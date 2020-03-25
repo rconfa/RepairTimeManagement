@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- definisco come visualizzare tutta la lista nello spinner -->
+
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:ellipsize="marquee"
+    android:fontFamily="@font/product_sans"
+    android:singleLine="true"
+    android:textAlignment="viewStart"
+    android:textColor="#000000"
+    android:textSize="20sp" />

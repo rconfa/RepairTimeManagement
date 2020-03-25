@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <!--- Gruppo generico
+          1) Permette di vedere tutta la lista di contatti
+          2) Sezione cronometro
+          3) Sezione invii falliti
+          4) impostazioni (selezione account, colore google)
+     -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_contact"
+            android:icon="@drawable/ic_menu_person"
+            android:title="@string/menu_home"
+            android:fontFamily="@font/product_sans"/>
+        <item
+            android:id="@+id/nav_chrono"
+            android:icon="@drawable/ic_menu_chrono"
+            android:title="@string/menu_gallery"
+            android:fontFamily="@font/product_sans"/>
+        <item
+            android:id="@+id/nav_send"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_send"
+            android:fontFamily="@font/product_sans"/>
+
+    </group>
+
+    <!-- add new group to add a dividing line -->
+    <group android:id="@+id/tools_menu">
+        <item
+            android:id="@+id/nav_tools"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/menu_tools"
+            android:fontFamily="@font/product_sans"/>
+    </group>
+
+
+
+</menu>

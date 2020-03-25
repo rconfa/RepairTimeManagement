@@ -1,0 +1,40 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fontFamily="@font/product_sans">
+
+    <PreferenceCategory
+        app:key="notifications_category"
+        app:title="Notifiche">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="notifications"
+            app:title="Vibrazione" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        app:key="calendar_category"
+        app:title="Account e calendario">
+
+        <!-- summary definito in base a scelta utente-->
+        <Preference
+            app:key="google_account"
+            app:title="Seleziona un account"></Preference>
+
+        <Preference
+            app:key="google_color"
+            app:summary="Seleziona un colore per gli eventi"
+            app:title="Colore"></Preference>
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
+
+
+

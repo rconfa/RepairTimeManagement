@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_chrono">
+
+    <fragment
+        android:id="@+id/nav_contact"
+        android:name="com.example.technobit.ui.contact.ContactFragment"
+        android:label="@string/nav_header_title"
+        tools:layout="@layout/fragment_contac" />
+
+    <fragment
+        android:id="@+id/nav_chrono"
+        android:name="com.example.technobit.ui.chronometer.ChronometerFragment"
+        android:label="@string/nav_header_title"
+        tools:layout="@layout/fragment_chronometer" />
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="com.example.technobit.ui.tools.ToolsFragment"
+        android:label="@string/nav_header_title"
+        tools:layout="@xml/preferences" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.example.technobit.ui.send.SendFragment"
+        android:label="@string/nav_header_title"
+        tools:layout="@layout/fragment_send" />
+</navigation>
