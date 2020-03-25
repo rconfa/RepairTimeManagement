@@ -27,16 +27,15 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
+
 import com.example.technobit.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.lang.reflect.Array;
 import java.util.TimeZone;
 
 public class ChronometerFragment extends Fragment {
@@ -177,8 +176,9 @@ public class ChronometerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        System.out.println("app closed");
-        saveAll();
+        // se il cronometro è stato inizializzato salvo i dati!
+        if(chronometer != null)
+            saveAll();
 
         super.onDestroy();
     }
