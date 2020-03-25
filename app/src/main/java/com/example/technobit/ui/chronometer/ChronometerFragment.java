@@ -75,6 +75,8 @@ public class ChronometerFragment extends Fragment {
         fab_chrono_play = (FloatingActionButton) root.findViewById(R.id.fab_start_pause);
         // bottone per lo stop
         buttonStop = (Button) root.findViewById(R.id.btn_stop);
+        buttonStop.setHeight(fab_chrono_play.getHeight());
+        buttonStop.setWidth(fab_chrono_play.getWidth());
         // spinner per la lista dei clienti
         sp = (Spinner) root.findViewById(R.id.spinner_choose_client);
         // layer da far sparire con bottone stop e scritta
