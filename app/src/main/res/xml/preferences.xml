@@ -6,29 +6,29 @@
 
     <PreferenceCategory
         app:key="notifications_category"
-        app:title="Notifiche">
+        app:title="@string/tools_notify">
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:key="notifications"
-            app:title="Vibrazione" />
+            app:title="@string/tools_vibration" />
 
     </PreferenceCategory>
 
 
     <PreferenceCategory
         app:key="calendar_category"
-        app:title="Account e calendario">
+        app:title="@string/tools_account_calendar">
 
         <!-- summary definito in base a scelta utente-->
         <Preference
             app:key="google_account"
-            app:title="Seleziona un account"></Preference>
+            app:title="@string/tools_select_account"/>
 
         <Preference
             app:key="google_color"
-            app:summary="Seleziona un colore per gli eventi"
-            app:title="Colore"></Preference>
+            app:summary="@string/tools_select_color_summary"
+            app:title="@string/tools_select_color"/>
 
 
     </PreferenceCategory>

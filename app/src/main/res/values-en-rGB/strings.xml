@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Technobit</string>
+    <string name="chrono_pause">PAUSE</string>
+    <string name="chrono_start">START</string>
+    <string name="chrono_stop">STOP</string>
+    <string name="color_picker_default_title">Pick a color</string>
+    <string name="menu_chronometer">Chronometer</string>
+    <string name="event_descr">Put here the event description...</string>
+    <string name="menu_home">Contacts</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_tools">Tools</string>
+    <string name="tools_account_calendar">Account and calendar</string>
+    <string name="tools_notify">Notification</string>
+    <string name="tools_select_account">Select an account</string>
+    <string name="tools_select_color">Color</string>
+    <string name="tools_select_color_summary">Select a color for the events</string>
+    <string name="tools_vibration">Vibration</string>
+</resources>

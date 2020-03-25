@@ -10,8 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="317dp"
         android:ems="10"
-        android:hint="put your text here"
+        android:hint="@string/event_descr"
         android:inputType="textLongMessage|textMultiLine"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:autofillHints="" tools:targetApi="o"/>
 
 </FrameLayout>
