@@ -2,7 +2,6 @@ package com.example.technobit.ui.tools;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -17,9 +16,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.example.technobit.R;
 import com.example.technobit.Color.ColorPickerDialog;
 import com.example.technobit.Color.ColorPickerSwatch;
+import com.example.technobit.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
@@ -90,7 +89,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
                 // salvo la scelta sulla vibrazione come coppia chiave-valore
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putBoolean(getString(R.string.shared_vibration), vibration.isChecked());
-                editor.commit();
+                editor.apply();
                 return true;
             }
         });
@@ -152,7 +151,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
             // salvo l'email scelta come coppia chiave-valore
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString(getString(R.string.shared_email), email_selected);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -209,7 +208,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
             set_icon_color();
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putInt(getString(R.string.shared_saved_color), color_selected);
-            editor.commit();
+            editor.apply();
         }
     };
 }
