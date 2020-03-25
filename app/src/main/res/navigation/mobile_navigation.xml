@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/nav_send"
-        android:name="com.example.technobit.ui.send.SendFragment"
+        android:name="com.example.technobit.ui.signature.signatureFragment"
         android:label="@string/nav_header_title"
         tools:layout="@layout/fragment_send" />
 </navigation>
