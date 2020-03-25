@@ -15,7 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.example.technobit.R;
 import com.example.technobit.signatureview.model.Point;
 
-public class SignatureView extends View implements View.OnClickListener{
+public class SignatureView extends View{
 
     public static final String TAG = SignatureView.class.getSimpleName();
     private Canvas canvasBmp;
@@ -42,7 +42,6 @@ public class SignatureView extends View implements View.OnClickListener{
     @SuppressWarnings("deprecation")
     public SignatureView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.setOnClickListener(this);
         this.context = context;
         this.setWillNotDraw(false);
         this.setDrawingCacheEnabled(true);
@@ -191,7 +190,7 @@ public class SignatureView extends View implements View.OnClickListener{
         }
     }
 
-    
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnableSignature()) {
@@ -395,8 +394,4 @@ public class SignatureView extends View implements View.OnClickListener{
     }
 
 
-    @Override
-    public void onClick(View v) {
-        requestFocus();
-    }
 }

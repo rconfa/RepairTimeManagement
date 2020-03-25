@@ -16,4 +16,6 @@
     <string name="tools_select_color">Color</string>
     <string name="tools_select_color_summary">Select a color for the events</string>
     <string name="tools_vibration">Vibration</string>
+    <string name="btn_send">SEND</string>
+    <string name="btn_clear">CLEAR</string>
 </resources>

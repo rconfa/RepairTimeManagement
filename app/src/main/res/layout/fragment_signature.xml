@@ -11,11 +11,13 @@
     <EditText
         android:id="@+id/et_eventDesc"
         android:layout_width="0dp"
-        android:layout_height="230dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
         android:autofillHints=""
         android:hint="@string/event_descr"
         android:inputType="textLongMessage|textMultiLine|textCapSentences"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/signature_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,17 +27,49 @@
     <com.example.technobit.signatureview.SignatureView
         android:id="@+id/signature_view"
         android:layout_width="0dp"
-        android:layout_height="207dp"
-        android:layout_marginTop="50dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="90dp"
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
         app:backgroundColor="#D9BDBDBD"
         app:enableSignature="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_eventDesc"
         app:penColor="#000000"
         app:penSize="4dp" />
+
+    <Button
+        android:id="@+id/btn_send"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="40dp"
+        android:text="@string/btn_send"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signature_view" />
+
+    <Button
+        android:id="@+id/btn_clear"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="95dp"
+        android:layout_marginBottom="40dp"
+        android:text="@string/btn_clear"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_send"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signature_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

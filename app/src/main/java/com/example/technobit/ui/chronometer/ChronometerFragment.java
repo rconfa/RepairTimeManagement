@@ -71,8 +71,6 @@ public class ChronometerFragment extends Fragment {
         // prendo tutti gli oggetti ui necessari
         // cronometro
         chronometer = root.findViewById(R.id.chrono);
-
-
         // bottone per lo start
         fab_chrono_play = (FloatingActionButton) root.findViewById(R.id.fab_start_pause);
         // bottone per lo stop

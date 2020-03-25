@@ -1,5 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">Technobit</string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
@@ -38,7 +37,8 @@
 
     <!-- string fragment signature-->
     <string name="event_descr">"Descrizione dell'evento..."</string>
-
+    <string name="btn_send">INVIA</string>
+    <string name="btn_clear">CLEAR</string>
 
     <string-array name="default_color_choice_values" translatable="false">
         <item>#7986CB</item>
@@ -88,8 +88,6 @@
         <item>nodsnicbiusadbcusbdacbasdbucsadbcuisdabcubausdibcuias</item>
         <item>cdsacsadc</item>
     </string-array>
-
-
 
 
 
