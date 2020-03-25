@@ -10,11 +10,12 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.example.technobit.R;
 import com.example.technobit.signatureview.model.Point;
 
-public class SignatureView extends View {
+public class SignatureView extends View implements View.OnClickListener{
 
     public static final String TAG = SignatureView.class.getSimpleName();
     private Canvas canvasBmp;
@@ -41,6 +42,7 @@ public class SignatureView extends View {
     @SuppressWarnings("deprecation")
     public SignatureView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.setOnClickListener(this);
         this.context = context;
         this.setWillNotDraw(false);
         this.setDrawingCacheEnabled(true);
@@ -74,9 +76,9 @@ public class SignatureView extends View {
         paintBm.setStrokeJoin(Paint.Join.ROUND);
         paintBm.setStrokeCap(Paint.Cap.ROUND);
         paintBm.setColor(Color.BLACK);
+
     }
 
-    /**************** Getter/Setter *****************/
 
     /**
      * Get stoke size for signature creation
@@ -189,6 +191,7 @@ public class SignatureView extends View {
         }
     }
 
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnableSignature()) {
@@ -198,6 +201,16 @@ public class SignatureView extends View {
         if (event.getPointerCount() > 1) {
             return false;
         }
+
+        // se c'è aperta la tastiera al primo click richiedo solo il focus sull'oggetto!
+        // cosi si perde il focus su qualsiasi altro oggetto del fragment
+        InputMethodManager imm = (InputMethodManager) getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && imm.isAcceptingText()){
+            requestFocus();
+            return false;
+        }
+
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -382,4 +395,8 @@ public class SignatureView extends View {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        requestFocus();
+    }
 }

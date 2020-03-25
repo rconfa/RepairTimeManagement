@@ -47,4 +47,9 @@ public class signatureFragment extends Fragment {
         imm.hideSoftInputFromWindow(et_description.getWindowToken(), 0);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
 }
