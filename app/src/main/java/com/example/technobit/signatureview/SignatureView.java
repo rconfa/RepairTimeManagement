@@ -1,5 +1,6 @@
 package com.example.technobit.signatureview;
 
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -39,9 +40,11 @@ public class SignatureView extends View{
     private float penSize;
     private Context context;
 
+
     @SuppressWarnings("deprecation")
     public SignatureView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
         this.context = context;
         this.setWillNotDraw(false);
         this.setDrawingCacheEnabled(true);
@@ -201,14 +204,15 @@ public class SignatureView extends View{
             return false;
         }
 
-        // se c'è aperta la tastiera al primo click richiedo solo il focus sull'oggetto!
-        // cosi si perde il focus su qualsiasi altro oggetto del fragment
-        InputMethodManager imm = (InputMethodManager) getContext()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // Nel caso in cui la tastiera sia aperta su schermo al primo click pulisco il focus
+        // in questo modo l'editText perde il focus e la tastiera viene chiusa!
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null && imm.isAcceptingText()){
-            requestFocus();
-            return false;
+            clearFocus();
+            return false; // in questo caso non disegno nulla!
         }
+
 
 
         switch (event.getAction()) {
@@ -243,6 +247,7 @@ public class SignatureView extends View{
             default:
                 break;
         }
+
         return true;// super.onTouchEvent(event);
     }
 
@@ -392,6 +397,5 @@ public class SignatureView extends View{
         }
         return false;
     }
-
 
 }
