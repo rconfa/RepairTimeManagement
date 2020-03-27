@@ -98,7 +98,8 @@
                 android:clickable="true"
                 app:backgroundTint="@color/colorAccent"
                 app:maxImageSize="35dp"
-                app:srcCompat="@android:drawable/ic_media_play" />
+                app:srcCompat="@android:drawable/ic_media_play"
+                android:focusable="true" />
 
             <TextView
                 android:id="@+id/txtView_Play"
