@@ -5,4 +5,5 @@
     <color name="colorAccent">#246158</color>
     <color name="penRoyalBlue">#4169e1</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 </resources>
