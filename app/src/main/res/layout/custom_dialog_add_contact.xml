@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_dialog_title"
+        android:id="@+id/et_dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -16,7 +16,7 @@
         android:textSize="22sp" />
 
     <EditText
-        android:id="@+id/tv_dialog_name"
+        android:id="@+id/et_dialog_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -26,7 +26,7 @@
         android:textSize="22sp" />
 
     <EditText
-        android:id="@+id/tv_dialog_email"
+        android:id="@+id/et_dialog_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/dialog_et_email"
@@ -63,11 +63,13 @@
             android:layout_marginStart="15dp"
             android:background="@android:color/transparent"
             android:clickable="true"
+            android:enabled="true"
+            android:focusable="true"
             android:text="@string/dialog_btn_yes"
             android:textColor="@color/colorAccent"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:focusable="true" />
+            android:visibility="invisible" />
 
 
     </LinearLayout>

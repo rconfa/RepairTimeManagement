@@ -95,11 +95,13 @@ public class ContactFragment extends Fragment {
                 cardArrayAdapter.notifyDataSetChanged();
                 return true;
             case R.id.icon_add:
-                CustomDialogClass cdd=new CustomDialogClass(getActivity());
+                CustomDialogClass cdd = new CustomDialogClass(getActivity());
                 cdd.show();
 
                 Window window = cdd.getWindow();
                 window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                // TODO SAVE new contact se clicca ok
                 return true;
             default:
                 return true;
