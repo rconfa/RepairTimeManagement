@@ -20,13 +20,16 @@
 		android:id="@+id/line1"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Text line 1" />
+		android:text="Example text"
+		android:textSize="20sp"
+		android:textStyle="bold" />
 
 	<TextView
 		android:id="@+id/line2"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Text line 2" />
+		android:text="Example text"
+		android:textSize="16sp" />
 
 </LinearLayout>
 
