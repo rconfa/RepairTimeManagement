@@ -36,9 +36,16 @@
     <string name="color_swatch_description_selected" msgid="5020921249944943124" translatable="false">"Colore selezionato: <xliff:g id="COLOR_INDEX">%1$d</xliff:g>"</string>
 
     <!-- string fragment signature-->
-    <string name="event_descr">"Descrizione dell'evento..."</string>
+    <string name="event_descr">"Descrizione dell'evento…"</string>
     <string name="btn_send">INVIA</string>
     <string name="btn_clear">CLEAR</string>
+
+    <!-- string per la custom dialog -->
+    <string name="dialog_title">Nuovo contatto</string>
+    <string name="dialog_et_name">nome</string>
+    <string name="dialog_et_email">email</string>
+    <string name="dialog_btn_no">ANNULLA</string>
+    <string name="dialog_btn_yes" translatable="false">OK</string>
 
     <string-array name="default_color_choice_values" translatable="false">
         <item>#7986CB</item>

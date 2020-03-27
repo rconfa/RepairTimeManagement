@@ -6,7 +6,7 @@
     <string name="chrono_stop">STOP</string>
     <string name="color_picker_default_title">Pick a color</string>
     <string name="menu_chronometer">Chronometer</string>
-    <string name="event_descr">Put here the event description...</string>
+    <string name="event_descr">Put here the event description…</string>
     <string name="menu_home">Contacts</string>
     <string name="menu_send">Send</string>
     <string name="menu_tools">Tools</string>
@@ -18,4 +18,8 @@
     <string name="tools_vibration">Vibration</string>
     <string name="btn_send">SEND</string>
     <string name="btn_clear">CLEAR</string>
+    <string name="dialog_title">New contact</string>
+    <string name="dialog_et_name">Name</string>
+    <string name="dialog_et_email">Email</string>
+    <string name="dialog_btn_no">CANCEL</string>
 </resources>
