@@ -7,6 +7,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,6 +20,10 @@ public class ContactFragment extends Fragment {
 
     private ContactViewModel contactViewModel;
     private MenuItem fav;
+    private CardArrayAdapter cardArrayAdapter;
+    private ListView listView;
+
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -27,6 +33,46 @@ public class ContactFragment extends Fragment {
 
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         View root = inflater.inflate(R.layout.fragment_contac, container, false);
+
+
+        listView = (ListView) root.findViewById(R.id.contact_listview);
+
+        //listView.addHeaderView(new View(getContext()));
+        //listView.addFooterView(new View(getContext()));
+
+        cardArrayAdapter = new CardArrayAdapter(getContext(), R.layout.list_item_card);
+
+        for (int i = 0; i < 10; i++) {
+            Card card = new Card("company: " + (i+1) + " company1", "email: " + (i+1) + " email2");
+            cardArrayAdapter.add(card);
+        }
+
+        listView.setAdapter(cardArrayAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                System.out.println("test2");
+            }
+        });
+
+        // evento sul click di un elemento della lista
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,final int pos, long id) {
+                //ViewGroup vg = (ViewGroup) arg1; // view group per prendere il layout
+
+                // salvo la posizone selezionata
+                boolean res = cardArrayAdapter.savePositionToDelete(String.valueOf(pos));
+                if(res) // se ho aggiunto la posizione metto come colore di sfondo il rosso
+                    arg1.setBackgroundResource(R.drawable.card_background_selected);
+                else // Se l'ho deselezionato rimetto lo sfondo bianco
+                    arg1.setBackgroundResource(R.drawable.card_background);
+
+                return true;
+            }
+        });
 
 
         return root;
