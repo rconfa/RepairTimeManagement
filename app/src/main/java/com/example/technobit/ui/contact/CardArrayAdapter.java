@@ -1,8 +1,6 @@
 package com.example.technobit.ui.contact;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +23,7 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         TextView line2;
     }
 
+    // unused ma necessario per extends
     public CardArrayAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
     }
@@ -57,6 +56,8 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
             viewHolder.line2 = (TextView) row.findViewById(R.id.line2);
             row.setTag(viewHolder);
         } else {
+            // risetto il background di default
+            row.setBackgroundResource(R.drawable.card_background);
             viewHolder = (CardViewHolder)row.getTag();
         }
         Card card = getItem(position);
@@ -65,14 +66,10 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         return row;
     }
 
-    public Bitmap decodeToBitmap(byte[] decodedByte) {
-        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
-    }
 
     /* se la posizone non è presente nel vettore la salvo e ritorno true
        altrimenti se già presente la tolgo e ritorno false
     */
-
     public boolean savePositionToDelete(String pos){
         // controllo se presente
         if(positionChecked.contains(pos)){
@@ -82,5 +79,15 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         else
             positionChecked.add(pos);
         return true;
+    }
+
+    // rimuove dalla lista tutti gli elementi selezionati
+    public void removeSelected(){
+
+        for(String index : positionChecked) {
+            cardList.remove(Integer.parseInt(index));
+        }
+
+        positionChecked.clear();
     }
 }

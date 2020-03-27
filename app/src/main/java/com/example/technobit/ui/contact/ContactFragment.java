@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -19,7 +20,6 @@ import com.example.technobit.R;
 public class ContactFragment extends Fragment {
 
     private ContactViewModel contactViewModel;
-    private MenuItem fav;
     private CardArrayAdapter cardArrayAdapter;
     private ListView listView;
 
@@ -32,13 +32,10 @@ public class ContactFragment extends Fragment {
         setHasOptionsMenu(true);
 
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_contac, container, false);
+        View root = inflater.inflate(R.layout.fragment_contact, container, false);
 
 
         listView = (ListView) root.findViewById(R.id.contact_listview);
-
-        //listView.addHeaderView(new View(getContext()));
-        //listView.addFooterView(new View(getContext()));
 
         cardArrayAdapter = new CardArrayAdapter(getContext(), R.layout.list_item_card);
 
@@ -61,8 +58,6 @@ public class ContactFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,final int pos, long id) {
-                //ViewGroup vg = (ViewGroup) arg1; // view group per prendere il layout
-
                 // salvo la posizone selezionata
                 boolean res = cardArrayAdapter.savePositionToDelete(String.valueOf(pos));
                 if(res) // se ho aggiunto la posizione metto come colore di sfondo il rosso
@@ -79,12 +74,36 @@ public class ContactFragment extends Fragment {
     }
 
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // aggiungo l'icona "add" alla barra in alto
-        fav = menu.add("add");
-        fav.setIcon(R.drawable.add_contact);
-        fav.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // carico il file per il menu, cosi visualizzo le icone per aggiungere/eliminare un contatto
+        inflater.inflate(R.menu.menu_contact, menu); //.xml file name
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    //Handling Action Bar button click
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            //Back button
+            case R.id.icon_remove:
+                cardArrayAdapter.removeSelected(); // rimuovo tutti gli oggetti selezionati
+                // listView.invalidateViews();
+                // forzo aggiornamento del dataSet
+                cardArrayAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.icon_add:
+                CustomDialogClass cdd=new CustomDialogClass(getActivity());
+                cdd.show();
+
+                Window window = cdd.getWindow();
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                return true;
+            default:
+                return true;
+        }
     }
 
 
