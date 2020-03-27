@@ -295,7 +295,7 @@ public class ChronometerFragment extends Fragment {
         // scrivo l'evento sul calendario
         saveOnCalendar(startMillis, endMillis);
 
-
+        pauseOffset = 0;
         chronometer.setBase(SystemClock.elapsedRealtime()); // azzero il cronometro
         // lo spinner deve essere bloccato sul cliente scelto
         sp.setEnabled(false);
