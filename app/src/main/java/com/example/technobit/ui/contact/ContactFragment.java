@@ -92,6 +92,9 @@ public class ContactFragment extends Fragment{
         // Handle item selection
         switch (item.getItemId()) {
             //Back button
+            //16908332
+
+
             case R.id.icon_remove:
                 cardArrayAdapter.removeSelected(); // rimuovo tutti gli oggetti selezionati
                 // listView.invalidateViews();
@@ -102,7 +105,7 @@ public class ContactFragment extends Fragment{
                 displayAddContactDialog();
                 return true;
             default:
-                return true;
+                return super.onOptionsItemSelected(item);
         }
     }
 
