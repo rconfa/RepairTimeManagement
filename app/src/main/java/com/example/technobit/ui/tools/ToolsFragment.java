@@ -202,7 +202,6 @@ public class ToolsFragment extends PreferenceFragmentCompat {
 
         @Override
         public void onColorSelected(int color) {
-            // TODO: RITROVARE COLORE DA NUMERO
             color_selected = color;
 
             set_icon_color();
