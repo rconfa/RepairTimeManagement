@@ -1,14 +1,18 @@
 package com.example.technobit.ui.contact;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.technobit.R;
 
-public class ContactFragment extends Fragment {
+public class ContactFragment extends Fragment{
 
     private ContactViewModel contactViewModel;
     private CardArrayAdapter cardArrayAdapter;
@@ -59,7 +63,7 @@ public class ContactFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,final int pos, long id) {
                 // salvo la posizone selezionata
-                boolean res = cardArrayAdapter.savePositionToDelete(String.valueOf(pos));
+                boolean res = cardArrayAdapter.savePositionToDelete(pos);
                 if(res) // se ho aggiunto la posizione metto come colore di sfondo il rosso
                     arg1.setBackgroundResource(R.drawable.card_background_selected);
                 else // Se l'ho deselezionato rimetto lo sfondo bianco
@@ -95,18 +99,71 @@ public class ContactFragment extends Fragment {
                 cardArrayAdapter.notifyDataSetChanged();
                 return true;
             case R.id.icon_add:
-                CustomDialogClass cdd = new CustomDialogClass(getActivity());
-                cdd.show();
-
-                Window window = cdd.getWindow();
-                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                // TODO SAVE new contact se clicca ok
+                displayAddContactDialog();
                 return true;
             default:
                 return true;
         }
     }
+
+    private void displayAddContactDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        // creo la view sfruttando il mio custom layout
+        View v = getLayoutInflater().inflate(R.layout.custom_dialog_add_contact, null);
+
+        builder.setView(v);
+        final AlertDialog dialog = builder.create();
+
+        // Accesso agli oggetti della view
+        final Button yes = (Button) v.findViewById(R.id.btn_yes);
+        final Button no = (Button) v.findViewById(R.id.btn_no);
+        final EditText et_name = (EditText) v.findViewById(R.id.et_dialog_name);
+        final EditText et_email = (EditText) v.findViewById(R.id.et_dialog_email);
+
+        // voglio che il nome sia obbligatorio, se è vuoto non abilito il bottone "ok"
+        et_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(count!=0) // se ha scritto il nome attivo il bottone ok
+                    yes.setVisibility(View.VISIBLE);
+                else
+                    yes.setVisibility(View.INVISIBLE);
+            }
+
+        });
+
+        // se clicca ok aggiungo al mio adapter i nuovi valori e chiudo la finestra!
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // prendo i valori
+                String name = et_name.getText().toString();
+                String email = et_email.getText().toString();
+                // aggiungo i valori
+                Card card = new Card(name, email);
+                cardArrayAdapter.add(card);
+                // chiudo la dialog
+                dialog.dismiss();
+            }
+        });
+
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        // visualizzo la dialog
+        dialog.show();
+    }
+
 
 
 }

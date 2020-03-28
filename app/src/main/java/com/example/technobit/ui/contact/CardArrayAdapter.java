@@ -15,12 +15,13 @@ import java.util.List;
 public class CardArrayAdapter  extends ArrayAdapter<Card> {
     private static final String TAG = "CardArrayAdapter";
     private List<Card> cardList = new ArrayList<Card>();
-    private ArrayList<String> positionChecked = new ArrayList<String>();
+    private ArrayList<Card> CardChecked = new ArrayList<Card>();
 
 
     static class CardViewHolder {
         TextView line1;
         TextView line2;
+
     }
 
     // unused ma necessario per extends
@@ -47,7 +48,10 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
+
         CardViewHolder viewHolder;
+        Card card = getItem(position);
+
         if (row == null) {
             LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(R.layout.list_item_card, parent, false);
@@ -56,13 +60,18 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
             viewHolder.line2 = (TextView) row.findViewById(R.id.line2);
             row.setTag(viewHolder);
         } else {
-            // risetto il background di default
-            row.setBackgroundResource(R.drawable.card_background);
+
+            // metto il background corretto in base se la carta è stata selezionata o no
+            if(card.isSelected())
+                row.setBackgroundResource(R.drawable.card_background_selected);
+            else
+                row.setBackgroundResource(R.drawable.card_background);
             viewHolder = (CardViewHolder)row.getTag();
         }
-        Card card = getItem(position);
+
         viewHolder.line1.setText(card.getLine1());
         viewHolder.line2.setText(card.getLine2());
+
         return row;
     }
 
@@ -70,24 +79,30 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
     /* se la posizone non è presente nel vettore la salvo e ritorno true
        altrimenti se già presente la tolgo e ritorno false
     */
-    public boolean savePositionToDelete(String pos){
+    public boolean savePositionToDelete(int pos){
+        Card getCard = cardList.get(pos);
+
         // controllo se presente
-        if(positionChecked.contains(pos)){
-            positionChecked.remove(pos);
+        if(CardChecked.contains(getCard)){
+            CardChecked.remove(getCard);
+            getCard.setIsSelected(false);
             return false;
         }
-        else
-            positionChecked.add(pos);
+        else{
+            getCard.setIsSelected(true); // setto la card come selezionata
+            CardChecked.add(getCard);
+        }
         return true;
     }
 
     // rimuove dalla lista tutti gli elementi selezionati
     public void removeSelected(){
+        for(Card c : CardChecked) {
 
-        for(String index : positionChecked) {
-            cardList.remove(Integer.parseInt(index));
+            cardList.remove(c);
         }
 
-        positionChecked.clear();
+        CardChecked.clear();
     }
+
 }
