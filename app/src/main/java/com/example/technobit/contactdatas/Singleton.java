@@ -28,12 +28,13 @@ public class Singleton {
         }
     }
 
-    public ArrayList<singleContact> getClientList(){
+    public ArrayList<singleContact> getContactList(){
         return this.clienti;
     }
 
     public void delete(int pos, Context c){
-
+        if(clienti == null)
+            return;
         // Remove the client from the file
         try {
             dc.delete(pos,c);
@@ -44,7 +45,9 @@ public class Singleton {
         }
     }
 
-    public void addClient(singleContact c_temp,Context c){
+    public void addContact(singleContact c_temp,Context c){
+        if(clienti == null)
+            clienti = new  ArrayList<singleContact>();
         try {
             dc.writeToFile(c_temp, c); // Add the new contact to file
             // if no errors I add the contact to list

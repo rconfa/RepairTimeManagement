@@ -23,13 +23,13 @@ public class singleContact {
 
     public String toString(){
         if(this.email.equals("")) // if mail is empty I set it like a single space
-            this.email = "";
+            this.email = " ";
         return this.company_name +";" + this.email;
     }
 
     public singleContact readFromString(String s_contact){
         // Check if the string contains the splitted character
-        if(!s_contact.contains(";")) {
+        if(s_contact.contains(";")) {
             String[] values = s_contact.split(";");
             if (values.length == 2) // string is well formed, has exactly one values for each field
                 return new singleContact(values[0], values[1]);
