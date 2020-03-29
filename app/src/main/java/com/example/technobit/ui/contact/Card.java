@@ -12,6 +12,11 @@ public class Card {
         this.isCardSelected = false;
     }
 
+    public Card(singleContact contact) {
+        this.client = contact;
+        this.isCardSelected = false;
+    }
+
     public String getLine1() {
         return this.client.getCompany_name();
     }
