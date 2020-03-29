@@ -1,0 +1,64 @@
+package com.example.technobit.contactdatas;
+
+import android.content.Context;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+// Class that implement Singleton pattern
+// store all the contact list that can be used in all class.
+public class Singleton {
+    // TODO: in catch give back an error to the user.
+
+    private static Singleton instance;
+
+    // Global variable
+    private  ArrayList<singleContact> clienti;
+    private retrieveFromFile dc;
+
+    // Restrict the constructor from being instantiated
+    private Singleton(Context c){
+        dc = new retrieveFromFile();
+
+        // Read all contact from file
+        try {
+            clienti = dc.readFile(c);
+        } catch (IOException e) {
+            clienti = null;
+        }
+    }
+
+    public ArrayList<singleContact> getClientList(){
+        return this.clienti;
+    }
+
+    public void delete(int pos, Context c){
+
+        // Remove the client from the file
+        try {
+            dc.delete(pos,c);
+            // If no errors I delete The client also from the list
+            clienti.remove(pos); // rimuovo dalla lista quel cliente
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addClient(singleContact c_temp,Context c){
+        try {
+            dc.writeToFile(c_temp, c); // Add the new contact to file
+            // if no errors I add the contact to list
+            clienti.add(c_temp);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static synchronized Singleton getInstance(Context c){
+        if(instance==null){
+            instance=new Singleton(c);
+        }
+        return instance;
+    }
+}
