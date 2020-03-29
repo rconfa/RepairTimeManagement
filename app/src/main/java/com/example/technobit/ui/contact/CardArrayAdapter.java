@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.technobit.R;
+import com.example.technobit.contactdatas.singleContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,18 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         cardList.add(object);
         super.add(object);
     }
+
+    public void add(ArrayList<singleContact> list_card){
+        if(list_card == null)
+            return;
+        Card temp;
+        for(singleContact s:list_card){
+            temp = new Card(s);
+            cardList.add(temp);
+            super.add(temp);
+        }
+    }
+
 
     @Override
     public int getCount() {
