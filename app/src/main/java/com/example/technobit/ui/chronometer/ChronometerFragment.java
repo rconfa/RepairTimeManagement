@@ -38,6 +38,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.TimeZone;
 
+// TODO: not send on calendar if color/email not selected
+
 public class ChronometerFragment extends Fragment {
 
     private ChronometerViewModel chronometerViewModel;
@@ -81,6 +83,7 @@ public class ChronometerFragment extends Fragment {
         sp = (Spinner) root.findViewById(R.id.spinner_choose_client);
         // layer da far sparire con bottone stop e scritta
         layButtonStop = (LinearLayout) root.findViewById(R.id.lay_btn_stop);
+        layButtonStop.setVisibility(View.GONE);
         // scritta sotto il bottone play
         tv_play = (TextView) root.findViewById(R.id.txtView_Play);
         // animazione per il cronometo

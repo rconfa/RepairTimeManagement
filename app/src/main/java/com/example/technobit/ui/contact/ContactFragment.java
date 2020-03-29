@@ -56,6 +56,7 @@ public class ContactFragment extends Fragment{
         // set the adapter for the listview
         listView.setAdapter(cardArrayAdapter);
 
+        /* TODO: edit existing contact??
         // listener on click on listview item
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -64,7 +65,7 @@ public class ContactFragment extends Fragment{
                 System.out.println("test2");
             }
         });
-
+        */
         // listener on Longclick on listview item
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
