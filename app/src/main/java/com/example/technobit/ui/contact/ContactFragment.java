@@ -31,7 +31,7 @@ public class ContactFragment extends Fragment{
     private CardArrayAdapter cardArrayAdapter;
     private ListView listView;
     private Singleton sg;
-
+    private ArrayList<Integer> posToBeRemoved;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -44,21 +44,19 @@ public class ContactFragment extends Fragment{
 
         // save the singleton instance
         sg = Singleton.getInstance(getContext());
+        // list of position to removed
+        posToBeRemoved = new ArrayList<Integer>();
 
         listView = (ListView) root.findViewById(R.id.contact_listview);
-
+        // adapter for the listview
         cardArrayAdapter = new CardArrayAdapter(getContext(), R.layout.list_item_card);
-
+        // add all item to the adapter
         addContactToAdapter();
-        /*
-        for (int i = 0; i < 10; i++) {
-            Card card = new Card("company: " + (i+1) + " company1", "email: " + (i+1) + " email2");
-            cardArrayAdapter.add(card);
-        }
-        */
 
+        // set the adapter for the listview
         listView.setAdapter(cardArrayAdapter);
 
+        // listener on click on listview item
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -67,17 +65,20 @@ public class ContactFragment extends Fragment{
             }
         });
 
-        // evento sul click di un elemento della lista
+        // listener on Longclick on listview item
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,final int pos, long id) {
                 // salvo la posizone selezionata
                 boolean res = cardArrayAdapter.savePositionToDelete(pos);
-                if(res) // se ho aggiunto la posizione metto come colore di sfondo il rosso
+                if(res) { // se ho aggiunto la posizione metto come colore di sfondo il rosso
                     arg1.setBackgroundResource(R.drawable.card_background_selected);
-                else // Se l'ho deselezionato rimetto lo sfondo bianco
+                    posToBeRemoved.add(pos);
+                }
+                else { // Se l'ho deselezionato rimetto lo sfondo bianco
                     arg1.setBackgroundResource(R.drawable.card_background);
-
+                    posToBeRemoved.remove((Object) pos); // I want to remove the obj not the index
+                }
                 return true;
             }
         });
@@ -109,10 +110,15 @@ public class ContactFragment extends Fragment{
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.icon_remove:
+                // remove all items selected from file
+                for(Integer i : posToBeRemoved)
+                    sg.delete(i,getContext());
 
-                cardArrayAdapter.removeSelected(); // rimuovo tutti gli oggetti selezionati
-                // listView.invalidateViews();
-                // forzo aggiornamento del dataSet
+                // clear the list of items to be removed
+                posToBeRemoved.clear();
+                // remove all items from the listview
+                cardArrayAdapter.removeSelected();
+                // Force update the view
                 cardArrayAdapter.notifyDataSetChanged();
                 return true;
             case R.id.icon_add:
