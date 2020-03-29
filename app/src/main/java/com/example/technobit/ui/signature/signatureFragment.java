@@ -90,7 +90,7 @@ public class signatureFragment extends Fragment {
     }
 
     private void sendOnCalendar(){
-        // TODO
+        // TODO send to calendar
 
         /*
         if(signatureView.isBitmapEmpty() == false){

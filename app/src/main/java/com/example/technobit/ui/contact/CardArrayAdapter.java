@@ -21,7 +21,6 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
     static class CardViewHolder {
         TextView line1;
         TextView line2;
-
     }
 
     // unused ma necessario per extends
@@ -62,7 +61,7 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         } else {
 
             // metto il background corretto in base se la carta è stata selezionata o no
-            if(card.isSelected())
+            if(card.isCardSelected())
                 row.setBackgroundResource(R.drawable.card_background_selected);
             else
                 row.setBackgroundResource(R.drawable.card_background);
@@ -85,11 +84,11 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         // controllo se presente
         if(CardChecked.contains(getCard)){
             CardChecked.remove(getCard);
-            getCard.setIsSelected(false);
+            getCard.setCardSelection(false);
             return false;
         }
         else{
-            getCard.setIsSelected(true); // setto la card come selezionata
+            getCard.setCardSelection(true); // setto la card come selezionata
             CardChecked.add(getCard);
         }
         return true;
