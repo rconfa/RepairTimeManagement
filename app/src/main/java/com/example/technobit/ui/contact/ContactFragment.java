@@ -20,13 +20,17 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.technobit.R;
+import com.example.technobit.contactdatas.Singleton;
+import com.example.technobit.contactdatas.singleContact;
+
+import java.util.ArrayList;
 
 public class ContactFragment extends Fragment{
 
     private ContactViewModel contactViewModel;
     private CardArrayAdapter cardArrayAdapter;
     private ListView listView;
-
+    private Singleton sg;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -38,15 +42,20 @@ public class ContactFragment extends Fragment{
         contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
         View root = inflater.inflate(R.layout.fragment_contact, container, false);
 
+        // save the singleton instance
+        sg = Singleton.getInstance(getContext());
 
         listView = (ListView) root.findViewById(R.id.contact_listview);
 
         cardArrayAdapter = new CardArrayAdapter(getContext(), R.layout.list_item_card);
 
+        addContactToAdapter();
+        /*
         for (int i = 0; i < 10; i++) {
             Card card = new Card("company: " + (i+1) + " company1", "email: " + (i+1) + " email2");
             cardArrayAdapter.add(card);
         }
+        */
 
         listView.setAdapter(cardArrayAdapter);
 
@@ -77,6 +86,12 @@ public class ContactFragment extends Fragment{
         return root;
     }
 
+    private void addContactToAdapter() {
+        // retrive all contact from file
+        final ArrayList<singleContact> allContact = sg.getContactList();
+        if(allContact != null)
+            cardArrayAdapter.add(allContact); // add all list to adapter
+    }
 
 
     @Override
@@ -91,11 +106,8 @@ public class ContactFragment extends Fragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            //Back button
-            //16908332
-
-
             case R.id.icon_remove:
+
                 cardArrayAdapter.removeSelected(); // rimuovo tutti gli oggetti selezionati
                 // listView.invalidateViews();
                 // forzo aggiornamento del dataSet
@@ -149,8 +161,10 @@ public class ContactFragment extends Fragment{
                 String name = et_name.getText().toString();
                 String email = et_email.getText().toString();
                 // aggiungo i valori
-                Card card = new Card(name, email);
-                cardArrayAdapter.add(card);
+                singleContact contact = new singleContact(name, email);
+                sg.addContact(contact,getContext());
+                cardArrayAdapter.notifyDataSetChanged();
+                //cardArrayAdapter.add(card);
                 // chiudo la dialog
                 dialog.dismiss();
             }
