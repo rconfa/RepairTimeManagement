@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.technobit.R;
-import com.example.technobit.contactdatas.singleContact;
+import com.example.technobit.contactdatas.SingleContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +35,11 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         super.add(object);
     }
 
-    public void add(ArrayList<singleContact> list_card){
+    public void add(ArrayList<SingleContact> list_card){
         if(list_card == null)
             return;
         Card temp;
-        for(singleContact s:list_card){
+        for(SingleContact s:list_card){
             temp = new Card(s);
             cardList.add(temp);
             super.add(temp);

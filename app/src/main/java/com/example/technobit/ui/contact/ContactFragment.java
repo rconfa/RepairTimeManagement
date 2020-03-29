@@ -20,8 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.technobit.R;
+import com.example.technobit.contactdatas.SingleContact;
 import com.example.technobit.contactdatas.Singleton;
-import com.example.technobit.contactdatas.singleContact;
 
 import java.util.ArrayList;
 
@@ -88,9 +88,11 @@ public class ContactFragment extends Fragment{
 
     private void addContactToAdapter() {
         // retrive all contact from file
-        final ArrayList<singleContact> allContact = sg.getContactList();
+        ArrayList<SingleContact> allContact = sg.getContactList();
         if(allContact != null)
             cardArrayAdapter.add(allContact); // add all list to adapter
+
+
     }
 
 
@@ -161,10 +163,11 @@ public class ContactFragment extends Fragment{
                 String name = et_name.getText().toString();
                 String email = et_email.getText().toString();
                 // aggiungo i valori
-                singleContact contact = new singleContact(name, email);
-                sg.addContact(contact,getContext());
+                SingleContact contact = new SingleContact(name, email);
+                sg.addContact(contact, getContext());
+                cardArrayAdapter.add(new Card(contact));
                 cardArrayAdapter.notifyDataSetChanged();
-                //cardArrayAdapter.add(card);
+
                 // chiudo la dialog
                 dialog.dismiss();
             }

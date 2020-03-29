@@ -1,28 +1,30 @@
 package com.example.technobit.ui.contact;
 
-import com.example.technobit.contactdatas.singleContact;
+import com.example.technobit.contactdatas.SingleContact;
 
 // Class that represent a single contact like a card to be added in an listview
-public class Card {
-    private singleContact client;
+public class Card extends SingleContact {
+    //private singleContact client;
     private Boolean isCardSelected; // salvo se la card è stata selezionata, se true background = green
 
     public Card(String company_name, String email) {
-        this.client = new singleContact(company_name,email);
+        super(company_name,email);
+
         this.isCardSelected = false;
     }
 
-    public Card(singleContact contact) {
-        this.client = contact;
+    public Card(SingleContact contact) {
+        super(contact);
+
         this.isCardSelected = false;
     }
 
     public String getLine1() {
-        return this.client.getCompany_name();
+        return super.getCompany_name();
     }
 
     public String getLine2() {
-        return this.client.getEmail();
+        return super.getEmail();
     }
 
     public boolean isCardSelected(){

@@ -13,12 +13,12 @@ public class Singleton {
     private static Singleton instance;
 
     // Global variable
-    private  ArrayList<singleContact> clienti;
-    private retrieveFromFile dc;
+    private  ArrayList<SingleContact> clienti;
+    private RetrieveFromFile dc;
 
     // Restrict the constructor from being instantiated
     private Singleton(Context c){
-        dc = new retrieveFromFile();
+        dc = new RetrieveFromFile();
 
         // Read all contact from file
         try {
@@ -28,7 +28,7 @@ public class Singleton {
         }
     }
 
-    public ArrayList<singleContact> getContactList(){
+    public ArrayList<SingleContact> getContactList(){
         return this.clienti;
     }
 
@@ -45,9 +45,9 @@ public class Singleton {
         }
     }
 
-    public void addContact(singleContact c_temp,Context c){
+    public void addContact(SingleContact c_temp,Context c){
         if(clienti == null)
-            clienti = new  ArrayList<singleContact>();
+            clienti = new  ArrayList<SingleContact>();
         try {
             dc.writeToFile(c_temp, c); // Add the new contact to file
             // if no errors I add the contact to list
