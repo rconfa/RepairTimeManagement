@@ -8,19 +8,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class retrieveFromFile {
+public class RetrieveFromFile {
 
     // legge un file txt e riporta tutti i dati come array
-    public ArrayList<singleContact> readFile(Context context) throws IOException {
-        ArrayList<singleContact> names = new ArrayList<singleContact>();
+    public ArrayList<SingleContact> readFile(Context context) throws IOException {
+        ArrayList<SingleContact> names = new ArrayList<SingleContact>();
 
         int i = 0;
         InputStreamReader input = new InputStreamReader(context.openFileInput("clienti.txt"));
         BufferedReader in = new BufferedReader(input);
         String line;
-        singleContact toAdd;
+        SingleContact toAdd;
         while ((line = in.readLine()) != null) {
-            toAdd = new singleContact().readFromString(line); // Retrieve the contact from the line
+            toAdd = new SingleContact().readFromString(line); // Retrieve the contact from the line
             names.add(toAdd); // adding the contact to list
         }
 
@@ -30,17 +30,17 @@ public class retrieveFromFile {
     }
 
 
-    public void writeAllToFile(ArrayList<singleContact> datas, Context context) throws IOException {
+    public void writeAllToFile(ArrayList<SingleContact> datas, Context context) throws IOException {
         // scrivo sul file
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("clienti.txt", Context.MODE_PRIVATE));
         // scrivo tutte le stringhe
-        for (singleContact s:datas) {
+        for (SingleContact s:datas) {
             outputStreamWriter.write(s.toString()+"\n");
         }
         outputStreamWriter.close();
     }
 
-    public void writeToFile(singleContact data, Context context) throws IOException {
+    public void writeToFile(SingleContact data, Context context) throws IOException {
 
         // scrivo sul file
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("clienti.txt", Context.MODE_APPEND));
@@ -53,16 +53,16 @@ public class retrieveFromFile {
     // leggo tutte le righe del file tranne la riga "pos", le salvo in un vettore, poi riscrivo tutto
     // cosi ho eliminato la riga pos
     public void delete(int pos,Context context) throws IOException {
-        ArrayList<singleContact> names = new ArrayList<singleContact>();
+        ArrayList<SingleContact> names = new ArrayList<SingleContact>();
 
         InputStreamReader input = new InputStreamReader(context.openFileInput("clienti.txt"));
         BufferedReader in = new BufferedReader(input);
         String line;
         int numLine = 0;
-        singleContact toAdd;
+        SingleContact toAdd;
         while ((line = in.readLine()) != null) {
             if (pos!=numLine) {
-                toAdd = new singleContact().readFromString(line); // Retrieve the contact from the line
+                toAdd = new SingleContact().readFromString(line); // Retrieve the contact from the line
                 names.add(toAdd); // adding the contact to list
             }
             numLine++;
