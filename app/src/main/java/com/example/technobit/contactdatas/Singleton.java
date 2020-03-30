@@ -34,9 +34,11 @@ public class Singleton {
 
     // return an array list with all company_name
     public ArrayList<String> getContactNameList(){
+
         ArrayList<String> name = new ArrayList<String>();
-        for(SingleContact s:this.clienti)
-            name.add(s.getCompany_name());
+        if(this.clienti != null)
+            for(SingleContact s:this.clienti)
+                name.add(s.getCompany_name());
 
         return name;
     }
