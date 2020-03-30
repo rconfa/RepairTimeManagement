@@ -63,4 +63,6 @@
         <item>#0B8043</item>
         <item>#D50000</item>
     </string-array>
-    </resources>
+
+    <string name="default_color_str" translatable="false">#7986CB</string>
+</resources>
