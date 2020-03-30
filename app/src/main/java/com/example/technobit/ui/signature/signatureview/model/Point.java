@@ -1,4 +1,4 @@
-package com.example.technobit.signatureview.model;
+package com.example.technobit.ui.signature.signatureview.model;
 
 public class Point {
     public final float x;

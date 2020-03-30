@@ -1,4 +1,4 @@
-package com.example.technobit.signatureview;
+package com.example.technobit.ui.signature.signatureview;
 
 
 import android.content.Context;
@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.example.technobit.R;
-import com.example.technobit.signatureview.model.Point;
+import com.example.technobit.ui.signature.signatureview.model.Point;
 
 public class SignatureView extends View{
 
