@@ -71,4 +71,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# ignore .idea folder
+/.idea
+
 # End of https://www.gitignore.io/api/linux,macos,windows
