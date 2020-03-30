@@ -24,6 +24,7 @@
     <string name="chrono_start">START</string>
     <string name="chrono_pause">PAUSA</string>
     <string name="chrono_stop">STOP </string>
+    <string name="spinner_hint">Scegli un cliente</string>
 
     <!-- String per le shared preference -->
     <string name="shared_email" translatable="false">shared_email</string>
