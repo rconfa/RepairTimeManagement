@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
+import com.example.technobit.contactdatas.Singleton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.TimeZone;
@@ -55,6 +56,7 @@ public class ChronometerFragment extends Fragment {
     private TextView tv_play;
     private Animation animBlink;
     private SharedPreferences sharedPref;
+    private Singleton sg;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,6 +71,8 @@ public class ChronometerFragment extends Fragment {
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
+        // save the singleton instance
+        sg = Singleton.getInstance(getContext());
 
         // prendo tutti gli oggetti ui necessari
         // cronometro
@@ -79,11 +83,14 @@ public class ChronometerFragment extends Fragment {
         buttonStop = (Button) root.findViewById(R.id.btn_stop);
         buttonStop.setHeight(fab_chrono_play.getHeight());
         buttonStop.setWidth(fab_chrono_play.getWidth());
+
         // spinner per la lista dei clienti
         sp = (Spinner) root.findViewById(R.id.spinner_choose_client);
+
         // layer da far sparire con bottone stop e scritta
         layButtonStop = (LinearLayout) root.findViewById(R.id.lay_btn_stop);
         layButtonStop.setVisibility(View.GONE);
+
         // scritta sotto il bottone play
         tv_play = (TextView) root.findViewById(R.id.txtView_Play);
         // animazione per il cronometo
@@ -91,12 +98,9 @@ public class ChronometerFragment extends Fragment {
         animBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
 
-
         // Init dello spinner
-        String[] clienti = getResources().getStringArray(R.array.client_name);
-
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(root.getContext(),
-                R.layout.spinner_item, clienti);
+                R.layout.spinner_item, sg.getContactNameList());
         arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         sp.setAdapter(arrayAdapter);
 
