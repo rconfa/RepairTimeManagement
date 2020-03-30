@@ -25,7 +25,13 @@
 
     <fragment
         android:id="@+id/nav_send"
-        android:name="com.example.technobit.ui.signature.signatureFragment"
+        android:name="com.example.technobit.ui.send.SendFragment"
         android:label="@string/nav_header_title"
         tools:layout="@layout/fragment_send" />
+
+    <!-- add item to navigate into signature fragment -->
+    <fragment
+        android:id="@+id/nav_signature"
+        android:name="com.example.technobit.ui.signature.signatureFragment"
+        tools:layout="@layout/fragment_signature" />
 </navigation>
