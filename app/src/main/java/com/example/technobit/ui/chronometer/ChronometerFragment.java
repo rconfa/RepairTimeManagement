@@ -36,6 +36,7 @@ import androidx.preference.PreferenceManager;
 import com.example.technobit.R;
 import com.example.technobit.contactdatas.Singleton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.TimeZone;
 
@@ -99,9 +100,11 @@ public class ChronometerFragment extends Fragment {
 
 
         // Init dello spinner
+        spinnerSelectionPos = -1; // di default non ho selezionato nulla
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(root.getContext(),
                 R.layout.spinner_item, sg.getContactNameList());
         arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        arrayAdapter.insert(getResources().getString(R.string.spinner_hint),0);
         sp.setAdapter(arrayAdapter);
 
 
@@ -131,7 +134,18 @@ public class ChronometerFragment extends Fragment {
         // evento listener sullo start del cronometro
         fab_chrono_play.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startChronometer(SystemClock.elapsedRealtime());
+                if(spinnerSelectionPos != -1)
+                    startChronometer(SystemClock.elapsedRealtime());
+                else{
+                    Snackbar snackbar = Snackbar.make(getView(), "Select client to start", Snackbar.LENGTH_LONG);
+                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                            .setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            });
+                    snackbar.show();
+                }
             }
         });
 
