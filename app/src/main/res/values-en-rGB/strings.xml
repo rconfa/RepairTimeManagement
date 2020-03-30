@@ -12,7 +12,7 @@
     <string name="menu_tools">Tools</string>
     <string name="tools_account_calendar">Account and calendar</string>
     <string name="tools_notify">Notification</string>
-    <string name="tools_select_account">Select an account:</string>
+    <string name="tools_select_account">Select an account</string>
     <string name="tools_select_color">Color</string>
     <string name="tools_select_color_summary">Select a color for the events</string>
     <string name="tools_vibration">Vibration</string>

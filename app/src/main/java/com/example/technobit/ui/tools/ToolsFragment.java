@@ -101,7 +101,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         if(email_selected != null)
             acc_selected = new Account(email_selected, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
 
-        String select_account = getResources().getString(R.string.tools_select_account);
+        String select_account = getResources().getString(R.string.tools_select_account) +":";
         Intent intent = AccountPicker.newChooseAccountIntent(acc_selected, null,
                 new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
                 false, select_account, null, null, null);
