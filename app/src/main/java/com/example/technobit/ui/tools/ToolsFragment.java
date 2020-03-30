@@ -33,7 +33,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
     private Preference color_sel; // preference sulla scelta del colore
     private int color_selected; // colore selezionato
     private SwitchPreferenceCompat vibration;
-
+    private int defaultColorValue;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -49,11 +49,10 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         // preference per la vibrazione del fragment (XML)
         vibration = (SwitchPreferenceCompat)findPreference("notifications");
 
-
-
+        String def_color = getResources().getString(R.string.default_color_str);
         // prendo il colore dalle shared preference, se non c'è viene settata al colore di default
-        int defaultValue = getResources().getInteger(R.integer.default_color);
-        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultValue);
+        defaultColorValue = Color.parseColor(def_color);
+        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
         // setto l'icona del colore
         set_icon_color();
 
@@ -118,8 +117,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
     private void color_choose(){
         // prendo tutta la lista di colori definita in resource
         int[] mColor = colorChoice();
-        int defaultValue = getResources().getInteger(R.integer.default_color);
-        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultValue);
+        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
 
         ColorPickerDialog colorcalendar = ColorPickerDialog.newInstance(
                 R.string.color_picker_default_title, mColor,
@@ -130,7 +128,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
 
         colorcalendar.setOnColorSelectedListener(colorcalendarListener);
 
-        colorcalendar.show(this.getFragmentManager(), "cal");
+        colorcalendar.show(this.getParentFragmentManager().beginTransaction(), "cal");
 
     }
 
