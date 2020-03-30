@@ -466,8 +466,7 @@ public class ChronometerFragment extends Fragment {
 
     private void askToSelectEmail() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Vuoi scegliere ora la mail? ");
-
+        builder.setTitle(getString(R.string.account_not_selected_yet));
         // Set up the buttons
         builder.setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
             @Override
