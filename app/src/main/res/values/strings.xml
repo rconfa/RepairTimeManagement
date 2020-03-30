@@ -25,6 +25,8 @@
     <string name="chrono_pause">PAUSA</string>
     <string name="chrono_stop">STOP </string>
     <string name="spinner_hint">Scegli un cliente</string>
+    <string name="snackbar_start_error">Scegli un cliente per iniziare</string>
+
 
     <!-- String per le shared preference -->
     <string name="shared_email" translatable="false">shared_email</string>
