@@ -100,7 +100,7 @@ public class ChronometerFragment extends Fragment {
 
 
         // Init dello spinner
-        spinnerSelectionPos = -1; // di default non ho selezionato nulla
+        spinnerSelectionPos = 0; // Default selected index, 0 = hint for the spinner
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(root.getContext(),
                 R.layout.spinner_item, sg.getContactNameList());
         arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -134,10 +134,10 @@ public class ChronometerFragment extends Fragment {
         // evento listener sullo start del cronometro
         fab_chrono_play.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(spinnerSelectionPos != -1)
+                if(spinnerSelectionPos != 0)
                     startChronometer(SystemClock.elapsedRealtime());
                 else{
-                    Snackbar snackbar = Snackbar.make(getView(), "Select client to start", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction("UNDO", new View.OnClickListener() {
                                 @Override
