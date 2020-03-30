@@ -26,7 +26,7 @@
     <string name="chrono_stop">STOP </string>
     <string name="spinner_hint">Scegli un cliente</string>
     <string name="snackbar_start_error">Scegli un cliente per iniziare</string>
-
+    <string name="account_not_selected_yet">Non hai ancora selezionato un account, vuoi farlo ora?</string>
 
     <!-- String per le shared preference -->
     <string name="shared_email" translatable="false">shared_email</string>
