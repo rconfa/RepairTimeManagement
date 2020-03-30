@@ -69,6 +69,7 @@ public class ChronometerFragment extends Fragment {
         // richiedo i permessi di accesso al calendar se necessario
         permission_calendar();
 
+
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
@@ -381,8 +382,6 @@ public class ChronometerFragment extends Fragment {
         // voglio che il nome del calendario corrisponda a questo
         //"technobit.sas@gmail.com"
 
-        // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
         String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
 
@@ -413,10 +412,11 @@ public class ChronometerFragment extends Fragment {
     }
 
     private int getColorInt(){
-        // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int defaultValue = getResources().getInteger(R.integer.default_color);
-        int color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultValue);
+        String def_color = getResources().getString(R.string.default_color_str);
+        int defaultColorValue = Color.parseColor(def_color);
+
+        // prendo il colore selezionato dalle shared preference
+        int color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
 
         int[] mColorChoices=null;
         String[] color_array = getResources().getStringArray(R.array.default_color_choice_values);
@@ -431,7 +431,7 @@ public class ChronometerFragment extends Fragment {
             }
         }
 
-        // se non ho trovato il colore di default metto 1 altrimenti restituisco il colore giusto
+        // se non ho trovato il colore di default metto 1 (colore nullo) altrimenti restituisco il colore giusto
         return colorVal == -1 ?  1 : colorVal;
     }
 
@@ -448,5 +448,14 @@ public class ChronometerFragment extends Fragment {
         }
     }
 
+    private boolean checkEmailSelected(){
+        // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
+        String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
 
+        if (email_selected == null)
+            return false;
+        else
+            return true;
+
+    }
 }
