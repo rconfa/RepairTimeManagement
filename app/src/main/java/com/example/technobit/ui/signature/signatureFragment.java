@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.technobit.R;
-import com.example.technobit.signatureview.SignatureView;
+import com.example.technobit.ui.signature.signatureview.SignatureView;
 
 public class signatureFragment extends Fragment {
 
