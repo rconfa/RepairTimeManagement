@@ -60,42 +60,4 @@
         <item>#0B8043</item>
         <item>#D50000</item>
     </string-array>
-
-    <string-array name="client_name" translatable="false">
-        <item>riccardo confalonieri</item>
-        <item>riccardo confalonieri2</item>
-        <item>riccardo confalonieri3</item>
-        <item>andrea technobit</item>
-        <item>daniele zanoletti</item>
-        <item>f.lli andrea spa iva danzica 20</item>
-        <item>nodsnicbiusadbcusbdacbasdbucsadbcuisdabcubausdibcuias</item>
-        <item>cdsacsadc</item>
-        <item>riccardo confalonieri</item>
-        <item>riccardo confalonieri2</item>
-        <item>riccardo confalonieri3</item>
-        <item>andrea technobit</item>
-        <item>daniele zanoletti</item>
-        <item>f.lli andrea spa iva danzica 20</item>
-        <item>nodsnicbiusadbcusbdacbasdbucsadbcuisdabcubausdibcuias</item>
-        <item>cdsacsadc</item>
-        <item>riccardo confalonieri</item>
-        <item>riccardo confalonieri2</item>
-        <item>riccardo confalonieri3</item>
-        <item>andrea technobit</item>
-        <item>daniele zanoletti</item>
-        <item>f.lli andrea spa iva danzica 20</item>
-        <item>nodsnicbiusadbcusbdacbasdbucsadbcuisdabcubausdibcuias</item>
-        <item>cdsacsadc</item>
-        <item>riccardo confalonieri</item>
-        <item>riccardo confalonieri2</item>
-        <item>riccardo confalonieri3</item>
-        <item>andrea technobit</item>
-        <item>daniele zanoletti</item>
-        <item>f.lli andrea spa iva danzica 20</item>
-        <item>nodsnicbiusadbcusbdacbasdbucsadbcuisdabcubausdibcuias</item>
-        <item>cdsacsadc</item>
-    </string-array>
-
-
-
-</resources>
+    </resources>
