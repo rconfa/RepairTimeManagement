@@ -16,9 +16,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.example.technobit.Color.ColorPickerDialog;
-import com.example.technobit.Color.ColorPickerSwatch;
 import com.example.technobit.R;
+import com.example.technobit.ui.colorDialog.ColorPickerDialog;
+import com.example.technobit.ui.colorDialog.ColorPickerSwatch;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 

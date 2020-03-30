@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.technobit.Color;
+package com.example.technobit.ui.colorDialog;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -26,7 +26,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import com.example.technobit.R;
-import com.example.technobit.Color.ColorPickerSwatch.OnColorSelectedListener;
+import com.example.technobit.ui.colorDialog.ColorPickerSwatch.OnColorSelectedListener;
 
 /**
  * A color picker custom view which creates an grid of color squares.  The number of squares per

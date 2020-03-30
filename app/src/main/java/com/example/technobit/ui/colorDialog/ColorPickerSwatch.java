@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.technobit.Color;
+package com.example.technobit.ui.colorDialog;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
