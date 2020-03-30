@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:gravity="center" />
 
-        <com.example.technobit.Color.ColorPickerPalette
+        <com.example.technobit.ui.colorDialog.ColorPickerPalette
             android:id="@+id/color_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
