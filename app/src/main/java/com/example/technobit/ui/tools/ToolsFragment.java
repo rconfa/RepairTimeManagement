@@ -50,8 +50,8 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         vibration = (SwitchPreferenceCompat)findPreference("notifications");
 
         String def_color = getResources().getString(R.string.default_color_str);
-        // prendo il colore dalle shared preference, se non c'è viene settata al colore di default
         defaultColorValue = Color.parseColor(def_color);
+        // prendo il colore dalle shared preference, se non c'è viene settata al colore di default
         color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
         // setto l'icona del colore
         set_icon_color();
@@ -101,7 +101,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         if(email_selected != null)
             acc_selected = new Account(email_selected, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
 
-        String select_account = getResources().getString(R.string.tools_select_account) +":";
+        String select_account = getResources().getString(R.string.tools_select_account);
         Intent intent = AccountPicker.newChooseAccountIntent(acc_selected, null,
                 new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
                 false, select_account, null, null, null);
