@@ -1,8 +1,10 @@
 package com.example.technobit.ui.chronometer;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
@@ -69,9 +72,14 @@ public class ChronometerFragment extends Fragment {
         // richiedo i permessi di accesso al calendar se necessario
         permission_calendar();
 
-
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        // if the user don't select the email I ask if he want to choose it now.
+        if (checkEmailSelected() == false)
+            askToSelectEmail();
+
+
 
         // save the singleton instance
         sg = Singleton.getInstance(getContext());
@@ -452,10 +460,30 @@ public class ChronometerFragment extends Fragment {
         // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
         String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
 
-        if (email_selected == null)
-            return false;
-        else
-            return true;
+        return email_selected != null;
+
+    }
+
+    private void askToSelectEmail() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Vuoi scegliere ora la mail? ");
+
+        // Set up the buttons
+        builder.setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // go to the tools fragment to select email
+                Navigation.findNavController(getView()).navigate(R.id.nav_tools);
+            }
+        });
+        builder.setNegativeButton(getString(R.string.dialog_btn_no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
 
     }
 }
