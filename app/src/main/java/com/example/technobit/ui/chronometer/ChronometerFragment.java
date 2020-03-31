@@ -43,7 +43,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.TimeZone;
 
-// TODO: not send on calendar if color/email not selected
+/* TODO: Better dialog message for email checking
+*        send to calendar(check if email selected)
+* */
 
 public class ChronometerFragment extends Fragment {
 

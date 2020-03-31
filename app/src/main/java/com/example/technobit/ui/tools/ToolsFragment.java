@@ -24,6 +24,9 @@ import com.google.android.gms.common.AccountPicker;
 
 import static android.app.Activity.RESULT_OK;
 
+/* TODO: light the email preference??!?!
+*        Add preference for english/ita swapping?
+*  */
 public class ToolsFragment extends PreferenceFragmentCompat {
 
     private final static int PICK_ACCOUNT_REQUEST = 0;

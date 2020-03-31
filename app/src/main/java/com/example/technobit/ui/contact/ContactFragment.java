@@ -25,6 +25,9 @@ import com.example.technobit.contactdatas.Singleton;
 
 import java.util.ArrayList;
 
+/* TODO: edit existing contact??
+*        Dialog message for confirm deletion?
+* */
 public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLongClickListener{
 
     private ContactViewModel contactViewModel;
@@ -63,8 +66,6 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
 
         // set the adapter for the listview
         recView.setAdapter(cardArrayAdapter);
-
-        /* TODO: edit existing contact??*/
 
         return root;
     }
