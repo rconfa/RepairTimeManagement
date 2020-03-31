@@ -27,7 +27,7 @@ public class SmartphoneControlUtility {
     }
 
     // shake the smartphone
-    private void shakeIt() {
+    public void shake() {
         // check if the vibration is enable
         if (mVibrationEnable) {
             // based of the Sdk version perform a shake of 600 millis.
