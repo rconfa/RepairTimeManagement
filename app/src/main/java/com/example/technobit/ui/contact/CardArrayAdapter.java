@@ -15,19 +15,42 @@ import java.util.ArrayList;
 
 
 public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.CardViewHolder> {
-    private ArrayList<Card> cardList = new ArrayList<Card>();
-    private ArrayList<Card> CardChecked = new ArrayList<Card>();
+    private ArrayList<Card> cardList = new ArrayList<>();
+    private ArrayList<Card> cardChecked = new ArrayList<>();
+    private ItemLongClickListener longClickListener;
 
-
-    static class CardViewHolder extends RecyclerView.ViewHolder{
+    static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         private TextView line1;
         private TextView line2;
+        private ItemLongClickListener longClickListener;
 
-        public CardViewHolder(@NonNull View itemView, TextView l1, TextView l2) {
+
+        private CardViewHolder(@NonNull View itemView, ItemLongClickListener lcl) {
             super(itemView);
-            line1 = l1;
-            line2 = l2;
+            // setting the textview
+            line1 = itemView.findViewById(R.id.tv_item_title);
+            line2 = itemView.findViewById(R.id.tv_item_email);
+
+            // setting the listener
+            longClickListener = lcl;
+
+            itemView.setOnLongClickListener(this);
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            longClickListener.onItemLongClick(v, getAdapterPosition());
+            return true;
+        }
+    }
+
+    void mySetLongClickListener(ItemLongClickListener itemLongClickListener) {
+        this.longClickListener = itemLongClickListener;
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface ItemLongClickListener {
+        void onItemLongClick(View view, int position);
     }
 
     @NonNull
@@ -37,11 +60,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_card, parent, false);
 
         // create the new view holder
-        TextView name = v.findViewById(R.id.tv_item_title);
-        TextView email = v.findViewById(R.id.tv_item_email);
-        CardViewHolder viewHolder = new CardViewHolder(v,name, email);
-
-        return viewHolder;
+        return new CardViewHolder(v,longClickListener);
 
     }
 
@@ -88,27 +107,29 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         Card getCard = cardList.get(pos);
 
         // controllo se presente
-        if(CardChecked.contains(getCard)){
-            CardChecked.remove(getCard);
+        if(cardChecked.contains(getCard)){
+            cardChecked.remove(getCard);
             getCard.setCardSelection(false);
             return false;
         }
         else{
             getCard.setCardSelection(true); // setto la card come selezionata
-            CardChecked.add(getCard);
+            cardChecked.add(getCard);
         }
         return true;
     }
 
     // rimuove dalla lista tutti gli elementi selezionati
     public void removeSelected(){
-        for(Card c : CardChecked) {
+        for(Card c : cardChecked) {
 
             cardList.remove(c);
         }
 
-        CardChecked.clear();
+        cardChecked.clear();
         notifyDataSetChanged(); // notify the change
     }
+
+
 
 }

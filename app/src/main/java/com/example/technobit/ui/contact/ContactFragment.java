@@ -10,14 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
 import com.example.technobit.contactdatas.SingleContact;
@@ -25,11 +25,11 @@ import com.example.technobit.contactdatas.Singleton;
 
 import java.util.ArrayList;
 
-public class ContactFragment extends Fragment{
+public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLongClickListener{
 
     private ContactViewModel contactViewModel;
     private CardArrayAdapter cardArrayAdapter;
-    private ListView listView;
+    private RecyclerView recView;
     private Singleton sg;
     private ArrayList<Integer> posToBeRemoved;
 
@@ -47,43 +47,24 @@ public class ContactFragment extends Fragment{
         // list of position to removed
         posToBeRemoved = new ArrayList<Integer>();
 
-        listView = (ListView) root.findViewById(R.id.contact_listview);
+        recView = (RecyclerView) root.findViewById(R.id.contact_listview);
+        recView.setHasFixedSize(true); // no change the layout size
+        // setting layout
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recView.setLayoutManager(layoutManager);
+
         // adapter for the listview
-        cardArrayAdapter = new CardArrayAdapter(getContext(), R.layout.list_item_card);
+        cardArrayAdapter = new CardArrayAdapter();
         // add all item to the adapter
         addContactToAdapter();
 
+        // set the long click listener equal to my local listener
+        cardArrayAdapter.mySetLongClickListener(this);
+
         // set the adapter for the listview
-        listView.setAdapter(cardArrayAdapter);
+        recView.setAdapter(cardArrayAdapter);
 
-        /* TODO: edit existing contact??
-        // listener on click on listview item
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                System.out.println("test2");
-            }
-        });
-        */
-        // listener on Longclick on listview item
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,final int pos, long id) {
-                // salvo la posizone selezionata
-                boolean res = cardArrayAdapter.savePositionToDelete(pos);
-                if(res) { // se ho aggiunto la posizione metto come colore di sfondo il rosso
-                    arg1.setBackgroundResource(R.drawable.card_background_selected);
-                    posToBeRemoved.add(pos);
-                }
-                else { // Se l'ho deselezionato rimetto lo sfondo bianco
-                    arg1.setBackgroundResource(R.drawable.card_background);
-                    posToBeRemoved.remove((Object) pos); // I want to remove the obj not the index
-                }
-                return true;
-            }
-        });
-
+        /* TODO: edit existing contact??*/
 
         return root;
     }
@@ -93,8 +74,6 @@ public class ContactFragment extends Fragment{
         ArrayList<SingleContact> allContact = sg.getContactList();
         if(allContact != null)
             cardArrayAdapter.add(allContact); // add all list to adapter
-
-
     }
 
 
@@ -119,8 +98,7 @@ public class ContactFragment extends Fragment{
                 posToBeRemoved.clear();
                 // remove all items from the listview
                 cardArrayAdapter.removeSelected();
-                // Force update the view
-                cardArrayAdapter.notifyDataSetChanged();
+
                 return true;
             case R.id.icon_add:
                 displayAddContactDialog();
@@ -173,7 +151,6 @@ public class ContactFragment extends Fragment{
                 SingleContact contact = new SingleContact(name, email);
                 sg.addContact(contact, getContext());
                 cardArrayAdapter.add(new Card(contact));
-                cardArrayAdapter.notifyDataSetChanged();
 
                 // chiudo la dialog
                 dialog.dismiss();
@@ -192,5 +169,17 @@ public class ContactFragment extends Fragment{
     }
 
 
-
+    @Override
+    public void onItemLongClick(View view, int position) {
+        // salvo la posizone selezionata
+        boolean res = cardArrayAdapter.savePositionToDelete(position);
+        if(res) { // se ho aggiunto la posizione metto come colore di sfondo il rosso
+            view.setBackgroundResource(R.drawable.card_background_selected);
+            posToBeRemoved.add(position);
+        }
+        else { // Se l'ho deselezionato rimetto lo sfondo bianco
+            view.setBackgroundResource(R.drawable.card_background);
+            posToBeRemoved.remove((Object) position); // I want to remove the obj not the index
+        }
+    }
 }
