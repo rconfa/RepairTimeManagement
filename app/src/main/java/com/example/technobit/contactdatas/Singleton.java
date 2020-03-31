@@ -43,14 +43,16 @@ public class Singleton {
         return name;
     }
 
-    public void delete(int pos, Context c){
+    public void delete(ArrayList<Integer> pos, Context c){
         if(clienti == null)
             return;
         // Remove the client from the file
         try {
             dc.delete(pos,c);
             // If no errors I delete The client also from the list
-            clienti.remove(pos); // rimuovo dalla lista quel cliente
+            for(int index:pos)
+                clienti.remove(index);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
