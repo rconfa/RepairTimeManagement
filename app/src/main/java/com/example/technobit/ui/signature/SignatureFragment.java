@@ -78,6 +78,7 @@ public class SignatureFragment extends Fragment {
                         startMillis, endMillis, color, getParentFragment());
                 boolean res = gCal.sendOnCalendar();
                 if(!res) {
+                    // TODO: save data
                     SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
                     scu.shake();
                 }
