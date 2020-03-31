@@ -32,6 +32,6 @@
     <!-- add item to navigate into signature fragment -->
     <fragment
         android:id="@+id/nav_signature"
-        android:name="com.example.technobit.ui.signature.signatureFragment"
+        android:name="com.example.technobit.ui.signature.SignatureFragment"
         tools:layout="@layout/fragment_signature" />
 </navigation>
