@@ -2,20 +2,12 @@ package com.example.technobit.ui.chronometer;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +20,6 @@ import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -41,7 +32,6 @@ import com.example.technobit.contactdatas.Singleton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.TimeZone;
 
 /* TODO: Better dialog message for email checking
 *        send to calendar(check if email selected)
@@ -53,16 +43,14 @@ public class ChronometerFragment extends Fragment {
     private Chronometer chronometer;
     private long pauseOffset;
     private boolean running; // mi dice se il cronometro sta runnando
-    private FloatingActionButton fab_chrono_play;
-    private Button buttonStop;
+    private FloatingActionButton fabChronoPlay;
     private Spinner sp;
     private String EventTitle = "";
     private int spinnerSelectionPos;
-    private LinearLayout layButtonStop;
-    private TextView tv_play;
+    private LinearLayout linearLayButtonStop;
+    private TextView tvPlay;
     private Animation animBlink;
     private SharedPreferences sharedPref;
-    private Singleton sg;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,33 +66,33 @@ public class ChronometerFragment extends Fragment {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // if the user don't select the email I ask if he want to choose it now.
-        if (checkEmailSelected() == false)
+        if (!checkEmailSelected())
             askToSelectEmail();
 
 
 
         // save the singleton instance
-        sg = Singleton.getInstance(getContext());
+        Singleton sg = Singleton.getInstance(getContext());
 
         // prendo tutti gli oggetti ui necessari
         // cronometro
         chronometer = root.findViewById(R.id.chrono);
         // bottone per lo start
-        fab_chrono_play = (FloatingActionButton) root.findViewById(R.id.fab_start_pause);
+        fabChronoPlay = root.findViewById(R.id.fab_start_pause);
         // bottone per lo stop
-        buttonStop = (Button) root.findViewById(R.id.btn_stop);
-        buttonStop.setHeight(fab_chrono_play.getHeight());
-        buttonStop.setWidth(fab_chrono_play.getWidth());
+        Button buttonStop = root.findViewById(R.id.btn_stop);
+        buttonStop.setHeight(fabChronoPlay.getHeight());
+        buttonStop.setWidth(fabChronoPlay.getWidth());
 
         // spinner per la lista dei clienti
-        sp = (Spinner) root.findViewById(R.id.spinner_choose_client);
+        sp = root.findViewById(R.id.spinner_choose_client);
 
         // layer da far sparire con bottone stop e scritta
-        layButtonStop = (LinearLayout) root.findViewById(R.id.lay_btn_stop);
-        layButtonStop.setVisibility(View.GONE);
+        linearLayButtonStop = root.findViewById(R.id.lay_btn_stop);
+        linearLayButtonStop.setVisibility(View.GONE);
 
         // scritta sotto il bottone play
-        tv_play = (TextView) root.findViewById(R.id.txtView_Play);
+        tvPlay = root.findViewById(R.id.txtView_Play);
         // animazione per il cronometo
         // load the animation
         animBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
@@ -112,7 +100,7 @@ public class ChronometerFragment extends Fragment {
 
         // Init dello spinner
         spinnerSelectionPos = 0; // Default selected index, 0 = hint for the spinner
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(root.getContext(),
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(root.getContext(),
                 R.layout.spinner_item, sg.getContactNameList());
         arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         arrayAdapter.insert(getResources().getString(R.string.spinner_hint),0);
@@ -125,25 +113,25 @@ public class ChronometerFragment extends Fragment {
         sp.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        fab_chrono_play.show();
+                        fabChronoPlay.show();
                         // se ho la view aggiorno i dati
                         // in alcuni casi è null, tipo quando si ruota lo schermo perchè
                         // non è ancora stata inizializzata!
                         if(view != null) {
-                            TextView clientName = (TextView) view.findViewById(R.id.spinnerItemTextView);
+                            TextView clientName = view.findViewById(R.id.spinnerItemTextView);
                             EventTitle = clientName.getText().toString();
                             spinnerSelectionPos = position;
                         }
                     }
 
                     public void onNothingSelected(AdapterView<?> parent) {
-                        fab_chrono_play.hide();
+                        fabChronoPlay.hide();
                     }
                 });
 
 
         // evento listener sullo start del cronometro
-        fab_chrono_play.setOnClickListener(new View.OnClickListener() {
+        fabChronoPlay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(spinnerSelectionPos != 0)
                     startChronometer(SystemClock.elapsedRealtime());
@@ -228,7 +216,7 @@ public class ChronometerFragment extends Fragment {
 
 
         // se non è uguale a 00:00 allora c'è un exe in corso!
-        if(chronometer.getText().equals("00:00") == false){
+        if(!chronometer.getText().equals("00:00")){
             //salvo la posizione dello spinner
             editor.putInt("spinner_pos", spinnerSelectionPos);
 
@@ -275,11 +263,11 @@ public class ChronometerFragment extends Fragment {
             // smetto di far lampeggiare il cronometro
             chronometer.clearAnimation();
             // cambio l'immagine con quella della pausa
-            fab_chrono_play.setImageResource(android.R.drawable.ic_media_pause);
+            fabChronoPlay.setImageResource(android.R.drawable.ic_media_pause);
             // il bottone stop non è piu usabile
-            layButtonStop.setVisibility(View.GONE);
+            linearLayButtonStop.setVisibility(View.GONE);
             // Cambio la scritta sotto il bottone, metto "pausa"
-            tv_play.setText(getResources().getText(R.string.chrono_pause));
+            tvPlay.setText(getResources().getText(R.string.chrono_pause));
             // lo spinner deve essere bloccato sul cliente scelto
             sp.setEnabled(false);
             // risetto il tempo del cronometro considerando anche la pausa
@@ -299,11 +287,11 @@ public class ChronometerFragment extends Fragment {
             // faccio lampeggiare il cronometro
             chronometer.startAnimation(animBlink);
             // il bottone per lo stop è visibile
-            layButtonStop.setVisibility(View.VISIBLE);
+            linearLayButtonStop.setVisibility(View.VISIBLE);
             // Cambio la scritta sotto il bottone, metto "start"
-            tv_play.setText(getResources().getText(R.string.chrono_start));
+            tvPlay.setText(getResources().getText(R.string.chrono_start));
             // metto in pausa il cronometro e cambio anche l'immagine del fab
-            fab_chrono_play.setImageResource(android.R.drawable.ic_media_play);
+            fabChronoPlay.setImageResource(android.R.drawable.ic_media_play);
             chronometer.stop();
             // salvo per quanto tempo sono stato in pausa
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
@@ -324,138 +312,22 @@ public class ChronometerFragment extends Fragment {
         long elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.getBase());
         // tempo di fine - tempo attivo = data e ora in millisecondi di inizio
         long startMillis = endMillis - elapsedMillis;
-        // scrivo l'evento sul calendario
-        saveOnCalendar(startMillis, endMillis);
+
+        // go to the signature fragment to complete the action
+        // add bundle value
+        Bundle bundle = new Bundle();
+        bundle.putLong("startMillis", startMillis);
+        bundle.putLong("endMillis", endMillis);
+        bundle.putString("EventTitle", EventTitle);
+        Navigation.findNavController(getView()).navigate(R.id.nav_signature, bundle);
+
 
         pauseOffset = 0;
         chronometer.setBase(SystemClock.elapsedRealtime()); // azzero il cronometro
         // lo spinner deve essere bloccato sul cliente scelto
         sp.setEnabled(false);
         // rimetto il bottone dello stop invisibile, non posso usarlo!
-        layButtonStop.setVisibility(View.GONE);
-    }
-
-    private void saveOnCalendar(long startMillis, long endMillis) {
-        ContentResolver cr = this.getContext().getContentResolver();
-        String calID = searchID(cr); // cerco l'id del calendario specifico
-
-        if (!calID.equals("-1")) {
-            TimeZone tz = TimeZone.getDefault();
-
-            ContentValues values = new ContentValues();
-
-            int color = getColorInt();
-
-
-            // mettere controllo id!=-1
-            values.put(CalendarContract.Events.DTSTART, startMillis);
-            values.put(CalendarContract.Events.DTEND, endMillis);
-            values.put(CalendarContract.Events.TITLE, EventTitle);
-            values.put(CalendarContract.Events.CALENDAR_ID, calID);
-            values.put(CalendarContract.Events.EVENT_TIMEZONE, tz.getID());
-            values.put(CalendarContract.Events.EVENT_COLOR_KEY, color);
-            // provo ad aggiungere l'evento
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (getContext().checkSelfPermission(Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                        // richiedo il permesso alla scrittura del calendario
-                        requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, 0);
-                        System.out.println("TODO: SAVE EVENT");
-                        shakeIt();
-                        //saveEventNotAdd(startMillis,endMillis, Title);
-                    }
-                    else {
-                        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-                        Toast.makeText(this.getContext(), "INVIATO!", Toast.LENGTH_LONG).show();
-                    }
-                }
-                else {
-                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-                    Toast.makeText(this.getContext(), "INVIATO!", Toast.LENGTH_LONG).show();
-                }
-            } catch (Exception e) {
-                System.out.println("TODO: SAVE EVENT");
-                shakeIt();
-                //saveEventNotAdd(startMillis,endMillis, Title);
-            }
-        }
-        else {
-            System.out.println("TODO: SAVE EVENT");
-            shakeIt();
-        }
-            //saveEventNotAdd(startMillis,endMillis, Title);
-    }
-
-    private String searchID(ContentResolver cr){
-        // cerco l'id del calendario che mi serve:
-        String projection[] = {"_id"}; // richiedo l'id del calendario
-        // voglio che il nome del calendario corrisponda a questo
-        //"technobit.sas@gmail.com"
-
-        // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
-        String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
-
-        String[] selectionArgs = new String[]{ email_selected };
-
-        // eseguo la query richiedendo che il campo name sia quello specificato in selectionArgs
-
-        Cursor managedCursor = cr.query(Uri.parse("content://com.android.calendar/calendars"),
-                projection, "calendar_displayName=?", selectionArgs, null);
-
-        // scorro tutti i possibili calendari
-        String calID = "-1";
-
-        try {
-            managedCursor.moveToFirst();// provo a prendere il primo elemento
-
-            calID = managedCursor.getString(0); // prendo il suo id
-
-            managedCursor.close();
-        }
-        catch(NullPointerException ne){
-            return "-1";
-        }
-        catch(Exception e) {
-            return "-1";
-        }
-        return calID;
-    }
-
-    private int getColorInt(){
-        String def_color = getResources().getString(R.string.default_color_str);
-        int defaultColorValue = Color.parseColor(def_color);
-
-        // prendo il colore selezionato dalle shared preference
-        int color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
-
-        int[] mColorChoices=null;
-        String[] color_array = getResources().getStringArray(R.array.default_color_choice_values);
-
-        int colorVal = -1;
-        if (color_array!=null && color_array.length>0) {
-            int i = 0;
-            while(i < color_array.length || colorVal == -1){
-                if(Color.parseColor(color_array[i]) == color_selected)
-                    colorVal = ++i;
-                ++i;
-            }
-        }
-
-        // se non ho trovato il colore di default metto 1 (colore nullo) altrimenti restituisco il colore giusto
-        return colorVal == -1 ?  1 : colorVal;
-    }
-
-    // se non va a buon fine l'invio attivo la vibrazione del telefono
-    private void shakeIt() {
-        boolean canVib = sharedPref.getBoolean(getString(R.string.shared_vibration), true);
-
-        if (canVib) {
-            if (Build.VERSION.SDK_INT >= 26) {
-                ((Vibrator) this.getContext().getSystemService(getContext().VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(600, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                ((Vibrator) this.getContext().getSystemService(getContext().VIBRATOR_SERVICE)).vibrate(600);
-            }
-        }
+        linearLayButtonStop.setVisibility(View.GONE);
     }
 
     private boolean checkEmailSelected(){
@@ -463,7 +335,6 @@ public class ChronometerFragment extends Fragment {
         String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
 
         return email_selected != null;
-
     }
 
     private void askToSelectEmail() {
