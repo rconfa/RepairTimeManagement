@@ -1,40 +1,75 @@
 package com.example.technobit.ui.contact;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
 import com.example.technobit.contactdatas.SingleContact;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class CardArrayAdapter  extends ArrayAdapter<Card> {
-    private static final String TAG = "CardArrayAdapter";
-    private List<Card> cardList = new ArrayList<Card>();
+
+public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.CardViewHolder> {
+    private ArrayList<Card> cardList = new ArrayList<Card>();
     private ArrayList<Card> CardChecked = new ArrayList<Card>();
 
 
-    static class CardViewHolder {
-        TextView line1;
-        TextView line2;
+    static class CardViewHolder extends RecyclerView.ViewHolder{
+        private TextView line1;
+        private TextView line2;
+
+        public CardViewHolder(@NonNull View itemView, TextView l1, TextView l2) {
+            super(itemView);
+            line1 = l1;
+            line2 = l2;
+        }
     }
 
-    // unused ma necessario per extends
-    public CardArrayAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId);
+    @NonNull
+    @Override
+    public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // take the view
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_card, parent, false);
+
+        // create the new view holder
+        TextView name = v.findViewById(R.id.tv_item_title);
+        TextView email = v.findViewById(R.id.tv_item_email);
+        CardViewHolder viewHolder = new CardViewHolder(v,name, email);
+
+        return viewHolder;
+
     }
 
     @Override
-    public void add(Card object) {
-        cardList.add(object);
-        super.add(object);
+    public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
+        // if the card is selected I change the transparent background
+        if(cardList.get(position).isCardSelected())
+            holder.itemView.setBackgroundResource(R.drawable.card_background_selected);
+        else
+            holder.itemView.setBackgroundResource(R.drawable.card_background);
+
+        // setting the lines values
+        holder.line1.setText(cardList.get(position).getLine1());
+        holder.line2.setText(cardList.get(position).getLine2());
     }
 
+    @Override
+    public int getItemCount() {
+        return cardList.size();
+    }
+
+    // add new card
+    public void add(Card object) {
+        cardList.add(object); // add the obj to list
+        notifyDataSetChanged(); // notify the change
+    }
+
+    // Add multiple card
     public void add(ArrayList<SingleContact> list_card){
         if(list_card == null)
             return;
@@ -42,53 +77,11 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         for(SingleContact s:list_card){
             temp = new Card(s);
             cardList.add(temp);
-            super.add(temp);
         }
     }
 
-
-    @Override
-    public int getCount() {
-        return this.cardList.size();
-    }
-
-    @Override
-    public Card getItem(int index) {
-        return this.cardList.get(index);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
-
-        CardViewHolder viewHolder;
-        Card card = getItem(position);
-
-        if (row == null) {
-            LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater.inflate(R.layout.list_item_card, parent, false);
-            viewHolder = new CardViewHolder();
-            viewHolder.line1 = (TextView) row.findViewById(R.id.line1);
-            viewHolder.line2 = (TextView) row.findViewById(R.id.line2);
-            row.setTag(viewHolder);
-        } else {
-
-            // metto il background corretto in base se la carta è stata selezionata o no
-            if(card.isCardSelected())
-                row.setBackgroundResource(R.drawable.card_background_selected);
-            else
-                row.setBackgroundResource(R.drawable.card_background);
-            viewHolder = (CardViewHolder)row.getTag();
-        }
-
-        viewHolder.line1.setText(card.getLine1());
-        viewHolder.line2.setText(card.getLine2());
-
-        return row;
-    }
-
-
-    /* se la posizone non è presente nel vettore la salvo e ritorno true
+    /*
+       se la posizone non è presente nel vettore la salvo e ritorno true
        altrimenti se già presente la tolgo e ritorno false
     */
     public boolean savePositionToDelete(int pos){
@@ -115,6 +108,7 @@ public class CardArrayAdapter  extends ArrayAdapter<Card> {
         }
 
         CardChecked.clear();
+        notifyDataSetChanged(); // notify the change
     }
 
 }
