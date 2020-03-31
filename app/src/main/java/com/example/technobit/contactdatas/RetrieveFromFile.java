@@ -12,9 +12,8 @@ public class RetrieveFromFile {
 
     // legge un file txt e riporta tutti i dati come array
     public ArrayList<SingleContact> readFile(Context context) throws IOException {
-        ArrayList<SingleContact> names = new ArrayList<SingleContact>();
+        ArrayList<SingleContact> names = new ArrayList<>();
 
-        int i = 0;
         InputStreamReader input = new InputStreamReader(context.openFileInput("clienti.txt"));
         BufferedReader in = new BufferedReader(input);
         String line;
@@ -30,7 +29,7 @@ public class RetrieveFromFile {
     }
 
 
-    public void writeAllToFile(ArrayList<SingleContact> datas, Context context) throws IOException {
+    private void writeAllToFile(ArrayList<SingleContact> datas, Context context) throws IOException {
         // scrivo sul file
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("clienti.txt", Context.MODE_PRIVATE));
         // scrivo tutte le stringhe
@@ -52,8 +51,8 @@ public class RetrieveFromFile {
 
     // leggo tutte le righe del file tranne la riga "pos", le salvo in un vettore, poi riscrivo tutto
     // cosi ho eliminato la riga pos
-    public void delete(int pos,Context context) throws IOException {
-        ArrayList<SingleContact> names = new ArrayList<SingleContact>();
+    public void delete(ArrayList<Integer> pos,Context context) throws IOException {
+        ArrayList<SingleContact> names = new ArrayList<>();
 
         InputStreamReader input = new InputStreamReader(context.openFileInput("clienti.txt"));
         BufferedReader in = new BufferedReader(input);
@@ -61,7 +60,7 @@ public class RetrieveFromFile {
         int numLine = 0;
         SingleContact toAdd;
         while ((line = in.readLine()) != null) {
-            if (pos!=numLine) {
+            if (!pos.contains(numLine)) {
                 toAdd = new SingleContact().readFromString(line); // Retrieve the contact from the line
                 names.add(toAdd); // adding the contact to list
             }
