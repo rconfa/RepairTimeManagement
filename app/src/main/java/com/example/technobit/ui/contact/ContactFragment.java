@@ -45,9 +45,9 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
         // save the singleton instance
         sg = Singleton.getInstance(getContext());
         // list of position to removed
-        posToBeRemoved = new ArrayList<Integer>();
+        posToBeRemoved = new ArrayList<>();
 
-        recView = (RecyclerView) root.findViewById(R.id.contact_listview);
+        recView = root.findViewById(R.id.contact_listview);
         recView.setHasFixedSize(true); // no change the layout size
         // setting layout
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -78,7 +78,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         // carico il file per il menu, cosi visualizzo le icone per aggiungere/eliminare un contatto
         inflater.inflate(R.menu.menu_contact, menu); //.xml file name
         super.onCreateOptionsMenu(menu, inflater);
@@ -91,8 +91,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
         switch (item.getItemId()) {
             case R.id.icon_remove:
                 // remove all items selected from file
-                for(Integer i : posToBeRemoved)
-                    sg.delete(i,getContext());
+                sg.delete(posToBeRemoved,getContext());
 
                 // clear the list of items to be removed
                 posToBeRemoved.clear();
@@ -118,10 +117,10 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
         final AlertDialog dialog = builder.create();
 
         // Accesso agli oggetti della view
-        final Button yes = (Button) v.findViewById(R.id.btn_yes);
-        final Button no = (Button) v.findViewById(R.id.btn_no);
-        final EditText et_name = (EditText) v.findViewById(R.id.et_dialog_name);
-        final EditText et_email = (EditText) v.findViewById(R.id.et_dialog_email);
+        final Button yes = v.findViewById(R.id.btn_yes);
+        final Button no = v.findViewById(R.id.btn_no);
+        final EditText et_name = v.findViewById(R.id.et_dialog_name);
+        final EditText et_email = v.findViewById(R.id.et_dialog_email);
 
         // voglio che il nome sia obbligatorio, se è vuoto non abilito il bottone "ok"
         et_name.addTextChangedListener(new TextWatcher() {
