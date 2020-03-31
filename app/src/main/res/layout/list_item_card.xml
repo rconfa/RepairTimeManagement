@@ -16,7 +16,7 @@
 	android:paddingBottom="15dp">
 
 	<TextView
-		android:id="@+id/line1"
+		android:id="@+id/tv_item_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="Example text"
@@ -24,7 +24,7 @@
 		android:textStyle="bold" />
 
 	<TextView
-		android:id="@+id/line2"
+		android:id="@+id/tv_item_email"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="Example text"
