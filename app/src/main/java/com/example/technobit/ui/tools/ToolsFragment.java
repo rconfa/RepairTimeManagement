@@ -28,9 +28,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.calendar.CalendarScopes;
 
-/* TODO: light the email preference??!?!
-*        Add preference for english/ita swapping?
-*  */
+// TODO: light the email preference??!?!
+// TODO 2: Add preference for english/ita swapping?
+// TODO 3: display dialog before revoke permission for email??
 public class ToolsFragment extends PreferenceFragmentCompat {
 
     private SharedPreferences sharedPref;
