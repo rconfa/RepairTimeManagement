@@ -23,6 +23,8 @@ import com.example.technobit.utilities.GoogleCalendarUtility;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.concurrent.ExecutionException;
+
 public class SignatureFragment extends Fragment {
 
     private SignatureViewModel mViewModel;
@@ -77,12 +79,18 @@ public class SignatureFragment extends Fragment {
                 int color = getColorInt();
                 GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc,
                         startMillis, endMillis, color, getParentFragment());
-                boolean res = false;
-                gCal.execute();
-                if(!res) {
+                String result = null;
+                try {
+                     result = gCal.execute().get();
+                } catch (ExecutionException | InterruptedException e) {
                     // TODO: save data
+                }
+
+                if(result == null) {
+                    // TODO: save data, show snackbar before back pressed
                     SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
                     scu.shake();
+                    getActivity().onBackPressed();
                 }
                 else{
                     Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
