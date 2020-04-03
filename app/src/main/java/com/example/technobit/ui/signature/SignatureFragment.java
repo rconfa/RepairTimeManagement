@@ -19,13 +19,12 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
+import com.example.technobit.utilities.AsyncResponse;
 import com.example.technobit.utilities.GoogleCalendarUtility;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.concurrent.ExecutionException;
-
-public class SignatureFragment extends Fragment {
+public class SignatureFragment extends Fragment implements AsyncResponse {
 
     private SignatureViewModel mViewModel;
     private EditText et_description;
@@ -33,6 +32,7 @@ public class SignatureFragment extends Fragment {
     private Button btn_clear;
     private SignatureView signatureView;
     private SharedPreferences sharedPref;
+    private AsyncResponse Asyncdelegate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +70,8 @@ public class SignatureFragment extends Fragment {
             }
         });
 
+        Asyncdelegate = this; // set my Asyncdelegate equal to my method implemented in this class
+
         // Event on click on button "send"
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,31 +80,8 @@ public class SignatureFragment extends Fragment {
                 String email = sharedPref.getString(getString(R.string.shared_email), null);
                 int color = getColorInt();
                 GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc,
-                        startMillis, endMillis, color, getParentFragment());
-                String result = null;
-                try {
-                     result = gCal.execute().get();
-                } catch (ExecutionException | InterruptedException e) {
-                    // TODO: save data
-                }
-
-                if(result == null) {
-                    // TODO: save data, show snackbar before back pressed
-                    SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
-                    scu.shake();
-                    getActivity().onBackPressed();
-                }
-                else{
-                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
-                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                }
-                            });
-                    snackbar.show();
-                    getActivity().onBackPressed();
-                }
+                        startMillis, endMillis, color, getContext(), Asyncdelegate);
+                gCal.execute();
             }
 
         });
@@ -162,28 +141,25 @@ public class SignatureFragment extends Fragment {
         return colorVal == -1 ?  1 : colorVal;
     }
 
-    private void sendOnCalendar(){
-        // TODO send to calendar
 
-        /*
-        if(signatureView.isBitmapEmpty() == false){
-            String path = getContext().getFilesDir() +  "/testBitmap.JPEG";
-            Bitmap b = getImage(); // prendo l'immagine
-            // converto la bitmap in jpg e aggiungo tutto al calendario google
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(path);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            b.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-            new upload().execute();
-
-
-        }*/
-
+    @Override
+    public void processFinish(String result) {
+        if(result == null) {
+            // TODO: save data, show snackbar before back pressed
+            SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
+            scu.shake();
+            getActivity().onBackPressed();
+        }
+        else{
+            Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
+            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                    .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    });
+            snackbar.show();
+            getActivity().onBackPressed();
+        }
     }
-
-
 }
