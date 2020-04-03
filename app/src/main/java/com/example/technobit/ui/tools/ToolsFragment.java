@@ -1,7 +1,5 @@
 package com.example.technobit.ui.tools;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -11,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -19,24 +18,30 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.example.technobit.R;
 import com.example.technobit.ui.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.colorDialog.ColorPickerSwatch;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.AccountPicker;
-
-import static android.app.Activity.RESULT_OK;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.api.services.calendar.CalendarScopes;
 
 /* TODO: light the email preference??!?!
 *        Add preference for english/ita swapping?
 *  */
 public class ToolsFragment extends PreferenceFragmentCompat {
 
-    private final static int PICK_ACCOUNT_REQUEST = 0;
     private SharedPreferences sharedPref;
-    private String email_selected; // Email selezionata
     private Preference account_sel; // preference sulla scelta dell'account
     private Preference color_sel; // preference sulla scelta del colore
     private int color_selected; // colore selezionato
     private SwitchPreferenceCompat vibration;
     private int defaultColorValue;
+    private GoogleSignInAccount googleAccount;
+    private GoogleSignInClient mGoogleSignInClient;
+    private int RC_SIGN_IN = 7;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -46,11 +51,11 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         // preference per l'account del fragment (XML)
-        account_sel = (Preference)findPreference("google_account");
+        account_sel = findPreference("google_account");
         // preference per il colore degli eventi del fragment (XML)
-        color_sel = (Preference)findPreference("google_color");
+        color_sel = findPreference("google_color");
         // preference per la vibrazione del fragment (XML)
-        vibration = (SwitchPreferenceCompat)findPreference("notifications");
+        vibration = findPreference("notifications");
 
         String def_color = getResources().getString(R.string.default_color_str);
         defaultColorValue = Color.parseColor(def_color);
@@ -59,19 +64,35 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         // setto l'icona del colore
         set_icon_color();
 
+        // get the last account signIn, if exist
+        googleAccount = GoogleSignIn.getLastSignedInAccount(getContext());
 
-        // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
-        email_selected = sharedPref.getString(getString(R.string.shared_email), null);
-        // aggiorno il summary dell'account
+        // update the preference summary for the account
         set_summary_account();
 
         // event su "seleziona un account"
         account_sel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                account_choose(); // metodo che crea l'intent per scegliere l'account
-                // aggiorno il summary
-                account_sel.setSummary(email_selected);
-                return false;
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestScopes(new Scope(CalendarScopes.CALENDAR)) // Scope to read/write calendar and drive
+                        .requestEmail()
+                        .build();
+
+                // Build a GoogleSignInClient with the options specified by gso.
+                mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+
+                if(googleAccount == null){
+                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                }
+                else{// if an account it's already signIn
+                    // Revoke all access for the account
+                    revokeAccess();
+                    // signOut the account
+                    signOut();
+                }
+
+                return true;
             }
         });
 
@@ -97,25 +118,58 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void account_choose(){
-        Account acc_selected = null;
-
-        // se ho trovato una mail salvata creo l'account collegato a quella email
-        if(email_selected != null)
-            acc_selected = new Account(email_selected, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-
-        String select_account = getResources().getString(R.string.tools_select_account) +":";
-        Intent intent = AccountPicker.newChooseAccountIntent(acc_selected, null,
-                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
-                false, select_account, null, null, null);
-        /*
-        .putExtra("overrideTheme", 1)
-        .putExtra("overrideCustomTheme",0);
-        */
-
-        startActivityForResult(intent, PICK_ACCOUNT_REQUEST);
+    private void set_summary_account(){
+        if(googleAccount!=null) // if an account is signIn
+            account_sel.setSummary(googleAccount.getEmail()); //set the account email as summary
+        else
+            account_sel.setSummary("");
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            googleAccount = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            set_summary_account();
+
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            // Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            set_summary_account();
+        }
+    }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        googleAccount = null;
+
+                        // update the preference summary for the account
+                        set_summary_account();
+                    }
+                });
+    }
+
+    private void revokeAccess() {
+        mGoogleSignInClient.revokeAccess();
+    }
 
     private void color_choose(){
         // prendo tutta la lista di colori definita in resource
@@ -132,33 +186,6 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         colorcalendar.setOnColorSelectedListener(colorcalendarListener);
 
         colorcalendar.show(this.getParentFragmentManager().beginTransaction(), "cal");
-
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode,
-                                    final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_ACCOUNT_REQUEST && resultCode == RESULT_OK) {
-            email_selected = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            set_summary_account();
-            // salvo l'email scelta come coppia chiave-valore
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.shared_email), email_selected);
-            editor.apply();
-        }
-    }
-
-
-    private void set_summary_account(){
-        account_sel.setSummary(email_selected); //metto come sommario la mail già selezionata
     }
 
     private void set_icon_color(){
@@ -173,7 +200,6 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         color_sel.setIcon(d); // aggiungo l'icona
 
     }
-
 
     // ritorna un vettore di interi di colori, in base a quelli definiti in ./values/string
     private int[] colorChoice(){
@@ -200,7 +226,6 @@ public class ToolsFragment extends PreferenceFragmentCompat {
 
     // evento sulla scelta del colore
     private ColorPickerSwatch.OnColorSelectedListener colorcalendarListener = new ColorPickerSwatch.OnColorSelectedListener(){
-
         @Override
         public void onColorSelected(int color) {
             color_selected = color;
