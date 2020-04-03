@@ -138,7 +138,7 @@ public class ChronometerFragment extends Fragment {
                 else{
                     Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                            .setAction("UNDO", new View.OnClickListener() {
+                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                 }
