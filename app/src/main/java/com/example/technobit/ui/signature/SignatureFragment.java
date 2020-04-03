@@ -75,9 +75,10 @@ public class SignatureFragment extends Fragment {
                 String desc = et_description.getText().toString();
                 String email = sharedPref.getString(getString(R.string.shared_email), null);
                 int color = getColorInt();
-                GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc, email,
+                GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc,
                         startMillis, endMillis, color, getParentFragment());
-                boolean res = gCal.sendOnCalendar();
+                boolean res = false;
+                //gCal.execute();
                 if(!res) {
                     // TODO: save data
                     SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
