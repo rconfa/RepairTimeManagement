@@ -1,11 +1,8 @@
 package com.example.technobit.ui.chronometer;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -29,6 +26,8 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.contactdatas.Singleton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -59,16 +58,12 @@ public class ChronometerFragment extends Fragment {
         chronometerViewModel = ViewModelProviders.of(this).get(ChronometerViewModel.class);
         View root = inflater.inflate(R.layout.fragment_chronometer, container, false);
 
-        // richiedo i permessi di accesso al calendar se necessario
-        permission_calendar();
-
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // if the user don't select the email I ask if he want to choose it now.
-        if (!checkEmailSelected())
+        if (!checkAccountSelected())
             askToSelectEmail();
-
 
 
         // save the singleton instance
@@ -241,22 +236,6 @@ public class ChronometerFragment extends Fragment {
         editor.commit();
     }
 
-    private void permission_calendar(){
-        // Richiesta della lettura del calendario
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.getContext().checkSelfPermission(Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_CALENDAR}, 0);
-            }
-        }
-
-        // Richiesta della scrittura del calendario
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.getContext().checkSelfPermission(Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, 0);
-            }
-        }
-    }
-
     private void startChronometer(long base) {
         // se il cronometro non sta ancora andando lo faccio partire
         if (!running) {
@@ -330,11 +309,11 @@ public class ChronometerFragment extends Fragment {
         linearLayButtonStop.setVisibility(View.GONE);
     }
 
-    private boolean checkEmailSelected(){
-        // prendo l'indirizzo email dalle shared preference, se non c'è viene settata a null
-        String email_selected = sharedPref.getString(getString(R.string.shared_email), null);
+    private boolean checkAccountSelected(){
+        // check if the user has selected an account
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
 
-        return email_selected != null;
+        return account != null;
     }
 
     private void askToSelectEmail() {
