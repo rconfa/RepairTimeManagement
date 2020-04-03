@@ -37,13 +37,14 @@ public class GoogleCalendarUtility {
 
     public boolean sendOnCalendar() {
         ContentResolver cr = mContext.getContentResolver();
-        String calID = searchID(cr); // Search for the calendar id
+        String calID = searchID(cr); // search for the calendar id
 
         if (!calID.equals("-1")) {
             TimeZone tz = TimeZone.getDefault();
 
             ContentValues values = new ContentValues();
 
+            // mettere controllo id!=-1
             values.put(CalendarContract.Events.DTSTART, mStartMillis);
             values.put(CalendarContract.Events.DTEND, mEndMillis);
             values.put(CalendarContract.Events.TITLE, mEventTitle);
@@ -72,19 +73,14 @@ public class GoogleCalendarUtility {
 
     private String searchID(ContentResolver cr) {
         // Search the calendar id
-        String projection[] = {CalendarContract.Calendars._ID, CalendarContract.Calendars.ACCOUNT_NAME}; // richiedo l'id del calendario
+        String projection[] = {"_id"}; // richiedo l'id del calendario
 
         // Set the args in base the email address
         String[] selectionArgs = new String[]{this.mSelectedEmail};
 
-        Uri uri = CalendarContract.Calendars.CONTENT_URI;
-
-        // todo: using uri in query
-        // check if projection it's ok!
-
         // Execute the query requesting the field name like the one specified in the selectionArgs
         Cursor managedCursor = cr.query(Uri.parse("content://com.android.calendar/calendars"),
-                projection, CalendarContract.Calendars.ACCOUNT_NAME + "=?", selectionArgs, null);
+                projection, "calendar_displayName=?", selectionArgs, null);
 
         // Scan all the calendars
         String calID = "-1";
