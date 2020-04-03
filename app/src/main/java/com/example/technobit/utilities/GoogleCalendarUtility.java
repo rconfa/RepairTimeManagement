@@ -25,7 +25,6 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
     private String mEventTitle, mEventDescription;
     private long mStartMillis, mEndMillis;
     private int mEventColor;
-    private Context mContext;
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private AsyncResponse mdelegate = null;
 
@@ -38,7 +37,6 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
         this.mStartMillis = mStartMillis;
         this.mEndMillis = mEndMillis;
         this.mEventColor = mEventColor;
-        this.mContext = mContext;
         this.mdelegate = delegate;
 
         final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
@@ -47,15 +45,18 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
                 .setBackOff(new ExponentialBackOff());
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
-        credential.setSelectedAccount(account.getAccount());
-        mService =  new com.google.api.services.calendar.Calendar.Builder(
-                HTTP_TRANSPORT, mJsonFactory, credential).setApplicationName("Technobit")
-                .build();
-
+        if(account != null) {
+            credential.setSelectedAccount(account.getAccount());
+            mService = new com.google.api.services.calendar.Calendar.Builder(
+                    HTTP_TRANSPORT, mJsonFactory, credential).setApplicationName("Technobit")
+                    .build();
+        }
+        else
+            mService = null;
 
     }
 
-    void insertEvent() throws IOException {
+    private void insertEvent() throws IOException {
         Event event = new Event()
                 .setSummary(mEventTitle)
                 .setDescription(mEventDescription)
@@ -94,13 +95,14 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        try {
-            insertEvent(); // insert the event into calendar
-            return "true";
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(mService != null) {
+            try {
+                insertEvent(); // insert the event into calendar
+                return "true";
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
         return null;
     }
 
