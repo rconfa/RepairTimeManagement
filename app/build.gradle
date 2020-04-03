@@ -32,10 +32,12 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    // per preferenceScreen delle impostazioni
+    // for preferenceScreen in tools fragment
     implementation 'androidx.preference:preference:1.1.0'
 
-    // per google account picker
-    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    // for send event to google calendar
+    implementation 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 
+    // for GoogleSignInAccount in tools fragment
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
 }
