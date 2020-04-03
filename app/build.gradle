@@ -21,6 +21,17 @@ android {
             resValue "string", "app_version", "Version: ${defaultConfig.versionName}"
         }
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+
+    }
 }
 
 dependencies {
@@ -39,9 +50,15 @@ dependencies {
     // for preferenceScreen in tools fragment
     implementation 'androidx.preference:preference:1.1.0'
 
+
+    // for get GoogleAccountCredential
+    implementation 'com.google.api-client:google-api-client-android:1.26.0'
+
+
+
     // for send event to google calendar
     implementation 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 
-    // for GoogleSignInAccount in tools fragment
+    // for get GoogleSignInAccount in tools fragment
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
 }
