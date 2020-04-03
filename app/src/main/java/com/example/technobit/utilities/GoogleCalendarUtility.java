@@ -3,8 +3,6 @@ package com.example.technobit.utilities;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import androidx.fragment.app.Fragment;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -27,21 +25,21 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
     private String mEventTitle, mEventDescription;
     private long mStartMillis, mEndMillis;
     private int mEventColor;
-    private Fragment mCallingFragment;
     private Context mContext;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
+    private AsyncResponse mdelegate = null;
 
     // constructor with parameters
     public GoogleCalendarUtility(String mEventTitle, String mEventDescription,
                                  long mStartMillis, long mEndMillis, int mEventColor,
-                                 Fragment mCallingFragment) {
+                                 Context mContext, AsyncResponse delegate) {
         this.mEventTitle = mEventTitle;
         this.mEventDescription = mEventDescription;
         this.mStartMillis = mStartMillis;
         this.mEndMillis = mEndMillis;
         this.mEventColor = mEventColor;
-        this.mCallingFragment = mCallingFragment;
-        this.mContext = this.mCallingFragment.getContext();
+        this.mContext = mContext;
+        this.mdelegate = delegate;
 
         final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext,
@@ -51,8 +49,9 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
         credential.setSelectedAccount(account.getAccount());
         mService =  new com.google.api.services.calendar.Calendar.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName("Technobit")
+                HTTP_TRANSPORT, mJsonFactory, credential).setApplicationName("Technobit")
                 .build();
+
 
     }
 
@@ -105,4 +104,10 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
         return null;
     }
 
+
+    @Override
+    protected void onPostExecute (String result){
+        // this is run on the main (UI) thread, after doInBackground returns
+        mdelegate.processFinish(result);
+    }
 }
