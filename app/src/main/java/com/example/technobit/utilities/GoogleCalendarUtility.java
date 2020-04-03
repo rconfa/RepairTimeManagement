@@ -74,7 +74,7 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
         java.util.Calendar c = java.util.Calendar.getInstance();
         DateTime endDate = new DateTime(c.getTime());
 
-        c.setTimeInMillis(c.getTimeInMillis() - mStartMillis);
+        c.setTimeInMillis(c.getTimeInMillis() - 9000);
         DateTime startDate = new DateTime(c.getTime());
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDate)

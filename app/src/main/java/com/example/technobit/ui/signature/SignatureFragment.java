@@ -78,7 +78,7 @@ public class SignatureFragment extends Fragment {
                 GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc,
                         startMillis, endMillis, color, getParentFragment());
                 boolean res = false;
-                //gCal.execute();
+                gCal.execute();
                 if(!res) {
                     // TODO: save data
                     SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
