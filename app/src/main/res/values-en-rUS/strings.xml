@@ -25,4 +25,6 @@
     <string name="spinner_hint">Choose a client</string>
     <string name="snackbar_start_error">Choose a client to start</string>
     <string name="account_not_selected_yet">You haven\'t selected an account yet, do you want to do it now?</string>
+    <string name="snackbar_close_btn">UNDO</string>
+    <string name="snackbar_send_positive">Sending successfully!</string>
 </resources>
