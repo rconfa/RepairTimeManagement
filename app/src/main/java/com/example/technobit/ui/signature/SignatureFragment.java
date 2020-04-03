@@ -21,6 +21,7 @@ import com.example.technobit.R;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
 import com.example.technobit.utilities.GoogleCalendarUtility;
 import com.example.technobit.utilities.SmartphoneControlUtility;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SignatureFragment extends Fragment {
 
@@ -83,7 +84,15 @@ public class SignatureFragment extends Fragment {
                     scu.shake();
                 }
                 else{
-                    // TODO: turn back to the calling fragment
+                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
+                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            });
+                    snackbar.show();
+                    getActivity().onBackPressed();
                 }
             }
 
