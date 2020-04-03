@@ -97,6 +97,7 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... strings) {
         try {
             insertEvent(); // insert the event into calendar
+            return "true";
         } catch (IOException e) {
             e.printStackTrace();
         }
