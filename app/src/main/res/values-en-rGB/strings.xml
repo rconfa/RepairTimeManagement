@@ -18,15 +18,14 @@
     <string name="tools_vibration">Vibration</string>
     <string name="btn_send">SEND</string>
     <string name="btn_clear">CLEAR</string>
-    <string name="dialog_title">New contact</string>
-    <string name="dialog_et_name">Name</string>
-    <string name="dialog_et_email">Email</string>
+    <string name="dialog_add_contact_title">New contact</string>
+    <string name="dialog_add_contact_name">Name</string>
+    <string name="dialog_add_contact_email">Email</string>
     <string name="dialog_btn_no">CANCEL</string>
     <string name="spinner_hint">Choose a client</string>
     <string name="snackbar_start_error">Choose a client to start</string>
-    <string name="account_not_selected_yet">You haven\'t selected an account yet, do you want to do it now?</string>
+    <string name="dialog_confirm_account_not_selected_yet">You haven\'t selected an account yet, do you want to do it now?</string>
     <string name="snackbar_close_btn">UNDO</string>
     <string name="snackbar_send_positive">Sending successfully!</string>
     <string name="dialog_confirm_signOut_message">Are you sure you want to log out?</string>
-    <string name="dialog_confirm_signOut_title">" "</string>
 </resources>

@@ -172,12 +172,10 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         else{// if an account it's already signIn
             // listner for the dialog
             ConfirmChoiceDialog.NoticeDialogListener listener = this;
-            // get the title from the resource
-            String title = getString(R.string.dialog_confirm_signOut_title);
             // get the message from the resource
             String message = getString(R.string.dialog_confirm_signOut_message);
             // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new ConfirmChoiceDialog(title, message,listener);
+            DialogFragment dialog = new ConfirmChoiceDialog(" ", message,listener);
             dialog.show(getParentFragmentManager(), TAG);
         }
     }

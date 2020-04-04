@@ -319,9 +319,9 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
         // listner for the dialog
         ConfirmChoiceDialog.NoticeDialogListener listener = this;
         // get the message from the resource
-        String message = getString(R.string.account_not_selected_yet);
+        String message = getString(R.string.dialog_confirm_account_not_selected_yet);
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new ConfirmChoiceDialog("", message,listener);
+        DialogFragment dialog = new ConfirmChoiceDialog(" ", message,listener);
         dialog.show(getParentFragmentManager(), TAG);
 
 
