@@ -50,15 +50,16 @@ dependencies {
     // for preferenceScreen in tools fragment
     implementation 'androidx.preference:preference:1.1.0'
 
-
-    // for get GoogleAccountCredential
+    // api for get GoogleAccountCredential
     implementation 'com.google.api-client:google-api-client-android:1.26.0'
 
-
-
-    // for send event to google calendar
+    // api for google calendar service
     implementation 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 
-    // for get GoogleSignInAccount in tools fragment
+    // api for get GoogleSignInAccount in tools fragment
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
+
+    // api for google Drive service
+    implementation 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+
 }
