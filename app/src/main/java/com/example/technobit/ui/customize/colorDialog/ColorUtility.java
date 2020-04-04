@@ -1,4 +1,4 @@
-package com.example.technobit.ui.colorDialog;
+package com.example.technobit.ui.customize.colorDialog;
 
 import android.content.Context;
 import android.graphics.Color;

@@ -16,10 +16,10 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.colorDialog.ColorPickerDialog;
-import com.example.technobit.ui.colorDialog.ColorPickerSwatch;
-import com.example.technobit.ui.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.ConfirmChoiceDialog;
+import com.example.technobit.ui.customize.colorDialog.ColorPickerDialog;
+import com.example.technobit.ui.customize.colorDialog.ColorPickerSwatch;
+import com.example.technobit.ui.customize.colorDialog.ColorUtility;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
