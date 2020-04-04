@@ -9,7 +9,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -18,112 +17,176 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.example.technobit.R;
 import com.example.technobit.ui.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.colorDialog.ColorPickerSwatch;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.example.technobit.ui.colorDialog.ColorUtility;
+import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.drive.DriveScopes;
 
 // TODO: light the email preference??!?!
 // TODO 2: Add preference for english/ita swapping?
 // TODO 3: display dialog before revoke permission for email??
 public class ToolsFragment extends PreferenceFragmentCompat {
 
-    private SharedPreferences sharedPref;
-    private Preference account_sel; // preference sulla scelta dell'account
-    private Preference color_sel; // preference sulla scelta del colore
-    private int color_selected; // colore selezionato
-    private SwitchPreferenceCompat vibration;
-    private int defaultColorValue;
-    private GoogleSignInAccount googleAccount;
-    private GoogleSignInClient mGoogleSignInClient;
+    private SharedPreferences mSharedPref;
+    private Preference mPreferenceAccount; // preference sulla scelta dell'account
+    private Preference mPreferenceColor; // preference sulla scelta del colore
+    private int mColorSelected; // colore selezionato
+    private SwitchPreferenceCompat mPreferenceVibration;
+    private GoogleUtility mGoogleUtility;
+
     private int RC_SIGN_IN = 7;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         //toolsViewModel = ViewModelProviders.of(this).get(ToolsViewModel.class);
+
+        // display settings preference
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
-        // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        // preference per l'account del fragment (XML)
-        account_sel = findPreference("google_account");
-        // preference per il colore degli eventi del fragment (XML)
-        color_sel = findPreference("google_color");
-        // preference per la vibrazione del fragment (XML)
-        vibration = findPreference("notifications");
+        // SharedPreference to read and save user preference
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        String def_color = getResources().getString(R.string.default_color_str);
-        defaultColorValue = Color.parseColor(def_color);
-        // prendo il colore dalle shared preference, se non c'è viene settata al colore di default
-        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
-        // setto l'icona del colore
-        set_icon_color();
+        // Get all preference from XML
+        // XML preference for google account
+        mPreferenceAccount = findPreference("google_account");
+        // XML preference for google calendar color
+        mPreferenceColor = findPreference("google_color");
+        // XML preference for vibration
+        mPreferenceVibration = findPreference("notifications");
 
-        // get the last account signIn, if exist
-        googleAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        settingColorXMLPreference(); // add icon with the selected color near color preference
+
+        // get google utility instance
+        mGoogleUtility = GoogleUtility.getInstance(getContext());
 
         // update the preference summary for the account
-        set_summary_account();
+        setAccountSummary();
 
-        // event su "seleziona un account"
-        account_sel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        // onclick event for account preference
+        mPreferenceAccount.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestScopes(new Scope(CalendarScopes.CALENDAR), new Scope(DriveScopes.DRIVE)) // Scope to read/write calendar and drive
-                        .requestEmail()
-                        .build();
-
-                // Build a GoogleSignInClient with the options specified by gso.
-                mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
-
-                if(googleAccount == null){
-                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
-                }
-                else{// if an account it's already signIn
-                    // Revoke all access for the account
-                    revokeAccess();
-                    // signOut the account
-                    signOut();
-                }
-
+                // if there isn't connected account start intent for connected a new account
+                // otherwise singout the last one.
+                accountChooser();
                 return true;
             }
         });
 
-        // event su "seleziona un colore"
-        color_sel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        // On click event for choosing color
+        mPreferenceColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-                color_choose(); // metodo che crea l'intent per scegliere il colore degli eventi
-                return false;
+                colorChooser(); // Method to display the dialog
+                return true;
             }
         });
 
-
-        vibration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        // On change event for vibration
+        mPreferenceVibration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
-                //vibration.isChecked()
-                // salvo la scelta sulla vibrazione come coppia chiave-valore
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean(getString(R.string.shared_vibration), vibration.isChecked());
-                editor.apply();
+                vibrationChange();
                 return true;
             }
         });
     }
 
-    private void set_summary_account(){
-        if(googleAccount!=null) // if an account is signIn
-            account_sel.setSummary(googleAccount.getEmail()); //set the account email as summary
+    // --- COLOR PREFERENCE ---
+
+    // method for setting the xml color preference
+    private void settingColorXMLPreference() {
+        // Setting the icon for color preference with the selected one or the default one if no one is selected yet
+        // getting the default color from resource
+        String def_color = getResources().getString(R.string.default_color_str);
+        // parsing to int the default color
+        int mDefaultColor = Color.parseColor(def_color);
+        // Get the user selected color from the sharedPreference if exists otherwise set it as the default color
+        mColorSelected = mSharedPref.getInt(getString(R.string.shared_saved_color), mDefaultColor);
+        // Add an icon near the xml color preference to display the selected color
+        setColorIcon();
+    }
+
+    private void colorChooser(){
+        ColorUtility colorUtility = new ColorUtility(getContext());
+        // get all color list defined
+        int[] mColor = colorUtility.getColorsArray();
+
+        // create the display dialog
+        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
+                R.string.color_picker_default_title, mColor,
+                mColorSelected, 5,
+                isTablet() ? ColorPickerDialog.SIZE_LARGE
+                        : ColorPickerDialog.SIZE_SMALL);
+
+        // set listener on color selection
+        colorCalendar.setOnColorSelectedListener(colorCalendarListener);
+
+        // show the dialog
+        colorCalendar.show(this.getParentFragmentManager().beginTransaction(), "colorPickerDialog");
+    }
+
+    // add icon for color preference
+    private void setColorIcon(){
+        // get white circle image
+        Drawable d = getResources().getDrawable(R.drawable.cerchio);
+
+        // Change the color for the image with the selected ones
+        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(mColorSelected, PorterDuff.Mode.SRC_ATOP);
+
+        // setting color filter for the drawable
+        d.setColorFilter(colorFilter);
+        mPreferenceColor.setIcon(d); // add the icon near xml preference
+
+    }
+
+    // True if the application is running on tablet, false otherwise
+    private boolean isTablet() {
+        return (getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    // Event on color choosing
+    private ColorPickerSwatch.OnColorSelectedListener colorCalendarListener = new ColorPickerSwatch.OnColorSelectedListener(){
+        @Override
+        public void onColorSelected(int color) {
+            mColorSelected = color; // update the selected color
+
+            // update the color icon
+            setColorIcon();
+            // write the selected color on sharedPreference
+            SharedPreferences.Editor editor = mSharedPref.edit();
+            editor.putInt(getString(R.string.shared_saved_color), mColorSelected);
+            editor.apply();
+        }
+    };
+
+
+    // --- ACCOUNT PREFERENCE ---
+
+    private void accountChooser() {
+        // if there is no account connected start the intend for choose account and get permission
+        if(mGoogleUtility.getAccount() == null){
+            // get signInClient and start the intent
+            Intent signInIntent = mGoogleUtility.getSignInClient().getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+        else{// if an account it's already signIn
+            // Revoke all access for the account
+            mGoogleUtility.revokeAccess();
+            // signOut the account
+            mGoogleUtility.signOut();
+            // update the preference summary for the account
+            setAccountSummary();
+        }
+    }
+
+    // set the summary for the account preference
+    private void setAccountSummary(){
+        // get the last signin account
+        GoogleSignInAccount account = mGoogleUtility.getAccount();
+        if(account !=null) // if an account is signIn
+            mPreferenceAccount.setSummary(account.getEmail()); //set the account email as summary
         else
-            account_sel.setSummary("");
+            mPreferenceAccount.setSummary("");
     }
 
     @Override
@@ -134,107 +197,17 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+            setAccountSummary();
         }
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            googleAccount = completedTask.getResult(ApiException.class);
 
-            // Signed in successfully, show authenticated UI.
-            set_summary_account();
-
-
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            // Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            set_summary_account();
-        }
+    // --- VIBRATION PREFERENCE ---
+    private void vibrationChange() {
+        // Saving the choice into sharedPreference
+        SharedPreferences.Editor editor = mSharedPref.edit();
+        editor.putBoolean(getString(R.string.shared_vibration), mPreferenceVibration.isChecked());
+        editor.apply();
     }
 
-    private void signOut() {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        googleAccount = null;
-
-                        // update the preference summary for the account
-                        set_summary_account();
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        mGoogleSignInClient.revokeAccess();
-    }
-
-    private void color_choose(){
-        // prendo tutta la lista di colori definita in resource
-        int[] mColor = colorChoice();
-        color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
-
-        ColorPickerDialog colorcalendar = ColorPickerDialog.newInstance(
-                R.string.color_picker_default_title, mColor,
-                color_selected, 5,
-                isTablet() ? ColorPickerDialog.SIZE_LARGE
-                        : ColorPickerDialog.SIZE_SMALL);
-
-
-        colorcalendar.setOnColorSelectedListener(colorcalendarListener);
-
-        colorcalendar.show(this.getParentFragmentManager().beginTransaction(), "cal");
-    }
-
-    private void set_icon_color(){
-        // prendo l'immagine del pallino bianco
-        Drawable d = getResources().getDrawable(R.drawable.cerchio);
-
-        // cambio il colore
-        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(color_selected, PorterDuff.Mode.SRC_ATOP);
-
-        // setto il filtro colore
-        d.setColorFilter(colorFilter);
-        color_sel.setIcon(d); // aggiungo l'icona
-
-    }
-
-    // ritorna un vettore di interi di colori, in base a quelli definiti in ./values/string
-    private int[] colorChoice(){
-
-        int[] mColorChoices=null;
-        String[] color_array = getResources().getStringArray(R.array.default_color_choice_values);
-
-        if (color_array!=null && color_array.length>0) {
-            mColorChoices = new int[color_array.length];
-            for (int i = 0; i < color_array.length; i++) {
-
-                mColorChoices[i] = Color.parseColor(color_array[i]);
-            }
-        }
-        return mColorChoices;
-    }
-
-    // metodo che restituisce true se sto runnando su un tablet
-    private boolean isTablet() {
-        return (getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
-    // evento sulla scelta del colore
-    private ColorPickerSwatch.OnColorSelectedListener colorcalendarListener = new ColorPickerSwatch.OnColorSelectedListener(){
-        @Override
-        public void onColorSelected(int color) {
-            color_selected = color;
-
-            set_icon_color();
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putInt(getString(R.string.shared_saved_color), color_selected);
-            editor.apply();
-        }
-    };
 }
