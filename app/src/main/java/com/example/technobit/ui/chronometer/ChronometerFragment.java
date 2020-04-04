@@ -1,7 +1,5 @@
 package com.example.technobit.ui.chronometer;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -19,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
@@ -26,6 +25,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.contactdatas.Singleton;
+import com.example.technobit.ui.customize.ConfirmChoiceDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -36,8 +36,8 @@ import com.google.android.material.snackbar.Snackbar;
 *        send to calendar(check if email selected)
 * */
 
-public class ChronometerFragment extends Fragment {
-
+public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog.NoticeDialogListener{
+    private static final String TAG = "ChronometerFragment";
     private ChronometerViewModel chronometerViewModel;
     private Chronometer chronometer;
     private long pauseOffset;
@@ -316,24 +316,20 @@ public class ChronometerFragment extends Fragment {
     }
 
     private void askToSelectEmail() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(getString(R.string.account_not_selected_yet));
-        // Set up the buttons
-        builder.setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // go to the tools fragment to select email
-                Navigation.findNavController(getView()).navigate(R.id.nav_tools);
-            }
-        });
-        builder.setNegativeButton(getString(R.string.dialog_btn_no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        // listner for the dialog
+        ConfirmChoiceDialog.NoticeDialogListener listener = this;
+        // get the message from the resource
+        String message = getString(R.string.account_not_selected_yet);
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new ConfirmChoiceDialog("", message,listener);
+        dialog.show(getParentFragmentManager(), TAG);
 
-        builder.show();
 
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // go to the tools fragment to select email
+        Navigation.findNavController(getView()).navigate(R.id.nav_tools);
     }
 }
