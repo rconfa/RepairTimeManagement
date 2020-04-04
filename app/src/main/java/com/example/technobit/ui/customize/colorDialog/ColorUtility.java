@@ -20,8 +20,8 @@ public class ColorUtility {
         String[] colorArray = mContext.getResources().getStringArray(R.array.default_color_choice_values);
         ArrayList<Integer> colorChoices = new ArrayList<>();
         // parse all color from string to int
-        for (int i = 0; i < colorArray.length; i++) {
-            colorChoices.add(Color.parseColor(colorArray[i]));
+        for (String s : colorArray) {
+            colorChoices.add(Color.parseColor(s));
         }
 
         return colorChoices;
