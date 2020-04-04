@@ -27,4 +27,6 @@
     <string name="account_not_selected_yet">You haven\'t selected an account yet, do you want to do it now?</string>
     <string name="snackbar_close_btn">UNDO</string>
     <string name="snackbar_send_positive">Sending successfully!</string>
+    <string name="dialog_confirm_signOut_message">Are you sure you want to log out?</string>
+    <string name="dialog_confirm_signOut_title">" "</string>
 </resources>

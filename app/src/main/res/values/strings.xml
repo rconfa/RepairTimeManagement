@@ -51,6 +51,9 @@
     <string name="dialog_et_email">email</string>
     <string name="dialog_btn_no">ANNULLA</string>
     <string name="dialog_btn_yes" translatable="false">OK</string>
+    <string name="dialog_confirm_signOut_title">" "</string>
+    <string name="dialog_confirm_signOut_message">Sei sicuro di voler uscire?</string>
+
 
     <string-array name="default_color_choice_values" translatable="false">
         <item>#7986CB</item>
