@@ -19,8 +19,8 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
+import com.example.technobit.utilities.AsyncInsertGoogleCalendar;
 import com.example.technobit.utilities.AsyncResponse;
-import com.example.technobit.utilities.GoogleCalendarUtility;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -79,7 +79,7 @@ public class SignatureFragment extends Fragment implements AsyncResponse {
                 String desc = et_description.getText().toString();
                 String email = sharedPref.getString(getString(R.string.shared_email), null);
                 int color = getColorInt();
-                GoogleCalendarUtility gCal = new GoogleCalendarUtility(eventTitle, desc,
+                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(eventTitle, desc,
                         startMillis, endMillis, color, getContext(), Asyncdelegate);
                 gCal.execute();
             }

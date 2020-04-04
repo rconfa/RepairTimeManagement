@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.TimeZone;
 
-public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
+// this class perform an insert in google calendar
+public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private final Calendar mService;
     private String mEventTitle, mEventDescription;
     private long mStartMillis, mEndMillis;
@@ -29,9 +30,9 @@ public class GoogleCalendarUtility extends AsyncTask<String, Void, String> {
     private AsyncResponse mdelegate = null;
 
     // constructor with parameters
-    public GoogleCalendarUtility(String mEventTitle, String mEventDescription,
-                                 long mStartMillis, long mEndMillis, int mEventColor,
-                                 Context mContext, AsyncResponse delegate) {
+    public AsyncInsertGoogleCalendar(String mEventTitle, String mEventDescription,
+                                     long mStartMillis, long mEndMillis, int mEventColor,
+                                     Context mContext, AsyncResponse delegate) {
         this.mEventTitle = mEventTitle;
         this.mEventDescription = mEventDescription;
         this.mStartMillis = mStartMillis;
