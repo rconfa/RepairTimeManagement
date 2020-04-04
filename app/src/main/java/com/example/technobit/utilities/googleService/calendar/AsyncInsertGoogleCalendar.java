@@ -15,10 +15,13 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventAttachment;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 
 // this class perform an insert in google calendar
@@ -29,17 +32,20 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private int mEventColor;
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private GoogleAsyncResponse mdelegate = null;
+    private String mAttachments;
 
     // constructor with parameters
     public AsyncInsertGoogleCalendar(String mEventTitle, String mEventDescription,
                                      long mStartMillis, long mEndMillis, int mEventColor,
-                                     Context mContext, GoogleAsyncResponse delegate) {
+                                     Context mContext, GoogleAsyncResponse mdelegate,
+                                     String mAttachments) {
         this.mEventTitle = mEventTitle;
         this.mEventDescription = mEventDescription;
         this.mStartMillis = mStartMillis;
         this.mEndMillis = mEndMillis;
         this.mEventColor = mEventColor;
-        this.mdelegate = delegate;
+        this.mdelegate = mdelegate;
+        this.mAttachments = mAttachments;
 
         final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext,
@@ -70,6 +76,18 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
                 .setOverrides(null);
         event.setReminders(reminders);
 
+        // create new attachments for the event
+        List<EventAttachment> attachments = event.getAttachments();
+        if (attachments == null) {
+            attachments = new ArrayList<EventAttachment>();
+        }
+        String attachs[] = mAttachments.split(";");
+        attachments.add(new EventAttachment()
+                .setFileUrl(attachs[0]) //webViewLink
+                .setMimeType(attachs[1]) // getMimeType
+                .setTitle(attachs[2])); // getName
+
+        event.setAttachments(attachments);
 
         TimeZone tz = TimeZone.getDefault();
 
@@ -92,7 +110,8 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
         String calendarId = "primary";
         //event.send
         if(mService!=null)
-            mService.events().insert(calendarId, event).execute();
+            mService.events().insert(calendarId, event).setSupportsAttachments(true)
+                    .execute();
     }
 
     @Override
