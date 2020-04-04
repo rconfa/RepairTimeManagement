@@ -69,27 +69,26 @@ public class ChronometerFragment extends Fragment {
         // save the singleton instance
         Singleton sg = Singleton.getInstance(getContext());
 
-        // prendo tutti gli oggetti ui necessari
-        // cronometro
+        // Get all ui object
         chronometer = root.findViewById(R.id.chrono);
-        // bottone per lo start
+        // fab button for start/pause chronometer
         fabChronoPlay = root.findViewById(R.id.fab_start_pause);
-        // bottone per lo stop
+        // Button for stop chronometer
         Button buttonStop = root.findViewById(R.id.btn_stop);
+        // set size like the fab button
         buttonStop.setHeight(fabChronoPlay.getHeight());
         buttonStop.setWidth(fabChronoPlay.getWidth());
 
-        // spinner per la lista dei clienti
+        // spinner for client list
         sp = root.findViewById(R.id.spinner_choose_client);
 
-        // layer da far sparire con bottone stop e scritta
+        // layer to display when chronometer is in pause
         linearLayButtonStop = root.findViewById(R.id.lay_btn_stop);
         linearLayButtonStop.setVisibility(View.GONE);
 
-        // scritta sotto il bottone play
+        // textview under the fab button for play/pause
         tvPlay = root.findViewById(R.id.txtView_Play);
-        // animazione per il cronometo
-        // load the animation
+        // load chronometer animation
         animBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
 
@@ -102,35 +101,36 @@ public class ChronometerFragment extends Fragment {
         sp.setAdapter(arrayAdapter);
 
 
-        // LISTENER EVENTI
-        // evento sulla scelta di un cliente dallo spinner
-
+        // LISTENER
+        // event on client choose from the spinner
         sp.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        fabChronoPlay.show();
-                        // se ho la view aggiorno i dati
-                        // in alcuni casi è null, tipo quando si ruota lo schermo perchè
-                        // non è ancora stata inizializzata!
+                        // If the view is not null (ex: rotate the screen produce null view)
                         if(view != null) {
+                            // get the client name
                             TextView clientName = view.findViewById(R.id.spinnerItemTextView);
+                            // set the event title as the client name
                             EventTitle = clientName.getText().toString();
-                            spinnerSelectionPos = position;
+                            spinnerSelectionPos = position; // save the spinner position
                         }
                     }
 
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        fabChronoPlay.hide();
-                    }
+                    public void onNothingSelected(AdapterView<?> parent) {}
                 });
 
 
-        // evento listener sullo start del cronometro
+        // Event on chronometer start
         fabChronoPlay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(spinnerSelectionPos != 0)
+                // check if the user have selected a client
+                if(spinnerSelectionPos != 0){
+                    // Spinner is not enable yet.
+                    sp.setEnabled(false);
                     startChronometer(SystemClock.elapsedRealtime());
+                }
                 else{
+                    // snackbar to send an Hint to the user
                     Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
@@ -144,7 +144,7 @@ public class ChronometerFragment extends Fragment {
         });
 
 
-        // evento listener sullo start del cronometro
+        // event on chronometer stop
         buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,14 +161,15 @@ public class ChronometerFragment extends Fragment {
 
         int state = sharedPref.getInt("chrono_state", 2);
 
+        // state = 2 nothing to recover
         if(state != 2) {
             int sp_pos = sharedPref.getInt("spinner_pos", 0);
-            sp.setSelection(sp_pos);
+            sp.setSelection(sp_pos); // set the choosen client
             sp.setEnabled(false);
 
             running = false;
 
-            // c'è qualcosa da recuperare, 0=running, 1=pausa
+            // If there is something to recover, 0=running, 1=pausa
             if (state == 0) {
                 long base = sharedPref.getLong("chronoBase", SystemClock.elapsedRealtime());
                 pauseOffset = 0;
@@ -181,7 +182,7 @@ public class ChronometerFragment extends Fragment {
             }
         }
 
-        // cancello le preferenze perchè già state utilizzate! Modo di delete = asincrono!
+        // Delete the used preference
         sharedPref.edit().remove("chrono_state").remove("spinner_pos")
                 .remove("chronoBase").remove("timeAppStopped").apply();
 
@@ -191,7 +192,7 @@ public class ChronometerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        // se il cronometro è stato inizializzato salvo i dati!
+        // If the chronometer is init() save the state
         if(chronometer != null)
             saveAll();
 
@@ -200,62 +201,61 @@ public class ChronometerFragment extends Fragment {
 
     @Override
     public void onPause(){
-        saveAll();
+        // If the chronometer is init() save the state
+        if(chronometer != null)
+            saveAll();
         super.onPause();
     }
 
     private void saveAll(){
-        // se cambia l'orientamento o l'app viene chiusa devo salvare i dati!!!
-        chronometer.stop(); // stoppo il cronometro
+        chronometer.stop();
         SharedPreferences.Editor editor = sharedPref.edit();
 
 
-        // se non è uguale a 00:00 allora c'è un exe in corso!
+        // If chronometer not equal 00:00 then there is an exe to be saved
         if(!chronometer.getText().equals("00:00")){
-            //salvo la posizione dello spinner
+            // save the spinner position
             editor.putInt("spinner_pos", spinnerSelectionPos);
 
-            // salvo la base del cronometro
+            // Save the chronometer base
             editor.putLong("chronoBase", chronometer.getBase());
 
-            // il cronometro era attivo, devo continuare a farlo andare!!!
+            // Save if the chronometer is running or is on pause
             if(running){
                 editor.putInt("chrono_state", 0); // 0 = running
             }
-            else{ // era in pausa, lo rimetto in pausa
+            else{ // was in pause
                 editor.putInt("chrono_state", 1); // 1 = pause
                 editor.putLong("timeAppStopped", pauseOffset);
             }
 
         }
         else
-            editor.putInt("chrono_state", 2); // 2 = fermo, non partito!
+            editor.putInt("chrono_state", 2); // 2 = stop, not start yet
 
 
-        // scrivo in modo sincrono tutte le shared preferenze
+        // Write in synchronized mode all the preference
         editor.commit();
     }
 
     private void startChronometer(long base) {
-        // se il cronometro non sta ancora andando lo faccio partire
+        // start the chronometer if is not running yet
         if (!running) {
-            // smetto di far lampeggiare il cronometro
+            // cancel the cronometer animation
             chronometer.clearAnimation();
-            // cambio l'immagine con quella della pausa
+            // change the image for the button play->pause
             fabChronoPlay.setImageResource(android.R.drawable.ic_media_pause);
-            // il bottone stop non è piu usabile
+            // button stop can not be used during running
             linearLayButtonStop.setVisibility(View.GONE);
-            // Cambio la scritta sotto il bottone, metto "pausa"
+            // Change the text under the button play->pause
             tvPlay.setText(getResources().getText(R.string.chrono_pause));
-            // lo spinner deve essere bloccato sul cliente scelto
-            sp.setEnabled(false);
-            // risetto il tempo del cronometro considerando anche la pausa
+            // Set the chronometer base minus the paused time
             chronometer.setBase(base  - pauseOffset);
             chronometer.start();
-            pauseOffset = 0; // azzero l'offset della pausa
+            pauseOffset = 0; // set the pause to zero.
             running = true;
         }
-        else { // sta ancora runnando, se riclicco il bottone lo metto in pausa
+        else { // Chronometer is running so I set it on pause
             pauseChronometer();
         }
 
@@ -263,33 +263,33 @@ public class ChronometerFragment extends Fragment {
 
     private void pauseChronometer() {
         if (running) {
-            // faccio lampeggiare il cronometro
+            // start the animation for the chronometer
             chronometer.startAnimation(animBlink);
-            // il bottone per lo stop è visibile
+            // Set button stop visible
             linearLayButtonStop.setVisibility(View.VISIBLE);
-            // Cambio la scritta sotto il bottone, metto "start"
+            // Change the text under the button pause->play
             tvPlay.setText(getResources().getText(R.string.chrono_start));
-            // metto in pausa il cronometro e cambio anche l'immagine del fab
+            // change the image for the button pause->play
             fabChronoPlay.setImageResource(android.R.drawable.ic_media_play);
             chronometer.stop();
-            // salvo per quanto tempo sono stato in pausa
+            // Save the duration of the pause
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
             running = false;
         }
     }
 
     private void stopChronometer(){
-        chronometer.stop(); // stoppo il cronometro
+        chronometer.stop();
 
-        // smetto di far lampeggiare il cronometro
+        // clear the animation
         chronometer.clearAnimation();
-        // setto come fermo
+        // set the chronometer as not running
         running = false;
 
-        long endMillis = System.currentTimeMillis(); // data e ora in millisecondi di fine
-        // conto quanto tempo è stato attivo il chronometro
+        long endMillis = System.currentTimeMillis(); // time of end
+        // time of duration
         long elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.getBase());
-        // tempo di fine - tempo attivo = data e ora in millisecondi di inizio
+        // time of start
         long startMillis = endMillis - elapsedMillis;
 
         // go to the signature fragment to complete the action
@@ -301,11 +301,10 @@ public class ChronometerFragment extends Fragment {
         Navigation.findNavController(getView()).navigate(R.id.nav_signature, bundle);
 
 
+        // reset all the chronometer to initial values
         pauseOffset = 0;
-        chronometer.setBase(SystemClock.elapsedRealtime()); // azzero il cronometro
-        // lo spinner deve essere bloccato sul cliente scelto
-        sp.setEnabled(false);
-        // rimetto il bottone dello stop invisibile, non posso usarlo!
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        sp.setEnabled(true);
         linearLayButtonStop.setVisibility(View.GONE);
     }
 
