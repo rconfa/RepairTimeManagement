@@ -4,23 +4,20 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttachment;
 import com.google.api.services.calendar.model.EventDateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -47,21 +44,21 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
         this.mdelegate = mdelegate;
         this.mAttachments = mAttachments;
 
-        final NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
-        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext,
-                Collections.singleton(CalendarScopes.CALENDAR))
-                .setBackOff(new ExponentialBackOff());
+        // get account and credential from google Utility
+        GoogleUtility gu = GoogleUtility.getInstance();
+        GoogleSignInAccount account = gu.getAccount(mContext);
+        GoogleAccountCredential credential = gu.getCredential(mContext);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(mContext);
-        if(account != null) {
-            credential.setSelectedAccount(account.getAccount());
+        if(account != null && credential!=null) {
+            NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
+            credential.setSelectedAccount(account.getAccount()); // set the account
+            // build the calendar service
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     HTTP_TRANSPORT, mJsonFactory, credential).setApplicationName("Technobit")
                     .build();
         }
         else
             mService = null;
-
     }
 
     private void insertEvent() throws IOException {
