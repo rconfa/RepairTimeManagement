@@ -3,6 +3,7 @@ package com.example.technobit.utilities.googleService.drive;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -21,11 +22,13 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
     Drive mService; // google drive service
     String mImageName; // name for the image
     java.io.File mFilepath; // local image filepath
+    private GoogleAsyncResponse mdelegate = null;
 
-
-    public AsyncInsertGoogleDrive(String mImageName, java.io.File mFilepath, Context mContext) {
+    public AsyncInsertGoogleDrive(String mImageName, java.io.File mFilepath, Context mContext,
+                                  GoogleAsyncResponse mdelegate) {
         this.mImageName = mImageName;
         this.mFilepath = mFilepath;
+        this.mdelegate = mdelegate;
 
         // get account and credential from google Utility
         GoogleUtility gu = GoogleUtility.getInstance(mContext);
@@ -44,15 +47,16 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
             mService = null;
     }
 
-    private void insertImage() throws IOException {
+    private String insertImage() throws IOException {
         File fileMetadata = new File();
         fileMetadata.setName(mImageName);
         FileContent mediaContent = new FileContent("image/jpeg", mFilepath);
         File file = mService.files().create(fileMetadata, mediaContent)
-                .setFields("id")
+                .setFields("mimeType, name, webViewLink")
                 .execute();
 
-        System.out.println("File ID: " + file.getId());
+        // return the information that I need for add attachments on google calendar
+        return file.getWebViewLink() +";"+file.getMimeType()+";"+file.getName();
     }
 
 
@@ -60,12 +64,17 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... strings) {
         if(mService != null) {
             try {
-                insertImage(); // upload an image into google drive
-                return "true";
+                return insertImage(); // upload an image into google drive
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute (String result){
+        // this is run on the main (UI) thread, after doInBackground returns
+        mdelegate.processFinish(result);
     }
 }
