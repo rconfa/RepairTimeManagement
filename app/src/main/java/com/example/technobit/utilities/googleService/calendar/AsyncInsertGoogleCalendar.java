@@ -1,8 +1,9 @@
-package com.example.technobit.utilities;
+package com.example.technobit.utilities.googleService.calendar;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -27,12 +28,12 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private long mStartMillis, mEndMillis;
     private int mEventColor;
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
-    private AsyncResponse mdelegate = null;
+    private GoogleAsyncResponse mdelegate = null;
 
     // constructor with parameters
     public AsyncInsertGoogleCalendar(String mEventTitle, String mEventDescription,
                                      long mStartMillis, long mEndMillis, int mEventColor,
-                                     Context mContext, AsyncResponse delegate) {
+                                     Context mContext, GoogleAsyncResponse delegate) {
         this.mEventTitle = mEventTitle;
         this.mEventDescription = mEventDescription;
         this.mStartMillis = mStartMillis;
