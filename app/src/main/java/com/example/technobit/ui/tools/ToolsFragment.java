@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.drive.DriveScopes;
 
 // TODO: light the email preference??!?!
 // TODO 2: Add preference for english/ita swapping?
@@ -74,7 +75,7 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         account_sel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestScopes(new Scope(CalendarScopes.CALENDAR)) // Scope to read/write calendar and drive
+                        .requestScopes(new Scope(CalendarScopes.CALENDAR), new Scope(DriveScopes.DRIVE)) // Scope to read/write calendar and drive
                         .requestEmail()
                         .build();
 
