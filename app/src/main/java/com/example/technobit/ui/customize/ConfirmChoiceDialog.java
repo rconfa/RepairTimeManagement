@@ -13,9 +13,9 @@ import com.example.technobit.R;
 // Custom yes/no dialog and an interface to handle yes answer.
 public class ConfirmChoiceDialog extends DialogFragment {
 
-    String mTitle, mMessage; // title and message for the dialog
+    private String mTitle, mMessage; // title and message for the dialog
     // Use this instance of the interface to deliver action events
-    NoticeDialogListener mListener;
+    private NoticeDialogListener mListener;
 
 
     public ConfirmChoiceDialog(String mTitle, String mMessage, NoticeDialogListener mListener) {
@@ -27,7 +27,7 @@ public class ConfirmChoiceDialog extends DialogFragment {
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface NoticeDialogListener {
+    interface NoticeDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
         //public void onDialogNegativeClick(DialogFragment dialog);
     }
