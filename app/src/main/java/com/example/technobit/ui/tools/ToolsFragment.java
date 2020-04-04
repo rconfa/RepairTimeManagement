@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -18,21 +19,20 @@ import com.example.technobit.R;
 import com.example.technobit.ui.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.colorDialog.ColorPickerSwatch;
 import com.example.technobit.ui.colorDialog.ColorUtility;
+import com.example.technobit.ui.customize.ConfirmChoiceDialog;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 // TODO: light the email preference??!?!
 // TODO 2: Add preference for english/ita swapping?
-// TODO 3: display dialog before revoke permission for email??
-public class ToolsFragment extends PreferenceFragmentCompat {
-
+public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmChoiceDialog.NoticeDialogListener{
+    private static final String TAG = "ToolsFragment";
     private SharedPreferences mSharedPref;
     private Preference mPreferenceAccount; // preference sulla scelta dell'account
     private Preference mPreferenceColor; // preference sulla scelta del colore
     private int mColorSelected; // colore selezionato
     private SwitchPreferenceCompat mPreferenceVibration;
     private GoogleUtility mGoogleUtility;
-
     private int RC_SIGN_IN = 7;
 
     @Override
@@ -170,12 +170,15 @@ public class ToolsFragment extends PreferenceFragmentCompat {
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
         else{// if an account it's already signIn
-            // Revoke all access for the account
-            mGoogleUtility.revokeAccess();
-            // signOut the account
-            mGoogleUtility.signOut();
-            // update the preference summary for the account
-            setAccountSummary();
+            // listner for the dialog
+            ConfirmChoiceDialog.NoticeDialogListener listener = this;
+            // get the title from the resource
+            String title = getString(R.string.dialog_confirm_signOut_title);
+            // get the message from the resource
+            String message = getString(R.string.dialog_confirm_signOut_message);
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new ConfirmChoiceDialog(title, message,listener);
+            dialog.show(getParentFragmentManager(), TAG);
         }
     }
 
@@ -201,13 +204,24 @@ public class ToolsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // Revoke all access for the account
+        mGoogleUtility.revokeAccess();
+        // signOut the account
+        mGoogleUtility.signOut();
+        // update the preference summary for the account
+        setAccountSummary();
+    }
 
     // --- VIBRATION PREFERENCE ---
+
     private void vibrationChange() {
         // Saving the choice into sharedPreference
         SharedPreferences.Editor editor = mSharedPref.edit();
         editor.putBoolean(getString(R.string.shared_vibration), mPreferenceVibration.isChecked());
         editor.apply();
     }
+
 
 }
