@@ -5,6 +5,8 @@ import android.graphics.Color;
 
 import com.example.technobit.R;
 
+import java.util.ArrayList;
+
 public class ColorUtility {
     private Context mContext;
 
@@ -12,6 +14,20 @@ public class ColorUtility {
         this.mContext = mContext;
     }
 
+    // return all color as an arrayList
+    public ArrayList<Integer> getColorsArrayList(){
+        // getting all the defined color from the resources
+        String[] colorArray = mContext.getResources().getStringArray(R.array.default_color_choice_values);
+        ArrayList<Integer> colorChoices = new ArrayList<>();
+        // parse all color from string to int
+        for (int i = 0; i < colorArray.length; i++) {
+            colorChoices.add(Color.parseColor(colorArray[i]));
+        }
+
+        return colorChoices;
+    }
+
+    // return all color as an array
     public int[] getColorsArray(){
         // getting all the defined color from the resources
         String[] colorArray = mContext.getResources().getStringArray(R.array.default_color_choice_values);
