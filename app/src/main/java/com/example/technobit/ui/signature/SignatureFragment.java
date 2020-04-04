@@ -14,10 +14,10 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
+import com.example.technobit.ui.customize.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
@@ -30,180 +30,190 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
-public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
+// TODO: cancellare file se uplodato su google
+// TODO 2: implementare salvataggio intelligente (file + dati) oppure (dati + attachments) se il file è stato uplodato
+public class SignatureFragment extends Fragment {
 
     private SignatureViewModel mViewModel;
-    private EditText et_description;
-    private Button btn_send;
-    private Button btn_clear;
-    private SignatureView signatureView;
-    private SharedPreferences sharedPref;
-    private GoogleAsyncResponse Asyncdelegate;
-    private String eventTitle;
-    private   String attachment;
-    private long endMillis, startMillis;
+    private EditText mEditTextDescription;
+    private SignatureView mSignatureView;
+    private SharedPreferences mSharedPref;
+    private String mEventTitle;
+    private long mEndMillis, mStartMillis;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        mViewModel = ViewModelProviders.of(this).get(SignatureViewModel.class);
+       // mViewModel = ViewModelProviders.of(this).get(SignatureViewModel.class);
 
         // view of the layout
         View root = inflater.inflate(R.layout.fragment_signature, container, false);
 
         Bundle bundle = this.getArguments();
         // get bundle values
-        endMillis = bundle.getLong("endMillis", -1);
-        startMillis =  bundle.getLong("startMillis", -1);
-        eventTitle = bundle.getString("EventTitle", "");
+        if (bundle != null) {
+            mEndMillis = bundle.getLong("endMillis", -1);
+            mStartMillis =  bundle.getLong("startMillis", -1);
+            mEventTitle = bundle.getString("EventTitle", "");
+        }
 
         // Shared preference for get/set all the preference
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         
         // get all UI object
         // Button to clear the signature
-        btn_clear = (Button) root.findViewById(R.id.btn_clear);
+        Button mBtnClear = root.findViewById(R.id.btn_clear);
         // Button for send all data to calendar
-        btn_send  = (Button) root.findViewById(R.id.btn_send);
-        // edittext for event description
-        et_description = (EditText) root.findViewById(R.id.et_eventDesc);
+        Button mBtnSend = root.findViewById(R.id.btn_send);
+        // edit text for event description
+        mEditTextDescription = root.findViewById(R.id.et_eventDesc);
         // signatureView for client signature
-        signatureView = root.findViewById(R.id.signature_view);
+        mSignatureView = root.findViewById(R.id.signature_view);
 
         // Event on click on button "clear"
-        btn_clear.setOnClickListener(new View.OnClickListener() {
+        mBtnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearCanvas();
+                clearCanvas(); // clear the canvas
             }
         });
 
-        Asyncdelegate = this; // set my Asyncdelegate equal to my method implemented in this class
 
         // Event on click on button "send"
-        btn_send.setOnClickListener(new View.OnClickListener() {
+        mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String desc = et_description.getText().toString();
-                String email = sharedPref.getString(getString(R.string.shared_email), null);
-                int color = getColorInt();
-                sendOnDrive();
-                /*
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(eventTitle, desc,
-                        startMillis, endMillis, color, getContext(), Asyncdelegate);
-                gCal.execute();*/
+                saveAllOnGoogle();
             }
-
         });
 
 
         // If the editText no longer as the focus I close the keyboard
-        et_description.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
+        mEditTextDescription.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-            if(!hasFocus){
-                hideKeyboard();
-            }
+                if(!hasFocus){
+                    hideKeyboard();
+                }
             }
         });
 
         return root;
     }
 
+
     // Close the keyboard if open
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(et_description.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mEditTextDescription.getWindowToken(), 0);
+        }
     }
 
     // Clear the canvas
     private void clearCanvas(){
-        signatureView.clearCanvas();
+        mSignatureView.clearCanvas();
     }
 
     // get the signature image
     private Bitmap getImage(){
-        return signatureView.getSignatureBitmap();
+        return mSignatureView.getSignatureBitmap();
     }
 
 
     private int getColorInt(){
-        String def_color = getResources().getString(R.string.default_color_str);
-        int defaultColorValue = Color.parseColor(def_color);
-
+        String defColor = getResources().getString(R.string.default_color_str);
+        int defaultColorValue = Color.parseColor(defColor);
         // Get the selected color from the shared preference
-        int color_selected = sharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
+        int colorSelected = mSharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
 
-        int[] mColorChoices=null;
-        String[] color_array = getResources().getStringArray(R.array.default_color_choice_values);
+        // get all color list defined
+        ColorUtility colorUtility = new ColorUtility(getContext());
+        ArrayList<Integer> mColor = colorUtility.getColorsArrayList();
+        return mColor.indexOf(colorSelected);
 
-        int colorVal = -1;
-        if (color_array!=null && color_array.length>0) {
-            int i = 0;
-            while(i < color_array.length || colorVal == -1){
-                if(Color.parseColor(color_array[i]) == color_selected)
-                    colorVal = ++i;
-                ++i;
-            }
-        }
-        // If I don't find the color return 1 (default color) else the right color val
-        return colorVal == -1 ?  1 : colorVal;
     }
 
-    private void sendOnDrive(){
-        if(!signatureView.isBitmapEmpty()){
-            File file = new File(getContext().getFilesDir() +  eventTitle +".jpeg");
+    // First upload the image on drive, on result add the event with the attachment on calendar
+    private void saveAllOnGoogle() {
+        File file = writeBitmapOnFile();
+        if(file != null){
+            // Insert the image on google drive
+            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(mEventTitle, file,
+                    getContext(), mDriveResponse);
+            gDrive.execute();
+        }
+    }
+
+    // Implement the interface to handle the asyncTask response for google drive uploading
+    private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
+        @Override
+        public void processFinish(String attachment) {
+            // when the image is upload I add the event on calendar
+            // get the description from the editText
+            String desc = mEditTextDescription.getText().toString();
+            int color = getColorInt(); // get the color that the user has choose
+            // insert the event on calendar
+            AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, desc,
+                    mStartMillis, mEndMillis, color, getContext(), mCalendarResponse, attachment);
+            gCal.execute();
+        }
+    };
+
+    // Implement the interface to handle the asyncTask response for google calendar insert
+    private GoogleAsyncResponse mCalendarResponse = new GoogleAsyncResponse(){
+        @Override
+        public void processFinish(String result) {
+            // if result == null the event is no added on google
+            if(result == null) {
+                // check if the user let vibrate the smartphone
+                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
+
+                if(canVib)
+                    new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+
+                // go back to the precedent activity
+                getActivity().onBackPressed();
+            }
+            else{
+                // create a snackbar with a positive message
+                Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
+                snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                        .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        });
+                snackbar.show();
+                // go back to the precedent activity
+                getActivity().onBackPressed();
+            }
+        }
+    };
+
+    // Write the bitmap on file.
+    // return the file on success, null on error
+    private File writeBitmapOnFile(){
+        // check if the user as insert his sign
+        if(!mSignatureView.isBitmapEmpty()){
+            File file = new File(getContext().getFilesDir() + mEventTitle +".jpeg");
             OutputStream os = null;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
-                Bitmap b = getImage(); // prendo l'immagine
+                Bitmap b = getImage();
+                // compress the bitmap and save it to file
                 b.compress(Bitmap.CompressFormat.JPEG, 100, os);
                 os.flush();
                 os.close();
-
-                AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(eventTitle, file, getContext(),
-                        new GoogleAsyncResponse() {
-                            @Override
-                            public void processFinish(String output) {
-                                attachment = output;
-                                String desc = et_description.getText().toString();
-                                String email = sharedPref.getString(getString(R.string.shared_email), null);
-                                int color = getColorInt();
-                                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(eventTitle, desc,
-                                        startMillis, endMillis, color, getContext(), Asyncdelegate, attachment);
-                                gCal.execute();
-
-                            }
-                        });
-                gDrive.execute();
-
+                return file;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
 
-    @Override
-    public void processFinish(String result) {
-        if(result == null) {
-            // TODO: save data, show snackbar before back pressed
-            SmartphoneControlUtility scu = new SmartphoneControlUtility(getContext(), true);
-            scu.shake();
-            getActivity().onBackPressed();
         }
-        else{
-            Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
-            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                    .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-            snackbar.show();
-            getActivity().onBackPressed();
-        }
+
+        return null;
     }
 }
