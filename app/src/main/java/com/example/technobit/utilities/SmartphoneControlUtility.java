@@ -8,34 +8,20 @@ import android.os.Vibrator;
 // Class for smartphone utility like shaking, send notification...
 public class SmartphoneControlUtility {
     private Context mContext;
-    private boolean mVibrationEnable;
 
     // constructor with parameters
-    public SmartphoneControlUtility(Context mContext, boolean canVib) {
+    public SmartphoneControlUtility(Context mContext) {
         this.mContext = mContext;
-        this.mVibrationEnable = canVib;
-    }
-
-    // getter
-    public boolean isVibrationEnable() {
-        return mVibrationEnable;
-    }
-
-    // setter
-    public void setVibrationEnable(boolean mVibrationEnable) {
-        this.mVibrationEnable = mVibrationEnable;
     }
 
     // shake the smartphone
     public void shake() {
-        // check if the vibration is enable
-        if (mVibrationEnable) {
-            // based of the Sdk version perform a shake of 600 millis.
-            if (Build.VERSION.SDK_INT >= 26) {
-                ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(600, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(600);
-            }
+        // based of the Sdk version perform a shake of 600 millis.
+        if (Build.VERSION.SDK_INT >= 26) {
+            ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(600, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(600);
         }
+
     }
 }
