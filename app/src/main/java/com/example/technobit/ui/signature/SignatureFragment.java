@@ -19,12 +19,12 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
-import com.example.technobit.utilities.AsyncInsertGoogleCalendar;
-import com.example.technobit.utilities.AsyncResponse;
 import com.example.technobit.utilities.SmartphoneControlUtility;
+import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
+import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
 import com.google.android.material.snackbar.Snackbar;
 
-public class SignatureFragment extends Fragment implements AsyncResponse {
+public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
 
     private SignatureViewModel mViewModel;
     private EditText et_description;
@@ -32,7 +32,7 @@ public class SignatureFragment extends Fragment implements AsyncResponse {
     private Button btn_clear;
     private SignatureView signatureView;
     private SharedPreferences sharedPref;
-    private AsyncResponse Asyncdelegate;
+    private GoogleAsyncResponse Asyncdelegate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
