@@ -111,19 +111,19 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
     private void displayAddContactDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        // creo la view sfruttando il mio custom layout
+        // Create the view using the layout
         View v = getLayoutInflater().inflate(R.layout.custom_dialog_add_contact, null);
 
         builder.setView(v);
         final AlertDialog dialog = builder.create();
 
-        // Accesso agli oggetti della view
+        // get layout items
         final Button yes = v.findViewById(R.id.btn_yes);
         final Button no = v.findViewById(R.id.btn_no);
         final EditText et_name = v.findViewById(R.id.et_dialog_name);
         final EditText et_email = v.findViewById(R.id.et_dialog_email);
 
-        // voglio che il nome sia obbligatorio, se è vuoto non abilito il bottone "ok"
+        // Set button yes enable only if the name is not empty
         et_name.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {}
@@ -132,7 +132,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count!=0) // se ha scritto il nome attivo il bottone ok
+                if(count!=0) // if the name is not empty set the yes but to visible
                     yes.setVisibility(View.VISIBLE);
                 else
                     yes.setVisibility(View.INVISIBLE);
@@ -140,19 +140,19 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
 
         });
 
-        // se clicca ok aggiungo al mio adapter i nuovi valori e chiudo la finestra!
+        // If click on yes I add the values into my arrayAdapter
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // prendo i valori
+                // get values
                 String name = et_name.getText().toString();
                 String email = et_email.getText().toString();
-                // aggiungo i valori
+                // add values
                 SingleContact contact = new SingleContact(name, email);
                 sg.addContact(contact, getContext());
                 cardArrayAdapter.add(new Card(contact));
 
-                // chiudo la dialog
+                // close dialog
                 dialog.dismiss();
             }
         });
@@ -164,20 +164,19 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
             }
         });
 
-        // visualizzo la dialog
         dialog.show();
     }
 
 
     @Override
     public void onItemLongClick(View view, int position) {
-        // salvo la posizone selezionata
+        // save the selected position
         boolean res = cardArrayAdapter.savePositionToDelete(position);
-        if(res) { // se ho aggiunto la posizione metto come colore di sfondo il rosso
+        if(res) { // if I add the position I set the background
             view.setBackgroundResource(R.drawable.card_background_selected);
             posToBeRemoved.add(position);
         }
-        else { // Se l'ho deselezionato rimetto lo sfondo bianco
+        else { // If I delete the position I set the default background
             view.setBackgroundResource(R.drawable.card_background);
             posToBeRemoved.remove((Object) position); // I want to remove the obj not the index
         }
