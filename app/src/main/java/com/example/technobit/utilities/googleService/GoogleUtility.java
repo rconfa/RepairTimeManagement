@@ -15,44 +15,40 @@ import com.google.api.services.drive.DriveScopes;
 import java.util.Arrays;
 
 public class GoogleUtility {
-    private Context mContext;
+
     private static GoogleUtility instance;
 
-    public static synchronized GoogleUtility getInstance(Context mContext){
+    public static synchronized GoogleUtility getInstance(){
         if(instance==null){
-            instance=new GoogleUtility(mContext);
+            instance=new GoogleUtility();
         }
         return instance;
     }
 
-    private GoogleUtility(Context mContext) {
-        this.mContext = mContext;
-    }
-
     // get Last signIn account
-    public GoogleSignInAccount getAccount(){
+    public GoogleSignInAccount getAccount(Context mContext){
         return GoogleSignIn.getLastSignedInAccount(mContext);
     }
 
     // get credential
-    public GoogleAccountCredential getCredential(){
+    public GoogleAccountCredential getCredential(Context mContext){
         return GoogleAccountCredential.usingOAuth2(mContext,
                 Arrays.asList(CalendarScopes.CALENDAR, DriveScopes.DRIVE))
                 .setBackOff(new ExponentialBackOff());
     }
 
     // sign out from account
-    public void signOut() {
-        getSignInClient().signOut();
+    public void signOut(Context mContext) {
+        getSignInClient(mContext).signOut();
     }
 
     // revoke all access for the account
-    public void revokeAccess() {
-        getSignInClient().revokeAccess();
+    public void revokeAccess(Context mContext) {
+        getSignInClient(mContext).revokeAccess();
     }
 
     // GoogleSignInClient
-    public GoogleSignInClient getSignInClient(){
+    public GoogleSignInClient getSignInClient(Context mContext){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope(CalendarScopes.CALENDAR), new Scope(DriveScopes.DRIVE)) // Scope to read/write calendar and drive
                 .requestEmail()

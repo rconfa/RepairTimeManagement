@@ -31,9 +31,9 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
         this.mdelegate = mdelegate;
 
         // get account and credential from google Utility
-        GoogleUtility gu = GoogleUtility.getInstance(mContext);
-        GoogleSignInAccount account = gu.getAccount();
-        GoogleAccountCredential credential = gu.getCredential();
+        GoogleUtility gu = GoogleUtility.getInstance();
+        GoogleSignInAccount account = gu.getAccount(mContext);
+        GoogleAccountCredential credential = gu.getCredential(mContext);
 
         if(account != null && credential!=null) {
             NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();

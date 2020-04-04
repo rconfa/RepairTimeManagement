@@ -56,7 +56,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         settingColorXMLPreference(); // add icon with the selected color near color preference
 
         // get google utility instance
-        mGoogleUtility = GoogleUtility.getInstance(getContext());
+        mGoogleUtility = GoogleUtility.getInstance();
 
         // update the preference summary for the account
         setAccountSummary();
@@ -164,9 +164,9 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
 
     private void accountChooser() {
         // if there is no account connected start the intend for choose account and get permission
-        if(mGoogleUtility.getAccount() == null){
+        if(mGoogleUtility.getAccount(getContext()) == null){
             // get signInClient and start the intent
-            Intent signInIntent = mGoogleUtility.getSignInClient().getSignInIntent();
+            Intent signInIntent = mGoogleUtility.getSignInClient(getContext()).getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
         else{// if an account it's already signIn
@@ -185,7 +185,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     // set the summary for the account preference
     private void setAccountSummary(){
         // get the last signin account
-        GoogleSignInAccount account = mGoogleUtility.getAccount();
+        GoogleSignInAccount account = mGoogleUtility.getAccount(getContext());
         if(account !=null) // if an account is signIn
             mPreferenceAccount.setSummary(account.getEmail()); //set the account email as summary
         else
@@ -207,9 +207,9 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         // Revoke all access for the account
-        mGoogleUtility.revokeAccess();
+        mGoogleUtility.revokeAccess(getContext());
         // signOut the account
-        mGoogleUtility.signOut();
+        mGoogleUtility.signOut(getContext());
         // update the preference summary for the account
         setAccountSummary();
     }
