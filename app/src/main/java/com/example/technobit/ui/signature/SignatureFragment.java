@@ -22,7 +22,14 @@ import com.example.technobit.ui.customize.signatureview.SignatureView;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
+import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
 
@@ -33,6 +40,9 @@ public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
     private SignatureView signatureView;
     private SharedPreferences sharedPref;
     private GoogleAsyncResponse Asyncdelegate;
+    private String eventTitle;
+    private   String attachment;
+    private long endMillis, startMillis;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -44,9 +54,9 @@ public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
 
         Bundle bundle = this.getArguments();
         // get bundle values
-        final long endMillis = bundle.getLong("endMillis", -1);
-        final long startMillis =  bundle.getLong("startMillis", -1);
-        final String eventTitle = bundle.getString("EventTitle", "");
+        endMillis = bundle.getLong("endMillis", -1);
+        startMillis =  bundle.getLong("startMillis", -1);
+        eventTitle = bundle.getString("EventTitle", "");
 
         // Shared preference for get/set all the preference
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -79,9 +89,11 @@ public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
                 String desc = et_description.getText().toString();
                 String email = sharedPref.getString(getString(R.string.shared_email), null);
                 int color = getColorInt();
+                sendOnDrive();
+                /*
                 AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(eventTitle, desc,
                         startMillis, endMillis, color, getContext(), Asyncdelegate);
-                gCal.execute();
+                gCal.execute();*/
             }
 
         });
@@ -141,6 +153,38 @@ public class SignatureFragment extends Fragment implements GoogleAsyncResponse {
         return colorVal == -1 ?  1 : colorVal;
     }
 
+    private void sendOnDrive(){
+        if(!signatureView.isBitmapEmpty()){
+            File file = new File(getContext().getFilesDir() +  eventTitle +".jpeg");
+            OutputStream os = null;
+            try {
+                os = new BufferedOutputStream(new FileOutputStream(file));
+                Bitmap b = getImage(); // prendo l'immagine
+                b.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                os.flush();
+                os.close();
+
+                AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(eventTitle, file, getContext(),
+                        new GoogleAsyncResponse() {
+                            @Override
+                            public void processFinish(String output) {
+                                attachment = output;
+                                String desc = et_description.getText().toString();
+                                String email = sharedPref.getString(getString(R.string.shared_email), null);
+                                int color = getColorInt();
+                                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(eventTitle, desc,
+                                        startMillis, endMillis, color, getContext(), Asyncdelegate, attachment);
+                                gCal.execute();
+
+                            }
+                        });
+                gDrive.execute();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void processFinish(String result) {
