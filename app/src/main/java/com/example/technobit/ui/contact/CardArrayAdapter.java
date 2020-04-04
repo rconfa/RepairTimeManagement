@@ -15,10 +15,11 @@ import java.util.ArrayList;
 
 
 public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.CardViewHolder> {
-    private ArrayList<Card> cardList = new ArrayList<>();
-    private ArrayList<Card> cardChecked = new ArrayList<>();
-    private ItemLongClickListener longClickListener;
+    private ArrayList<Card> cardList = new ArrayList<>(); // arrayList contains all contact
+    private ArrayList<Card> cardChecked = new ArrayList<>(); // arrayList contains all contact checked
+    private ItemLongClickListener longClickListener; // long press listener
 
+    // class for the recycle view
     static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         private TextView line1;
         private TextView line2;
@@ -44,6 +45,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         }
     }
 
+    // set the long click listener
     void mySetLongClickListener(ItemLongClickListener itemLongClickListener) {
         this.longClickListener = itemLongClickListener;
     }
@@ -73,8 +75,8 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
             holder.itemView.setBackgroundResource(R.drawable.card_background);
 
         // setting the lines values
-        holder.line1.setText(cardList.get(position).getLine1());
-        holder.line2.setText(cardList.get(position).getLine2());
+        holder.line1.setText(cardList.get(position).getCompanyName());
+        holder.line2.setText(cardList.get(position).getEmail());
     }
 
     @Override
@@ -100,33 +102,33 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     }
 
     /*
-       se la posizone non è presente nel vettore la salvo e ritorno true
-       altrimenti se già presente la tolgo e ritorno false
+       I add the position if is not in the arrayList yet and return true
+       else I delete the position from the arrayList and return false
     */
     public boolean savePositionToDelete(int pos){
         Card getCard = cardList.get(pos);
 
-        // controllo se presente
+        // Check if the card is in arrayList yet
         if(cardChecked.contains(getCard)){
-            cardChecked.remove(getCard);
-            getCard.setCardSelection(false);
+            cardChecked.remove(getCard); // remove the card
+            getCard.setCardSelection(false); // set the checked value as false
             return false;
         }
         else{
-            getCard.setCardSelection(true); // setto la card come selezionata
-            cardChecked.add(getCard);
+            getCard.setCardSelection(true); // Setting the card as checked
+            cardChecked.add(getCard); // add the card to the arrayList
         }
         return true;
     }
 
-    // rimuove dalla lista tutti gli elementi selezionati
+    // remove from the arraylist all the element
     public void removeSelected(){
+        // remove the deleted item from the list
         for(Card c : cardChecked) {
-
             cardList.remove(c);
         }
 
-        cardChecked.clear();
+        cardChecked.clear(); // clear the checked arrayList
         notifyDataSetChanged(); // notify the change
     }
 
