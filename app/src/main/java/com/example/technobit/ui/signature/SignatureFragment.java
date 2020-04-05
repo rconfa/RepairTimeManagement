@@ -23,6 +23,7 @@ import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
 import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
+import com.example.technobit.utilities.notSendedData.DataToSend;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedOutputStream;
@@ -42,6 +43,7 @@ public class SignatureFragment extends Fragment {
     private SharedPreferences mSharedPref;
     private String mEventTitle;
     private long mEndMillis, mStartMillis;
+    private String desc;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,6 +87,8 @@ public class SignatureFragment extends Fragment {
         mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // get the description from the editText
+                desc = mEditTextDescription.getText().toString();
                 saveAllOnGoogle();
             }
         });
@@ -151,14 +155,20 @@ public class SignatureFragment extends Fragment {
     private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
         @Override
         public void processFinish(String attachment) {
-            // when the image is upload I add the event on calendar
-            // get the description from the editText
-            String desc = mEditTextDescription.getText().toString();
-            int color = getColorInt(); // get the color that the user has choose
-            // insert the event on calendar
-            AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, desc,
-                    mStartMillis, mEndMillis, color, getContext(), mCalendarResponse, attachment);
-            gCal.execute();
+            if(attachment != null) {
+                // todo delete bitmap file
+
+                // when the image is upload I add the event on calendar
+                int color = getColorInt(); // get the color that the user has choose
+                // insert the event on calendar
+                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, desc,
+                        mStartMillis, mEndMillis, color, getContext(), mCalendarResponse, attachment);
+                gCal.execute();
+            }
+            else {
+                String imagePath = getContext().getFilesDir() + "/" +  mEventTitle +".jpeg";
+                saveDataIntoFile(mEventTitle, desc, imagePath,mStartMillis,mEndMillis);
+            }
         }
     };
 
@@ -168,6 +178,9 @@ public class SignatureFragment extends Fragment {
         public void processFinish(String result) {
             // if result == null the event is no added on google
             if(result == null) {
+                // save the data into file, imagePath = "" because it's already upload into file
+                saveDataIntoFile(mEventTitle, desc, "",mStartMillis,mEndMillis);
+
                 // check if the user let vibrate the smartphone
                 boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
 
@@ -198,7 +211,7 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mSignatureView.isBitmapEmpty()){
-            File file = new File(getContext().getFilesDir() + mEventTitle +".jpeg");
+            File file = new File(getContext().getFilesDir() + "/" + mEventTitle +".jpeg");
             OutputStream os = null;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
@@ -215,5 +228,14 @@ public class SignatureFragment extends Fragment {
         }
 
         return null;
+    }
+
+    private void saveDataIntoFile(String mEventTitle, String desc, String imagePath, long mStartMillis, long mEndMillis) {
+        DataToSend dt = new DataToSend(mEventTitle, desc,imagePath,mStartMillis,mEndMillis);
+        try {
+            dt.saveOnFile(getContext());
+        } catch (IOException e) {
+            // Todo: snackbar to confirm
+        }
     }
 }
