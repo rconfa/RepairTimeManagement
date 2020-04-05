@@ -31,12 +31,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-
-/* TODO: Better dialog message for email checking
-*        send to calendar(check if email selected)
-* */
-
-public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog.NoticeDialogListener{
+public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
     private ChronometerViewModel chronometerViewModel;
     private Chronometer chronometer;
@@ -65,8 +60,7 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
         if (!checkAccountSelected())
             askToSelectEmail();
 
-
-        // save the singleton instance
+        // get the singleton instance
         ContactSingleton sg = ContactSingleton.getInstance(getContext());
 
         // Get all ui object
@@ -249,8 +243,9 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
             linearLayButtonStop.setVisibility(View.GONE);
             // Change the text under the button play->pause
             tvPlay.setText(getResources().getText(R.string.chrono_pause));
+
             // Set the chronometer base minus the paused time
-            chronometer.setBase(base  - pauseOffset);
+            chronometer.setBase(base - pauseOffset);
             chronometer.start();
             pauseOffset = 0; // set the pause to zero.
             running = true;
@@ -316,20 +311,22 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
     }
 
     private void askToSelectEmail() {
-        // listner for the dialog
-        ConfirmChoiceDialog.NoticeDialogListener listener = this;
         // get the message from the resource
         String message = getString(R.string.dialog_confirm_account_not_selected_yet);
         // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new ConfirmChoiceDialog(" ", message,listener);
+        DialogFragment dialog = new ConfirmChoiceDialog(" ", message,mSelectNewEmailListener);
         dialog.show(getParentFragmentManager(), TAG);
 
 
     }
 
-    @Override
-    public void onDialogPositiveClick() {
-        // go to the tools fragment to select email
-        Navigation.findNavController(getView()).navigate(R.id.nav_tools);
-    }
+    ConfirmChoiceDialog.NoticeDialogListener mSelectNewEmailListener =
+            new ConfirmChoiceDialog.NoticeDialogListener() {
+        @Override
+        public void onDialogPositiveClick() {
+            // go to the tools fragment to select email
+            Navigation.findNavController(getView()).navigate(R.id.nav_tools);
+        }
+    };
+
 }
