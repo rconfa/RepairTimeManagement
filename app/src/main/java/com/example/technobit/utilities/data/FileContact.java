@@ -73,4 +73,28 @@ public class FileContact {
 
         this.writeAllToFile(names,context);
     }
+
+    public void update(Contact toUpdate, int pos, Context c) throws IOException {
+        ArrayList<Contact> names = new ArrayList<>();
+
+        InputStreamReader input = new InputStreamReader(c.openFileInput("clienti.txt"));
+        BufferedReader in = new BufferedReader(input);
+        String line;
+        int numLine = 0;
+        Contact toAdd;
+        while ((line = in.readLine()) != null) {
+            if (numLine!=pos) {
+                toAdd = new Contact().readFromString(line); // Retrieve the contact from the line
+                if (toAdd != null)
+                    names.add(toAdd); // adding the contact to list
+            }
+            else
+                names.add(toUpdate);
+            numLine++;
+        }
+
+        in.close();
+
+        this.writeAllToFile(names,c);
+    }
 }

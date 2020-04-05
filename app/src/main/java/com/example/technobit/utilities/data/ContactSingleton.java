@@ -71,6 +71,20 @@ public class ContactSingleton {
         }
     }
 
+    public void updateContact(Contact toUpdate, int pos, Context c){
+        if(clienti == null)
+            return;
+        // update the contact on file
+        try {
+            dc.update(toUpdate, pos,c);
+            // If no errors I update it also in the list
+            clienti.set(pos, toUpdate); // update into client list
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static synchronized ContactSingleton getInstance(Context c){
         if(instance==null){
             instance=new ContactSingleton(c);
