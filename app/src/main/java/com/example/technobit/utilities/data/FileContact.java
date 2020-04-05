@@ -20,7 +20,8 @@ public class FileContact {
         Contact toAdd;
         while ((line = in.readLine()) != null) {
             toAdd = new Contact().readFromString(line); // Retrieve the contact from the line
-            names.add(toAdd); // adding the contact to list
+            if(toAdd != null)
+                names.add(toAdd); // adding the contact to list
         }
 
         in.close();
@@ -62,7 +63,8 @@ public class FileContact {
         while ((line = in.readLine()) != null) {
             if (!pos.contains(numLine)) {
                 toAdd = new Contact().readFromString(line); // Retrieve the contact from the line
-                names.add(toAdd); // adding the contact to list
+                if (toAdd != null)
+                    names.add(toAdd); // adding the contact to list
             }
             numLine++;
         }

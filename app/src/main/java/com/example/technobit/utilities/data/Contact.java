@@ -27,8 +27,6 @@ public class Contact {
     }
 
     public String toString(){
-        if(this.email.equals("")) // if mail is empty I set it like a single space
-            this.email = " ";
         return this.company_name +";" + this.email;
     }
 
@@ -38,6 +36,8 @@ public class Contact {
             String[] values = s_contact.split(";");
             if (values.length == 2) // string is well formed, has exactly one values for each field
                 return new Contact(values[0], values[1]);
+            else if(values.length == 1) // string contains only the company name
+                return new Contact(values[0], "");
         }
 
         return null;
