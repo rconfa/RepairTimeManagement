@@ -56,6 +56,10 @@
     <string name="dialog_confirm_signOut_message">Sei sicuro di voler scollegare il tuo account?</string>
     <string name="dialog_confirm_account_not_selected_yet">Non hai ancora selezionato un account, vuoi farlo ora?</string>
 
+    <!-- string for contact fragment-->
+    <string name="snackbar_file_error">Impossibile completare l\'azione</string>
+    <string name="dialog_confirm_delete_message"> Sei sicuro di voler  rimuovere i contatti selezionati? </string>
+
 
     <string-array name="default_color_choice_values" translatable="false">
         <item>#7986CB</item>

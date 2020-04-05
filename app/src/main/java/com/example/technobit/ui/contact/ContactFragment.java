@@ -15,14 +15,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
+import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.ui.customize.dialog.ManageContactDialog;
 import com.example.technobit.utilities.data.Contact;
 import com.example.technobit.utilities.data.ContactSingleton;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-/* TODO: edit existing contact??
-*        Dialog message for confirm deletion?
+/* TODO:
+*        No click if card selected
+*        Button "delete" restyling and clickable only if a contact is selected.
 * */
 public class ContactFragment extends Fragment
         implements CardArrayAdapter.ItemLongClickListener, CardArrayAdapter.ItemClickListener {
@@ -90,14 +94,7 @@ public class ContactFragment extends Fragment
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.icon_remove:
-                // remove all items selected from file
-                mContactSingleton.delete(mPosToBeRemoved,getContext());
-
-                // clear the list of items to be removed
-                mPosToBeRemoved.clear();
-                // remove all items from the listview
-                mCardArrayAdapter.removeSelected();
-
+                performeRemovingContact();
                 return true;
             case R.id.icon_add:
                 displayAddContactDialog();
@@ -106,25 +103,6 @@ public class ContactFragment extends Fragment
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private void displayAddContactDialog() {
-        // get the title for the dialog
-        String title = getString(R.string.dialog_add_contact_title);
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new ManageContactDialog(title,"","", -1,
-                getContext(), mAddContactListener);
-        dialog.show(getParentFragmentManager(), TAG);
-    }
-
-    // notice listener on positive button click for contact update
-    private ManageContactDialog.NoticeDialogListener mAddContactListener = new ManageContactDialog.NoticeDialogListener() {
-        @Override
-        public void onDialogPositiveClick(Contact c, int position) {
-            mContactSingleton.addContact(c, getContext());
-            mCardArrayAdapter.add(new Card(c));
-        }
-    };
-
 
     // long click on recycle view item
     @Override
@@ -140,6 +118,59 @@ public class ContactFragment extends Fragment
             mPosToBeRemoved.remove((Object) position); // I want to remove the obj not the index
         }
     }
+
+    public void performeRemovingContact(){
+        // Ask the user to confirm the action
+        // get the message from the resource
+        String message = getString(R.string.dialog_confirm_delete_message);
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new ConfirmChoiceDialog(" ", message,confirmDeleteListener);
+        dialog.show(getParentFragmentManager(), TAG);
+
+    }
+
+    // listner for the dialog
+    private ConfirmChoiceDialog.NoticeDialogListener confirmDeleteListener = new ConfirmChoiceDialog.NoticeDialogListener() {
+        @Override
+        public void onDialogPositiveClick() {
+            // remove all items selected from file
+            try {
+                mContactSingleton.delete(mPosToBeRemoved,getContext());
+                // clear the list of items to be removed
+                mPosToBeRemoved.clear();
+                // remove all items from the listview
+                mCardArrayAdapter.removeSelected();
+            } catch (IOException e) {
+                displaySnackbarError();
+            }
+        }
+    };
+
+
+    // dialog to add new contact
+    private void displayAddContactDialog() {
+        // get the title for the dialog
+        String title = getString(R.string.dialog_add_contact_title);
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new ManageContactDialog(title,"","", -1,
+                getContext(), mAddContactListener);
+        dialog.show(getParentFragmentManager(), TAG);
+    }
+
+    // notice listener on positive button click for add contact
+    private ManageContactDialog.NoticeDialogListener mAddContactListener = new ManageContactDialog.NoticeDialogListener() {
+        @Override
+        public void onDialogPositiveClick(Contact c, int position) {
+            try {
+                mContactSingleton.addContact(c, getContext());
+                mCardArrayAdapter.add(new Card(c));
+            } catch (IOException e) {
+                displaySnackbarError();
+            }
+
+        }
+    };
+
 
     // click on recycle view item
     @Override
@@ -157,9 +188,26 @@ public class ContactFragment extends Fragment
         @Override
         public void onDialogPositiveClick(Contact c, int position) {
             Card temp = new Card(c);
-            mContactSingleton.updateContact(c, position, getContext());
-            mCardArrayAdapter.modify(temp,position);
+            try {
+                mContactSingleton.updateContact(c, position, getContext());
+                mCardArrayAdapter.modify(temp,position);
+            } catch (IOException e) {
+                displaySnackbarError();
+            }
+
         }
     };
+
+    private void displaySnackbarError(){
+        // create a snackbar with a positive message
+        Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_file_error, Snackbar.LENGTH_LONG);
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                });
+        snackbar.show();
+    }
 
 }

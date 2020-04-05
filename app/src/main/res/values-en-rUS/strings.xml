@@ -29,4 +29,6 @@
     <string name="snackbar_send_positive">Sending successfully!</string>
     <string name="dialog_confirm_signOut_message">Are you sure you want to log out?</string>
     <string name="dialog_update_contact_title">Update data</string>
+    <string name="snackbar_file_error">Unable to complete the action</string>
+    <string name="dialog_confirm_delete_message">Are you sure you want to remove the selected contacts?</string>
 </resources>
