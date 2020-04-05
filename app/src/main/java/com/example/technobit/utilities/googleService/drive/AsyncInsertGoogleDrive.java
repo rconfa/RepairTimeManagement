@@ -3,6 +3,7 @@ package com.example.technobit.utilities.googleService.drive;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.technobit.R;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -19,10 +20,10 @@ import java.io.IOException;
 // this class perform an image upload in google drive
 public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
-    Drive mService; // google drive service
-    String mImageName; // name for the image
-    java.io.File mFilepath; // local image filepath
-    private GoogleAsyncResponse mdelegate = null;
+    private Drive mService; // google drive service
+    private String mImageName; // name for the image
+    private java.io.File mFilepath; // local image filepath
+    private GoogleAsyncResponse mdelegate;
 
     public AsyncInsertGoogleDrive(String mImageName, java.io.File mFilepath, Context mContext,
                                   GoogleAsyncResponse mdelegate) {
@@ -40,7 +41,7 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
             credential.setSelectedAccount(account.getAccount()); // set the account
             // build the drive service
             mService = new Drive.Builder(HTTP_TRANSPORT, mJsonFactory, credential)
-                    .setApplicationName("Technobit")
+                    .setApplicationName(mContext.getString(R.string.app_name))
                     .build();
         }
         else

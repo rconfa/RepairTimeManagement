@@ -3,6 +3,7 @@ package com.example.technobit.utilities.googleService.calendar;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.technobit.R;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -54,7 +55,8 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
             credential.setSelectedAccount(account.getAccount()); // set the account
             // build the calendar service
             mService = new com.google.api.services.calendar.Calendar.Builder(
-                    HTTP_TRANSPORT, mJsonFactory, credential).setApplicationName("Technobit")
+                    HTTP_TRANSPORT, mJsonFactory, credential)
+                    .setApplicationName(mContext.getString(R.string.app_name))
                     .build();
         }
         else
@@ -76,9 +78,9 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
         // create new attachments for the event
         List<EventAttachment> attachments = event.getAttachments();
         if (attachments == null) {
-            attachments = new ArrayList<EventAttachment>();
+            attachments = new ArrayList<>();
         }
-        String attachs[] = mAttachments.split(";");
+        String[] attachs = mAttachments.split(";");
         attachments.add(new EventAttachment()
                 .setFileUrl(attachs[0]) //webViewLink
                 .setMimeType(attachs[1]) // getMimeType
