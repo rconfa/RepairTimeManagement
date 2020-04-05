@@ -66,12 +66,14 @@ public class ManageContactDialog extends DialogFragment {
         final EditText etEmail = v.findViewById(R.id.et_dialog_email);
         // setting values
         etTitle.setText(mTitle);
-        if(!mName.isEmpty()){
+        if(!mName.isEmpty())
             etName.setText(mName);
-            yes.setVisibility(View.VISIBLE);
-        }
         if(!mEmail.isEmpty())
             etEmail.setText(mEmail);
+
+        // if position != -1 it's an update dialog so the button yes must be visibile
+        if(mPosition!=-1)
+            yes.setVisibility(View.VISIBLE);
 
         // Set button yes enable only if the name is not empty
         etName.addTextChangedListener(new TextWatcher() {
