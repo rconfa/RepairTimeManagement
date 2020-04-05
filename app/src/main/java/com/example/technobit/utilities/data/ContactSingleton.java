@@ -7,18 +7,18 @@ import java.util.ArrayList;
 
 // Class that implement Singleton pattern
 // store all the contact list that can be used in all class.
-public class Singleton {
+public class ContactSingleton {
     // TODO: in catch give back an error to the user.
 
-    private static Singleton instance;
+    private static ContactSingleton instance;
 
     // Global variable
-    private  ArrayList<SingleContact> clienti;
-    private MyFile dc;
+    private  ArrayList<Contact> clienti;
+    private FileContact dc;
 
     // Restrict the constructor from being instantiated
-    private Singleton(Context c){
-        dc = new MyFile();
+    private ContactSingleton(Context c){
+        dc = new FileContact();
 
         // Read all contact from file
         try {
@@ -28,7 +28,7 @@ public class Singleton {
         }
     }
 
-    public ArrayList<SingleContact> getContactList(){
+    public ArrayList<Contact> getContactList(){
         return this.clienti;
     }
 
@@ -37,7 +37,7 @@ public class Singleton {
 
         ArrayList<String> name = new ArrayList<String>();
         if(this.clienti != null)
-            for(SingleContact s:this.clienti)
+            for(Contact s:this.clienti)
                 name.add(s.getCompany_name());
 
         return name;
@@ -58,9 +58,9 @@ public class Singleton {
         }
     }
 
-    public void addContact(SingleContact c_temp,Context c){
+    public void addContact(Contact c_temp, Context c){
         if(clienti == null)
-            clienti = new  ArrayList<SingleContact>();
+            clienti = new  ArrayList<Contact>();
         try {
             dc.writeToFile(c_temp, c); // Add the new contact to file
             // if no errors I add the contact to list
@@ -71,9 +71,9 @@ public class Singleton {
         }
     }
 
-    public static synchronized Singleton getInstance(Context c){
+    public static synchronized ContactSingleton getInstance(Context c){
         if(instance==null){
-            instance=new Singleton(c);
+            instance=new ContactSingleton(c);
         }
         return instance;
     }

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
-import com.example.technobit.utilities.data.SingleContact;
+import com.example.technobit.utilities.data.Contact;
 
 import java.util.ArrayList;
 
@@ -91,11 +91,11 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     }
 
     // Add multiple card
-    public void add(ArrayList<SingleContact> list_card){
+    public void add(ArrayList<Contact> list_card){
         if(list_card == null)
             return;
         Card temp;
-        for(SingleContact s:list_card){
+        for(Contact s:list_card){
             temp = new Card(s);
             cardList.add(temp);
         }

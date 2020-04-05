@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
-import com.example.technobit.utilities.data.SingleContact;
-import com.example.technobit.utilities.data.Singleton;
+import com.example.technobit.utilities.data.Contact;
+import com.example.technobit.utilities.data.ContactSingleton;
 
 import java.util.ArrayList;
 
@@ -33,7 +33,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
     private ContactViewModel contactViewModel;
     private CardArrayAdapter cardArrayAdapter;
     private RecyclerView recView;
-    private Singleton sg;
+    private ContactSingleton sg;
     private ArrayList<Integer> posToBeRemoved;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,7 +46,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
         View root = inflater.inflate(R.layout.fragment_contact, container, false);
 
         // save the singleton instance
-        sg = Singleton.getInstance(getContext());
+        sg = ContactSingleton.getInstance(getContext());
         // list of position to removed
         posToBeRemoved = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
 
     private void addContactToAdapter() {
         // retrive all contact from file
-        ArrayList<SingleContact> allContact = sg.getContactList();
+        ArrayList<Contact> allContact = sg.getContactList();
         if(allContact != null)
             cardArrayAdapter.add(allContact); // add all list to adapter
     }
@@ -148,7 +148,7 @@ public class ContactFragment extends Fragment implements CardArrayAdapter.ItemLo
                 String name = et_name.getText().toString();
                 String email = et_email.getText().toString();
                 // add values
-                SingleContact contact = new SingleContact(name, email);
+                Contact contact = new Contact(name, email);
                 sg.addContact(contact, getContext());
                 cardArrayAdapter.add(new Card(contact));
 

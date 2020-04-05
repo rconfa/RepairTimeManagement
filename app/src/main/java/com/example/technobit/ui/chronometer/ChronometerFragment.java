@@ -25,7 +25,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
 import com.example.technobit.ui.customize.ConfirmChoiceDialog;
-import com.example.technobit.utilities.data.Singleton;
+import com.example.technobit.utilities.data.ContactSingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -67,7 +67,7 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
 
 
         // save the singleton instance
-        Singleton sg = Singleton.getInstance(getContext());
+        ContactSingleton sg = ContactSingleton.getInstance(getContext());
 
         // Get all ui object
         chronometer = root.findViewById(R.id.chrono);
