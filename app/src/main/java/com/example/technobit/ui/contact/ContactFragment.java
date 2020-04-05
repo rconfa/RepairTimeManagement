@@ -24,9 +24,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/* TODO:
-*        Button "delete" restyling and clickable only if a contact is selected.
-* */
 public class ContactFragment extends Fragment
         implements CardArrayAdapter.ItemLongClickListener, CardArrayAdapter.ItemClickListener {
 
