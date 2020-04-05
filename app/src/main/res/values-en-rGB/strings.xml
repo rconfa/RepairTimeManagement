@@ -31,4 +31,6 @@
     <string name="dialog_update_contact_title">Update data</string>
     <string name="snackbar_file_error">Unable to complete the action</string>
     <string name="dialog_confirm_delete_message">Are you sure you want to remove the selected contacts?</string>
+    <string name="contact_menu_add">New</string>
+    <string name="contact_menu_delete">Delete</string>
 </resources>

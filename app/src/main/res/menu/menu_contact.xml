@@ -7,12 +7,12 @@
         android:checkable="true"
         android:enabled="true"
         android:icon="@drawable/trasch_bin"
-        android:title="Remove"
+        android:title="@string/contact_menu_delete"
         android:visible="false"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/icon_add"
         android:icon="@drawable/add_contact"
-        android:title="add"
+        android:title="@string/contact_menu_add"
         app:showAsAction="ifRoom" />
 </menu>
