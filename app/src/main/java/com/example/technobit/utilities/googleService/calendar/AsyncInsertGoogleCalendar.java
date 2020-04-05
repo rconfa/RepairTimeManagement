@@ -19,6 +19,7 @@ import com.google.api.services.calendar.model.EventDateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -26,7 +27,8 @@ import java.util.TimeZone;
 public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private final Calendar mService;
     private String mEventTitle, mEventDescription;
-    private long mStartMillis, mEndMillis;
+    private long mElapsedMillis;
+    private Date mEndDate;
     private int mEventColor;
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private GoogleAsyncResponse mdelegate = null;
@@ -34,13 +36,13 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
 
     // constructor with parameters
     public AsyncInsertGoogleCalendar(String mEventTitle, String mEventDescription,
-                                     long mStartMillis, long mEndMillis, int mEventColor,
+                                     Date mEndDate, long mEndMillis, int mEventColor,
                                      Context mContext, GoogleAsyncResponse mdelegate,
                                      String mAttachments) {
         this.mEventTitle = mEventTitle;
         this.mEventDescription = mEventDescription;
-        this.mStartMillis = mStartMillis;
-        this.mEndMillis = mEndMillis;
+        this.mEndDate = mEndDate;
+        this.mElapsedMillis = mEndMillis;
         this.mEventColor = mEventColor;
         this.mdelegate = mdelegate;
         this.mAttachments = mAttachments;
@@ -90,11 +92,12 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
 
         TimeZone tz = TimeZone.getDefault();
 
-        java.util.Calendar c = java.util.Calendar.getInstance();
-        DateTime endDate = new DateTime(c.getTime());
+        DateTime endDate = new DateTime(mEndDate.getTime());
 
-        c.setTimeInMillis(c.getTimeInMillis() - 9000);
-        DateTime startDate = new DateTime(c.getTime());
+        mEndDate.setTime(mEndDate.getTime() - mElapsedMillis);
+        DateTime startDate = new DateTime(mEndDate.getTime());
+
+
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDate)
                 .setTimeZone(tz.getID());

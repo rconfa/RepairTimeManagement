@@ -31,6 +31,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
     private ChronometerViewModel chronometerViewModel;
@@ -243,7 +246,6 @@ public class ChronometerFragment extends Fragment{
             linearLayButtonStop.setVisibility(View.GONE);
             // Change the text under the button play->pause
             tvPlay.setText(getResources().getText(R.string.chrono_pause));
-
             // Set the chronometer base minus the paused time
             chronometer.setBase(base - pauseOffset);
             chronometer.start();
@@ -281,17 +283,16 @@ public class ChronometerFragment extends Fragment{
         // set the chronometer as not running
         running = false;
 
-        long endMillis = System.currentTimeMillis(); // time of end
+        // get the ended date
+        Date end =  Calendar.getInstance().getTime();
         // time of duration
         long elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.getBase());
-        // time of start
-        long startMillis = endMillis - elapsedMillis;
 
         // go to the signature fragment to complete the action
         // add bundle value
         Bundle bundle = new Bundle();
-        bundle.putLong("startMillis", startMillis);
-        bundle.putLong("endMillis", endMillis);
+        bundle.putLong("durationMillis", elapsedMillis);
+        bundle.putLong("dateEnd", end.getTime());
         bundle.putString("EventTitle", EventTitle);
         Navigation.findNavController(getView()).navigate(R.id.nav_signature, bundle);
 

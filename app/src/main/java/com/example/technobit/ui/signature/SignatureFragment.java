@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 // TODO: cancellare file se uplodato su google
 // TODO 2: implementare salvataggio intelligente (file + dati) oppure (dati + attachments) se il file è stato uplodato
@@ -42,7 +43,7 @@ public class SignatureFragment extends Fragment {
     private SignatureView mSignatureView;
     private SharedPreferences mSharedPref;
     private String mEventTitle;
-    private long mEndMillis, mStartMillis;
+    private long mDuration, mEndDate;
     private String desc;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,10 +57,11 @@ public class SignatureFragment extends Fragment {
         Bundle bundle = this.getArguments();
         // get bundle values
         if (bundle != null) {
-            mEndMillis = bundle.getLong("endMillis", -1);
-            mStartMillis =  bundle.getLong("startMillis", -1);
+            mDuration = bundle.getLong("durationMillis", -1);
+            mEndDate =  bundle.getLong("dateEnd", -1);
             mEventTitle = bundle.getString("EventTitle", "");
         }
+
 
         // Shared preference for get/set all the preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -161,13 +163,15 @@ public class SignatureFragment extends Fragment {
                 // when the image is upload I add the event on calendar
                 int color = getColorInt(); // get the color that the user has choose
                 // insert the event on calendar
+                Date endDate = new Date(mEndDate);
+
                 AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, desc,
-                        mStartMillis, mEndMillis, color, getContext(), mCalendarResponse, attachment);
+                        endDate, mDuration, color, getContext(), mCalendarResponse, attachment);
                 gCal.execute();
             }
             else {
                 String imagePath = getContext().getFilesDir() + "/" +  mEventTitle +".jpeg";
-                saveDataIntoFile(mEventTitle, desc, imagePath,mStartMillis,mEndMillis);
+                saveDataIntoFile(mEventTitle, desc, imagePath,0,0);
             }
         }
     };
@@ -179,7 +183,7 @@ public class SignatureFragment extends Fragment {
             // if result == null the event is no added on google
             if(result == null) {
                 // save the data into file, imagePath = "" because it's already upload into file
-                saveDataIntoFile(mEventTitle, desc, "",mStartMillis,mEndMillis);
+                saveDataIntoFile(mEventTitle, desc, "",0,0);
 
                 // check if the user let vibrate the smartphone
                 boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
