@@ -1,4 +1,4 @@
-package com.example.technobit.ui.customize;
+package com.example.technobit.ui.customize.dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -28,7 +28,7 @@ public class ConfirmChoiceDialog extends DialogFragment {
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NoticeDialogListener {
-        void onDialogPositiveClick(DialogFragment dialog);
+        void onDialogPositiveClick();
         //public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -45,12 +45,13 @@ public class ConfirmChoiceDialog extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_btn_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Send the positive button event back to the host activity
-                mListener.onDialogPositiveClick(ConfirmChoiceDialog.this);
+                mListener.onDialogPositiveClick();
+                dismiss();
             }
         })
         .setNegativeButton(R.string.dialog_btn_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss(); // dismiss the dialog
+                dismiss(); // dismiss the dialog
             }
         });
 
