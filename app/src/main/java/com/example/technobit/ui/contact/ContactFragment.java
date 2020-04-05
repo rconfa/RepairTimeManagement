@@ -35,6 +35,7 @@ public class ContactFragment extends Fragment
     private CardArrayAdapter mCardArrayAdapter;
     private ContactSingleton mContactSingleton;
     private ArrayList<Integer> mPosToBeRemoved;
+    private MenuItem mMenuDeleteItem;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -84,6 +85,8 @@ public class ContactFragment extends Fragment
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         // Upload menu file with add/delete icons
         inflater.inflate(R.menu.menu_contact, menu); //.xml file name
+        // get the item for delete contact
+        mMenuDeleteItem = menu.findItem(R.id.icon_remove);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -116,6 +119,11 @@ public class ContactFragment extends Fragment
             view.setBackgroundResource(R.drawable.card_background);
             mPosToBeRemoved.remove((Object) position); // I want to remove the obj not the index
         }
+
+        if(this.mPosToBeRemoved.isEmpty())
+            mMenuDeleteItem.setVisible(false);
+        else
+            mMenuDeleteItem.setVisible(true);
     }
 
     public void performeRemovingContact(){
