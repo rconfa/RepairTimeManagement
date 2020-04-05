@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /* TODO:
-*        No click if card selected
 *        Button "delete" restyling and clickable only if a contact is selected.
 * */
 public class ContactFragment extends Fragment

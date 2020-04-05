@@ -21,7 +21,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     private ItemClickListener mClickListener; // on click listener
 
     // class for the recycle view that implements longclick and click listener
-    static class CardViewHolder extends RecyclerView.ViewHolder
+    class CardViewHolder extends RecyclerView.ViewHolder
             implements View.OnLongClickListener, View.OnClickListener
     {
         private TextView mTextViewName; // first line of the view (company name)
@@ -52,11 +52,13 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
             return true;
         }
 
-        // action to be performed on clicl
+        // action to be performed on click only if the card is not selected
         @Override
         public void onClick(View v) {
-            mClickListener.onItemClick(v, getAdapterPosition(), mTextViewName.getText().toString(),
-                    mTextViewEmail.getText().toString());
+            int position = getAdapterPosition();
+            if(!mCardList.get(position).isCardSelected())
+                mClickListener.onItemClick(v, position , mTextViewName.getText().toString(),
+                        mTextViewEmail.getText().toString());
         }
     }
 
