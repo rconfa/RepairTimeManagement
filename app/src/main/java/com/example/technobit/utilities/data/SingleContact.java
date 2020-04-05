@@ -1,4 +1,4 @@
-package com.example.technobit.contactdatas;
+package com.example.technobit.utilities.data;
 
 // this class represent the data of a single contact.
 

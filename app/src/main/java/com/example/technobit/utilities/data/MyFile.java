@@ -1,4 +1,4 @@
-package com.example.technobit.contactdatas;
+package com.example.technobit.utilities.data;
 
 import android.content.Context;
 
@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class RetrieveFromFile {
+public class MyFile {
 
     // legge un file txt e riporta tutti i dati come array
     public ArrayList<SingleContact> readFile(Context context) throws IOException {

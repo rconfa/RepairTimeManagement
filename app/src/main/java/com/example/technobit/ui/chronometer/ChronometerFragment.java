@@ -24,8 +24,8 @@ import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
-import com.example.technobit.contactdatas.Singleton;
 import com.example.technobit.ui.customize.ConfirmChoiceDialog;
+import com.example.technobit.utilities.data.Singleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

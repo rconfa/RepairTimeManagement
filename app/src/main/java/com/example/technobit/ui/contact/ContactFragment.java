@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
-import com.example.technobit.contactdatas.SingleContact;
-import com.example.technobit.contactdatas.Singleton;
+import com.example.technobit.utilities.data.SingleContact;
+import com.example.technobit.utilities.data.Singleton;
 
 import java.util.ArrayList;
 

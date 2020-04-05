@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
-import com.example.technobit.contactdatas.SingleContact;
+import com.example.technobit.utilities.data.SingleContact;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.technobit.contactdatas;
+package com.example.technobit.utilities.data;
 
 import android.content.Context;
 
@@ -14,11 +14,11 @@ public class Singleton {
 
     // Global variable
     private  ArrayList<SingleContact> clienti;
-    private RetrieveFromFile dc;
+    private MyFile dc;
 
     // Restrict the constructor from being instantiated
     private Singleton(Context c){
-        dc = new RetrieveFromFile();
+        dc = new MyFile();
 
         // Read all contact from file
         try {

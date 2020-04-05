@@ -1,6 +1,6 @@
 package com.example.technobit.ui.contact;
 
-import com.example.technobit.contactdatas.SingleContact;
+import com.example.technobit.utilities.data.SingleContact;
 
 // Class that represent a single contact like a card to be added in an listview
 public class Card extends SingleContact {
