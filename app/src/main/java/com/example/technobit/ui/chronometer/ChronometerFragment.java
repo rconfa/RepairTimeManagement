@@ -24,7 +24,7 @@ import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.customize.ConfirmChoiceDialog;
+import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.utilities.data.ContactSingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -328,7 +328,7 @@ public class ChronometerFragment extends Fragment implements ConfirmChoiceDialog
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogPositiveClick() {
         // go to the tools fragment to select email
         Navigation.findNavController(getView()).navigate(R.id.nav_tools);
     }
