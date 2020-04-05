@@ -66,11 +66,11 @@
 
 
     <string-array name="default_color_choice_values" translatable="false">
+        <item>#F6BF26</item>
         <item>#7986CB</item>
         <item>#039B81</item>
         <item>#8E24AA</item>
         <item>#E67C73</item>
-        <item>#F6BF26</item>
         <item>#F4511E</item>
         <item>#4285F4</item>
         <item>#616161</item>
