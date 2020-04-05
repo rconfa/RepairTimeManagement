@@ -2,7 +2,7 @@ package com.example.technobit.ui.contact;
 
 import com.example.technobit.utilities.data.Contact;
 
-// Class that represent a single contact like a card to be added in an listview
+// Class that represent a single contact like a card to be added in the recycle view.
 public class Card extends Contact {
     private Boolean isCardSelected; // Save if the card is selected, if true background = green
 
