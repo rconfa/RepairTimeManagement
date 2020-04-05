@@ -46,6 +46,7 @@
 
     <!-- string per la custom dialog -->
     <string name="dialog_add_contact_title">Nuovo contatto</string>
+    <string name="dialog_update_contact_title">Aggiorna i dati</string>
     <string name="dialog_add_contact_name">nome</string>
     <string name="dialog_add_contact_email">email</string>
 
