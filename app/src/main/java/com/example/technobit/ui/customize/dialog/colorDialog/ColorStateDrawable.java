@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.technobit.ui.customize.colorDialog;
+package com.example.technobit.ui.customize.dialog.colorDialog;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;

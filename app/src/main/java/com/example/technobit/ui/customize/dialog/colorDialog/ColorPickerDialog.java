@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.technobit.ui.customize.colorDialog;
+package com.example.technobit.ui.customize.dialog.colorDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,7 +27,7 @@ import android.widget.ProgressBar;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.customize.colorDialog.ColorPickerSwatch.OnColorSelectedListener;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerSwatch.OnColorSelectedListener;
 
 /**
  * A dialog which takes in as input an array of colors and creates a palette allowing the user to

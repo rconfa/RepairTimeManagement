@@ -16,10 +16,10 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.customize.ConfirmChoiceDialog;
-import com.example.technobit.ui.customize.colorDialog.ColorPickerDialog;
-import com.example.technobit.ui.customize.colorDialog.ColorPickerSwatch;
-import com.example.technobit.ui.customize.colorDialog.ColorUtility;
+import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerDialog;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerSwatch;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
@@ -203,7 +203,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogPositiveClick() {
         // Revoke all access for the account
         mGoogleUtility.revokeAccess(getContext());
         // signOut the account

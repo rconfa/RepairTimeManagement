@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.customize.colorDialog.ColorUtility;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
