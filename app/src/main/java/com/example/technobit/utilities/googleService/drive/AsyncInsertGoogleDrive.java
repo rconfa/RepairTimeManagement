@@ -8,6 +8,8 @@ import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.FileContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -52,12 +54,17 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
         File fileMetadata = new File();
         fileMetadata.setName(mImageName);
         FileContent mediaContent = new FileContent("image/jpeg", mFilepath);
-        File file = mService.files().create(fileMetadata, mediaContent)
-                .setFields("mimeType, name, webViewLink")
-                .execute();
+
+        Drive.Files.Create fileDrive = mService.files().create(fileMetadata, mediaContent);
+
+        fileDrive.getMediaHttpUploader().setProgressListener(new CustomProgressListener());
+
+        File result = fileDrive.setFields("mimeType, name, webViewLink").execute();
+
+
 
         // return the information that I need for add attachments on google calendar
-        return file.getWebViewLink() +";"+file.getMimeType()+";"+file.getName();
+        return result.getWebViewLink() +";"+result.getMimeType()+";"+result.getName();
     }
 
 
@@ -77,5 +84,25 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
     protected void onPostExecute (String result){
         // this is run on the main (UI) thread, after doInBackground returns
         mdelegate.processFinish(result);
+    }
+
+    class CustomProgressListener implements MediaHttpUploaderProgressListener {
+        @Override
+        public void progressChanged(MediaHttpUploader uploader) throws IOException {
+            // todo use a progress bar!
+            switch (uploader.getUploadState()) {
+                case INITIATION_STARTED:
+                    System.out.println("Initiation has started!");
+                    break;
+                case INITIATION_COMPLETE:
+                    System.out.println("Initiation is complete!");
+                    break;
+                case MEDIA_IN_PROGRESS:
+                    System.out.println(uploader.getProgress());
+                    break;
+                case MEDIA_COMPLETE:
+                    System.out.println("Upload is complete!");
+            }
+        }
     }
 }
