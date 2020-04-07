@@ -65,7 +65,7 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_marginBottom="5dp"
-                android:background="@android:drawable/ic_lock_power_off"
+                android:background="@drawable/baseline_stop_white_18dp"
                 android:backgroundTint="#E71010"
                 android:fontFamily="@font/product_sans_bold"
                 android:textSize="24sp"
@@ -95,10 +95,10 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="5dp"
                 android:clickable="true"
+                android:focusable="true"
                 app:backgroundTint="@color/colorAccent"
-                app:maxImageSize="35dp"
-                app:srcCompat="@android:drawable/ic_media_play"
-                android:focusable="true" />
+                app:maxImageSize="30dp"
+                app:srcCompat="@android:drawable/ic_media_play" />
 
             <TextView
                 android:id="@+id/txtView_Play"
