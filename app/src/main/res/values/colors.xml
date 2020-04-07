@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#246158</color>
+    <color name="colorPrimary">#ff6d00</color>
+    <color name="colorPrimaryDark">#c43c00</color>
+    <color name="colorAccent">#ff9e40</color>
+
+
+
+
     <color name="penRoyalBlue">#4169e1</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
