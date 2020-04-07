@@ -217,7 +217,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     private void vibrationChange() {
         // Saving the choice into sharedPreference
         SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(getString(R.string.shared_vibration), mPreferenceVibration.isChecked());
+        editor.putBoolean(getString(R.string.shared_vibration), !mPreferenceVibration.isChecked());
         editor.apply();
     }
 
