@@ -158,8 +158,7 @@ public class SignatureFragment extends Fragment {
         @Override
         public void processFinish(String attachment) {
             if(attachment != null) {
-                // todo delete bitmap file
-
+                deleteBitmapFile();
                 // when the image is upload I add the event on calendar
                 int color = getColorInt(); // get the color that the user has choose
                 // insert the event on calendar
@@ -170,8 +169,17 @@ public class SignatureFragment extends Fragment {
                 gCal.execute();
             }
             else {
-                String imagePath = getContext().getFilesDir() + "/" +  mEventTitle +".jpeg";
-                saveDataIntoFile(mEventTitle, desc, imagePath,0,0);
+                String path = getContext().getFilesDir() + "/" + mEventTitle +".jpeg";
+                saveDataIntoFile(false, mEventTitle, desc,mDuration,mEndDate,path);
+
+                // check if the user let vibrate the smartphone
+                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
+
+                if(canVib)
+                    new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+
+                // go back to the precedent activity
+                getActivity().onBackPressed();
             }
         }
     };
@@ -181,9 +189,9 @@ public class SignatureFragment extends Fragment {
         @Override
         public void processFinish(String result) {
             // if result == null the event is no added on google
-            if(result == null) {
+            if(!result.equals("true")) {
                 // save the data into file, imagePath = "" because it's already upload into file
-                saveDataIntoFile(mEventTitle, desc, "",0,0);
+                saveDataIntoFile(true, mEventTitle, desc, mDuration,mEndDate, result);
 
                 // check if the user let vibrate the smartphone
                 boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
@@ -234,8 +242,14 @@ public class SignatureFragment extends Fragment {
         return null;
     }
 
-    private void saveDataIntoFile(String mEventTitle, String desc, String imagePath, long mStartMillis, long mEndMillis) {
-        DataToSend dt = new DataToSend(mEventTitle, desc,imagePath,mStartMillis,mEndMillis);
+    private boolean deleteBitmapFile(){
+        File file = new File(getContext().getFilesDir() + "/" + mEventTitle + ".jpeg");
+        return file.delete();
+    }
+
+    private void saveDataIntoFile(Boolean isDriveSent, String mEventTitle, String desc,
+                                  long duration, long endMillis, String imageData) {
+        DataToSend dt = new DataToSend(isDriveSent, mEventTitle, desc,duration,endMillis,imageData);
         try {
             dt.saveOnFile(getContext());
         } catch (IOException e) {
