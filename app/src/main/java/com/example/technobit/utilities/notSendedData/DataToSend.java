@@ -52,11 +52,12 @@ public class DataToSend {
     public void readFromString(String datas){
         String[] unzippedData = datas.split(";");
 
+        this.mIsDriveSent = Boolean.getBoolean(unzippedData[0]);
         this.mEventTitle = unzippedData[1];
         this.mDescription = unzippedData[2];
         this.mEventDuration = Long.decode(unzippedData[3]);
         this.mEventEnd = Long.decode(unzippedData[4]);
-        if(unzippedData[0].equals("false")) // not sent to drive
+        if(!mIsDriveSent) // not sent to drive
             this.mImageData = unzippedData[5]; // image data = only the image path
         else
             this.mImageData = unzippedData[5] + ";" + unzippedData[6] + ";" + unzippedData[7]; // image data = all the attachments
@@ -72,5 +73,29 @@ public class DataToSend {
 
     public ArrayList<DataToSend> getAll(Context mContext) throws IOException {
         return new FileNotSended().readFile(mContext);
+    }
+
+    public String getEventTitle() {
+        return mEventTitle;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public String getImageData() {
+        return mImageData;
+    }
+
+    public Long getEventDuration() {
+        return mEventDuration;
+    }
+
+    public Long getEventEnd() {
+        return mEventEnd;
+    }
+
+    public String getIsDriveSent() {
+        return mIsDriveSent.toString();
     }
 }
