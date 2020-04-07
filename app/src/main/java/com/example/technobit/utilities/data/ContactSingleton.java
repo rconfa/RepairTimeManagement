@@ -8,8 +8,6 @@ import java.util.ArrayList;
 // Class that implement Singleton pattern
 // store all the contact list that can be used in all class.
 public class ContactSingleton {
-    // TODO: in catch give back an error to the user.
-
     private static ContactSingleton instance;
 
     // Global variable
