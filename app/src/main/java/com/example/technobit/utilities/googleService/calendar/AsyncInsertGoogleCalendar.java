@@ -126,7 +126,7 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
                 e.printStackTrace();
             }
         }
-        return null;
+        return mAttachments;
     }
 
 
