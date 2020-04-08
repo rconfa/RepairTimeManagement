@@ -26,7 +26,7 @@ import androidx.preference.PreferenceManager;
 import com.example.technobit.R;
 import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.utilities.data.ContactSingleton;
-import com.example.technobit.utilities.notSendedData.GoogleData;
+import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -290,7 +290,7 @@ public class ChronometerFragment extends Fragment{
         long elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.getBase());
 
         // Initialize the instance of CalendarEvent with the known value.
-        GoogleData eventToSave = GoogleData.initialize(3, EventTitle, null,
+        GoogleDataSingleton eventToSave = GoogleDataSingleton.initialize(3, EventTitle, null,
                 null, elapsedMillis, end.getTime());
 
         /*

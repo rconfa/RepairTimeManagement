@@ -11,7 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.technobit.utilities.notSendedData.GoogleData;
+import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
     // if the user destroy the application I save the data not sent
     public void onDestroy() {
         // if there is some data not sent to google I save it
-        if(GoogleData.isInstanceNull()) { // if the instance is not null I save it.
+        if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
             try {
-                GoogleData.saveInstance(this);
+                GoogleDataSingleton.saveInstance(this);
             } catch (IOException e) {
                 e.printStackTrace();
             }

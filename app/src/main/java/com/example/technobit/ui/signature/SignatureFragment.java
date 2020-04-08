@@ -23,7 +23,7 @@ import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
 import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
-import com.example.technobit.utilities.notSendedData.GoogleData;
+import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedOutputStream;
@@ -42,7 +42,7 @@ public class SignatureFragment extends Fragment {
     private EditText mEditTextDescription;
     private SignatureView mSignatureView;
     private SharedPreferences mSharedPref;
-    private GoogleData mSingletonEvent;
+    private GoogleDataSingleton mSingletonEvent;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -91,8 +91,8 @@ public class SignatureFragment extends Fragment {
                 }
                 else {
                     // set the event description
-                    mSingletonEvent = GoogleData.getInstance();
-                    mSingletonEvent.setDescription(mEditTextDescription.getText().toString());
+                    mSingletonEvent = GoogleDataSingleton.getInstance();
+                    GoogleDataSingleton.getData().setDescription(mEditTextDescription.getText().toString());
 
                     saveAllOnGoogle();
                 }
@@ -150,10 +150,10 @@ public class SignatureFragment extends Fragment {
     private void saveAllOnGoogle() {
         File file = writeBitmapOnFile();
         if(file != null){
-            mSingletonEvent.setImage(file.getPath());
-            mSingletonEvent.setCase(2);
+            GoogleDataSingleton.getData().setImage(file.getPath());
+            GoogleDataSingleton.getData().setCase(2);
             // Insert the image on google drive
-            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(mSingletonEvent.getEventTitle(),
+            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(GoogleDataSingleton.getData().getEventTitle(),
                     file, getContext(), mDriveResponse);
             gDrive.execute();
         }
@@ -165,19 +165,20 @@ public class SignatureFragment extends Fragment {
         public void processFinish(String attachment) {
             if(attachment != null) {
                 // setting the attachment and the case in singleton
-                mSingletonEvent.setImage(attachment);
-                mSingletonEvent.setCase(1);
+                GoogleDataSingleton.getData().setImage(attachment);
+                GoogleDataSingleton.getData().setCase(1);
 
                 // delete the bitmap file, is useless now
                 deleteBitmapFile();
                 // when the image is upload I add the event on calendar
                 int color = getColorInt(); // get the color that the user has choose
                 // insert the event on calendar
-                Date endDate = new Date(mSingletonEvent.getEventEnd());
+                Date endDate = new Date(GoogleDataSingleton.getData().getEventEnd());
 
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mSingletonEvent.getEventTitle(),
-                        mSingletonEvent.getDescription(), endDate, mSingletonEvent.getEventDuration(),
-                        color, getContext(), mCalendarResponse, attachment);
+                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(GoogleDataSingleton.getData().getEventTitle(),
+                        GoogleDataSingleton.getData().getDescription(), endDate,
+                        GoogleDataSingleton.getData().getEventDuration(), color, getContext(),
+                        mCalendarResponse, attachment);
                 gCal.execute();
             }
             else {
@@ -198,8 +199,8 @@ public class SignatureFragment extends Fragment {
         @Override
         public void processFinish(String result) {
             // if result == null the event is no added on google
-            if(!result.equals("true")) {
-                GoogleData.reset(); // it all sent, I reset the value to null
+            if(result.equals("true")) {
+                GoogleDataSingleton.reset(); // it all sent, I reset the value to null
 
                 // create a snackbar with a positive message
                 Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
@@ -231,7 +232,8 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mSignatureView.isBitmapEmpty()){
-            File file = new File(getContext().getFilesDir() + "/" + mSingletonEvent.getEventTitle() +".jpeg");
+            File file = new File(getContext().getFilesDir() + "/" +
+                    GoogleDataSingleton.getData().getEventTitle() +".jpeg");
             OutputStream os = null;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
@@ -251,16 +253,17 @@ public class SignatureFragment extends Fragment {
     }
 
     private boolean deleteBitmapFile(){
-        File file = new File(getContext().getFilesDir() + "/" + mSingletonEvent.getEventTitle() + ".jpeg");
+        File file = new File(getContext().getFilesDir() + "/" +
+                GoogleDataSingleton.getData().getEventTitle() + ".jpeg");
         return file.delete();
     }
 
     @Override
     // if the user destroy this fragment without send the info on google I save all into file
     public void onDestroy() {
-        if(GoogleData.isInstanceNull()) { // if the instance is not null I save it.
+        if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
             try {
-                GoogleData.saveInstance(getContext());
+                GoogleDataSingleton.saveInstance(getContext());
             } catch (IOException e) {
                 e.printStackTrace();
             }
