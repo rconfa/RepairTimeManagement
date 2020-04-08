@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class FileGoogle {
 
     // append data into file
-    protected void writeAllToFile(GoogleData data, Context context) throws IOException {
+    public void writeAllToFile(GoogleData data, Context context) throws IOException {
         // get the output stream
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter
                 (context.openFileOutput("notSent.txt", Context.MODE_APPEND));
@@ -23,7 +23,7 @@ public class FileGoogle {
 
 
     // Delete file
-    protected void delete(Context context) throws IOException {
+    public void delete(Context context) throws IOException {
         context.deleteFile("notSent.txt");
     }
 
