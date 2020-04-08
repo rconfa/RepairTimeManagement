@@ -34,8 +34,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-// TODO: cancellare file se uplodato su google
-// TODO 2: implementare salvataggio intelligente (file + dati) oppure (dati + attachments) se il file è stato uplodato
 public class SignatureFragment extends Fragment {
 
     private SignatureViewModel mViewModel;
