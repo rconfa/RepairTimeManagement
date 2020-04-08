@@ -68,8 +68,10 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private void insertEvent() throws IOException {
         Event event = new Event()
                 .setSummary(mEventTitle)
-                .setDescription(mEventDescription)
                 .setColorId(Integer.toString(mEventColor));
+
+        if(mEventDescription!=null)
+            event.setDescription(mEventDescription);
 
         // overload reminders, I want no reminders!
         Event.Reminders reminders = new Event.Reminders()
@@ -77,17 +79,19 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
                 .setOverrides(null);
         event.setReminders(reminders);
 
-        // create new attachments for the event
-        List<EventAttachment> attachments = event.getAttachments();
-        if (attachments == null) {
-            attachments = new ArrayList<>();
+        if(mAttachments!=null) {
+            // create new attachments for the event
+            List<EventAttachment> attachments = event.getAttachments();
+            if (attachments == null) {
+                attachments = new ArrayList<>();
+            }
+
+            attachments.add(new EventAttachment()
+                    .setFileUrl(mAttachments)
+            );
+
+            event.setAttachments(attachments);
         }
-
-        attachments.add(new EventAttachment()
-                .setFileUrl(mAttachments)
-        );
-
-        event.setAttachments(attachments);
 
         TimeZone tz = TimeZone.getDefault();
 
