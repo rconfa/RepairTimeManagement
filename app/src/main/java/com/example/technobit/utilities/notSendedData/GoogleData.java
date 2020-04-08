@@ -5,7 +5,7 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/*  This class store values that need to send into google drive.
+/*  This class store values that need to send into google drive/calendar.
     If there some error while sending or app crash it saves data into file.
     The file could have 3 syntax:
 
@@ -18,6 +18,8 @@ import java.util.ArrayList;
     3) If the app crash before the user sign and insert the description
     3;EventTitle;eventDuration;eventEndTime
  */
+
+// todo: create a class data and a class for the instance
 public class GoogleData {
     private static GoogleData instance;
     private String mEventTitle, mDescription, mImage; // title, descripion and attachment for the event
