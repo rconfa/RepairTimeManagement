@@ -23,7 +23,7 @@ import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
 import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
 import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
-import com.example.technobit.utilities.notSendedData.DataToSend;
+import com.example.technobit.utilities.notSendedData.GoogleData;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedOutputStream;
@@ -42,10 +42,7 @@ public class SignatureFragment extends Fragment {
     private EditText mEditTextDescription;
     private SignatureView mSignatureView;
     private SharedPreferences mSharedPref;
-    private String mEventTitle;
-    private long mDuration, mEndDate;
-    private String desc;
-
+    private GoogleData mSingletonEvent;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -54,6 +51,7 @@ public class SignatureFragment extends Fragment {
         // view of the layout
         View root = inflater.inflate(R.layout.fragment_signature, container, false);
 
+        /*
         Bundle bundle = this.getArguments();
         // get bundle values
         if (bundle != null) {
@@ -61,7 +59,7 @@ public class SignatureFragment extends Fragment {
             mEndDate =  bundle.getLong("dateEnd", -1);
             mEventTitle = bundle.getString("EventTitle", "");
         }
-
+        */
 
         // Shared preference for get/set all the preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -89,8 +87,10 @@ public class SignatureFragment extends Fragment {
         mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get the description from the editText
-                desc = mEditTextDescription.getText().toString();
+                // set the event description
+                mSingletonEvent = GoogleData.getInstance();
+                mSingletonEvent.setDescription( mEditTextDescription.getText().toString());
+
                 saveAllOnGoogle();
             }
         });
@@ -146,9 +146,11 @@ public class SignatureFragment extends Fragment {
     private void saveAllOnGoogle() {
         File file = writeBitmapOnFile();
         if(file != null){
+            mSingletonEvent.setImage(file.getPath());
+            mSingletonEvent.setCase(2);
             // Insert the image on google drive
-            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(mEventTitle, file,
-                    getContext(), mDriveResponse);
+            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(mSingletonEvent.getEventTitle(),
+                    file, getContext(), mDriveResponse);
             gDrive.execute();
         }
     }
@@ -158,20 +160,23 @@ public class SignatureFragment extends Fragment {
         @Override
         public void processFinish(String attachment) {
             if(attachment != null) {
+                // setting the attachment and the case in singleton
+                mSingletonEvent.setImage(attachment);
+                mSingletonEvent.setCase(1);
+
+                // delete the bitmap file, is useless now
                 deleteBitmapFile();
                 // when the image is upload I add the event on calendar
                 int color = getColorInt(); // get the color that the user has choose
                 // insert the event on calendar
-                Date endDate = new Date(mEndDate);
+                Date endDate = new Date(mSingletonEvent.getEventEnd());
 
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, desc,
-                        endDate, mDuration, color, getContext(), mCalendarResponse, attachment);
+                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mSingletonEvent.getEventTitle(),
+                        mSingletonEvent.getDescription(), endDate, mSingletonEvent.getEventDuration(),
+                        color, getContext(), mCalendarResponse, attachment);
                 gCal.execute();
             }
             else {
-                String path = getContext().getFilesDir() + "/" + mEventTitle +".jpeg";
-                saveDataIntoFile(false, mEventTitle, desc,mDuration,mEndDate,path);
-
                 // check if the user let vibrate the smartphone
                 boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
 
@@ -190,19 +195,8 @@ public class SignatureFragment extends Fragment {
         public void processFinish(String result) {
             // if result == null the event is no added on google
             if(!result.equals("true")) {
-                // save the data into file, imagePath = "" because it's already upload into file
-                saveDataIntoFile(true, mEventTitle, desc, mDuration,mEndDate, result);
+                GoogleData.reset(); // it all sent, I reset the value to null
 
-                // check if the user let vibrate the smartphone
-                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
-
-                if(canVib)
-                    new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
-
-                // go back to the precedent activity
-                getActivity().onBackPressed();
-            }
-            else{
                 // create a snackbar with a positive message
                 Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
                 snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
@@ -215,6 +209,16 @@ public class SignatureFragment extends Fragment {
                 // go back to the precedent activity
                 getActivity().onBackPressed();
             }
+            else{
+                // check if the user let vibrate the smartphone
+                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
+
+                if(canVib)
+                    new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+
+                // go back to the precedent activity
+                getActivity().onBackPressed();
+            }
         }
     };
 
@@ -223,7 +227,7 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mSignatureView.isBitmapEmpty()){
-            File file = new File(getContext().getFilesDir() + "/" + mEventTitle +".jpeg");
+            File file = new File(getContext().getFilesDir() + "/" + mSingletonEvent.getEventTitle() +".jpeg");
             OutputStream os = null;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
@@ -243,17 +247,20 @@ public class SignatureFragment extends Fragment {
     }
 
     private boolean deleteBitmapFile(){
-        File file = new File(getContext().getFilesDir() + "/" + mEventTitle + ".jpeg");
+        File file = new File(getContext().getFilesDir() + "/" + mSingletonEvent.getEventTitle() + ".jpeg");
         return file.delete();
     }
 
-    private void saveDataIntoFile(Boolean isDriveSent, String mEventTitle, String desc,
-                                  long duration, long endMillis, String imageData) {
-        DataToSend dt = new DataToSend(isDriveSent, mEventTitle, desc,duration,endMillis,imageData);
-        try {
-            dt.saveOnFile(getContext());
-        } catch (IOException e) {
-            // Todo: snackbar to confirm
+    @Override
+    // if the user destroy this fragment without send the info on google I save all into file
+    public void onDestroy() {
+        if(GoogleData.isInstanceNull()) { // if the instance is not null I save it.
+            try {
+                GoogleData.saveInstance(getContext());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        super.onDestroy();
     }
 }
