@@ -82,11 +82,10 @@ public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
         if (attachments == null) {
             attachments = new ArrayList<>();
         }
-        String[] attachs = mAttachments.split(";");
+
         attachments.add(new EventAttachment()
-                .setFileUrl(attachs[0]) //webViewLink
-                .setMimeType(attachs[1]) // getMimeType
-                .setTitle(attachs[2])); // getName
+                .setFileUrl(mAttachments)
+        );
 
         event.setAttachments(attachments);
 

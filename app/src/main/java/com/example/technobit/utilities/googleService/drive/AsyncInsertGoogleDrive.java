@@ -59,12 +59,10 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
 
         fileDrive.getMediaHttpUploader().setProgressListener(new CustomProgressListener());
 
-        File result = fileDrive.setFields("mimeType, name, webViewLink").execute();
-
-
+        File result = fileDrive.setFields("webViewLink").execute();
 
         // return the information that I need for add attachments on google calendar
-        return result.getWebViewLink() +";"+result.getMimeType()+";"+result.getName();
+        return result.getWebViewLink();
     }
 
 
