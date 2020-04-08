@@ -21,8 +21,10 @@ public class SendFragment extends Fragment {
 
     private SendViewModel sendViewModel;
     private SharedPreferences mSharedPref;
-    private String mEventTitle, mDescription;
-    private long mEndDate,mDuration;
+    private ArrayList<GoogleData> allData;
+    private int parsingIndex;
+    private int numberOfExecution, totToExecute;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,7 +36,7 @@ public class SendFragment extends Fragment {
         // Shared preference for get/set all the preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        ArrayList<GoogleData> allData;
+
         try {
             allData = new GoogleData().getAll(getContext());
         } catch (IOException e) {
@@ -54,83 +56,87 @@ public class SendFragment extends Fragment {
     }
 
     /*
-    private void SendAllToGoogle(ArrayList<GoogleData> allData){
-        for(DataToSend singleData : allData){
-            this.mEventTitle = singleData.getEventTitle();
-            this.mDescription = singleData.getDescription();
-            this.mDuration = singleData.getEventDuration();
-            this.mEndDate = singleData.getEventEnd();
+    private void SendAllToGoogle(ArrayList<GoogleData> allData) {
+        GoogleData singleData = new GoogleData();
+        numberOfExecution = 0;
+        totToExecute = allData.size();
 
-            if(singleData.getIsDriveSent().equals("true")){
-                // when the image is upload I add the event on calendar
-                int color = getColorInt(); // get the color that the user has choose
-                // insert the event on calendar
-                Date endDate = new Date(mEndDate);
-
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, mDescription,
-                        endDate, mDuration, color, getContext(), mCalendarResponse, singleData.getImageData());
-                gCal.execute();
-
-                // if true I need to send only the information to the calendar
+        for (parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
+            singleData = allData.get(parsingIndex);
+            if (singleData.getCase() != 2) {
+                sendToCalendar(singleData);
             }
-            else{ // before send to drive
-                File f = new File(singleData.getImageData());
-                // Insert the image on google drive
-                AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(singleData.getEventTitle(),
-                        f, getContext(), mDriveResponse);
-                gDrive.execute();
+            else{
+                sentToDrive(singleData);
+            }
+        }
+
+        // delete the file
+        try {
+            new FileGoogle().delete(getContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(GoogleData data:allData) {
+            try {
+                new FileGoogle().writeAllToFile(data, getContext());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
+
+    private void sentToDrive(GoogleData singleData) {
+        // Insert the image on google drive
+        AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(singleData.getEventTitle(),
+                getBitmapFile(singleData.getImage()), getContext(), mDriveResponse);
+        gDrive.execute();
+    }
+
+    private void sendToCalendar(GoogleData data){
+        // when the image is upload I add the event on calendar
+        int color = getColorInt(); // get the color that the user has choose
+        // insert the event on calendar
+        Date endDate = new Date(data.getEventEnd());
+
+        AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(data.getEventTitle(),
+                data.getDescription(), endDate, data.getEventDuration(), color, getContext(),
+                mCalendarResponse, data.getImage());
+        gCal.execute();
+
+    }
+
+
+    // Implement the interface to handle the asyncTask response for google calendar insert
+    private GoogleAsyncResponse mCalendarResponse = new GoogleAsyncResponse(){
+        @Override
+        public void processFinish(String result) {
+            if(result.equals("true"))
+                allData.remove(parsingIndex);
+
+            numberOfExecution++;
+        }
+    };
 
     // Implement the interface to handle the asyncTask response for google drive uploading
     private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
         @Override
         public void processFinish(String attachment) {
             if(attachment != null) {
-                deleteBitmapFile();
-                // when the image is upload I add the event on calendar
-                int color = getColorInt(); // get the color that the user has choose
-                // insert the event on calendar
-                Date endDate = new Date(mEndDate);
+                GoogleData dataToAdd = allData.get(parsingIndex);
 
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(mEventTitle, mDescription,
-                        endDate, mDuration, color, getContext(), mCalendarResponse, attachment);
-                gCal.execute();
-            }
-            else {
-                 new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+                // delete the bitmap file, is useless now
+                getBitmapFile(dataToAdd.getImage()).delete();
+
+                dataToAdd.setImage(attachment);
+                // modify the array list in case the google calendar fail
+                allData.set(parsingIndex, dataToAdd);
+                sendToCalendar(dataToAdd);
             }
         }
     };
-
-    // Implement the interface to handle the asyncTask response for google calendar insert
-    private GoogleAsyncResponse mCalendarResponse = new GoogleAsyncResponse(){
-        @Override
-        public void processFinish(String result) {
-            // if result == null the event is no added on google
-            if(!result.equals("true")) {
-                 new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
-            }
-            else{
-                // create a snackbar with a positive message
-                Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
-                snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                        .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        });
-                snackbar.show();
-            }
-        }
-    };
-
-    private boolean deleteBitmapFile(){
-        File file = new File(getContext().getFilesDir() + "/" + mEventTitle + ".jpeg");
-        return file.delete();
-    }
 
     private int getColorInt(){
         String defColor = getResources().getString(R.string.default_color_str);
@@ -142,6 +148,9 @@ public class SendFragment extends Fragment {
         ColorUtility colorUtility = new ColorUtility(getContext());
         ArrayList<Integer> mColor = colorUtility.getColorsArrayList();
         return mColor.indexOf(colorSelected);
+    }
 
+    private File getBitmapFile(String filepath){
+        return new File(filepath);
     }*/
 }
