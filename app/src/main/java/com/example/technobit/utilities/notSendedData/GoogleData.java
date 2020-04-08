@@ -2,6 +2,8 @@ package com.example.technobit.utilities.notSendedData;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,22 +23,18 @@ import java.util.ArrayList;
 
 // todo: create a class data and a class for the instance
 public class GoogleData {
-    private static GoogleData instance;
     private String mEventTitle, mDescription, mImage; // title, descripion and attachment for the event
     private Long mEventDuration, mEventEnd; // duration and end time for the event
-
-
-
     private int mCase;
 
 
     // constructor with parameter
-    private GoogleData(int mCase, String mEventTitle, String mDescription, String mAttachement,
+    public GoogleData(int mCase, String mEventTitle, String mDescription, String mAttachment,
                        Long mEventDuration, Long mEventEnd) {
         this.setCase(mCase);
         this.setEventTitle(mEventTitle);
         this.setDescription(mDescription);
-        this.setImage(mAttachement);
+        this.setImage(mAttachment);
         this.setEventDuration(mEventDuration);
         this.setEventEnd(mEventEnd);
     }
@@ -102,56 +100,11 @@ public class GoogleData {
         this.mCase = mCase;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return  mCase + ";" + mEventTitle + ";" + mDescription + ";" + mEventDuration + ";" +
                 mEventEnd + ";" + mImage;
-    }
-
-    // get the instance
-    public static synchronized GoogleData getInstance(){
-        if(instance==null){
-            instance=new GoogleData();
-        }
-        return instance;
-    }
-
-    // initialize the instance with value
-    public static synchronized GoogleData initialize(int mCase, String mEventTitle, String mDescription,
-                                                     String mImage, Long mEventDuration,
-                                                     Long mEventEnd){
-        if(instance==null){
-            instance=new GoogleData(mCase, mEventTitle, mDescription,mImage,mEventDuration,mEventEnd);
-        }
-        else{
-            instance.setCase(mCase);
-            instance.setEventTitle(mEventTitle);
-            instance.setDescription(mDescription);
-            instance.setImage(mImage);
-            instance.setEventDuration(mEventDuration);
-            instance.setEventEnd(mEventEnd);
-        }
-        return instance;
-    }
-
-    // reset the instance to null
-    public static synchronized void reset(){
-        instance = null;
-    }
-
-
-    public static synchronized boolean isInstanceNull(){
-        return instance!=null;
-    }
-
-
-    public static synchronized boolean saveInstance(Context c) throws IOException {
-        if(instance!=null){
-            new FileGoogle().writeAllToFile(getInstance(),c);
-        }
-
-        reset();
-        return true;
     }
 
     public ArrayList<GoogleData> getAll(Context mContext) throws IOException {
