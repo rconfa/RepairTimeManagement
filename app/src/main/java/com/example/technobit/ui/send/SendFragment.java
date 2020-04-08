@@ -1,7 +1,6 @@
 package com.example.technobit.ui.send;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
-import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
-import com.example.technobit.utilities.SmartphoneControlUtility;
-import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
-import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
-import com.example.technobit.utilities.notSendedData.DataToSend;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.technobit.utilities.notSendedData.GoogleData;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class SendFragment extends Fragment {
 
@@ -43,16 +34,16 @@ public class SendFragment extends Fragment {
         // Shared preference for get/set all the preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        ArrayList<DataToSend> allData;
+        ArrayList<GoogleData> allData;
         try {
-            allData = new DataToSend().getAll(getContext());
+            allData = new GoogleData().getAll(getContext());
         } catch (IOException e) {
             allData = null;
         }
 
         if(allData!=null) {
             textView.setText("find " + allData.size() + " event not sended yet");
-            SendAllToGoogle(allData);
+            //SendAllToGoogle(allData);
         }
         else
             textView.setText("Error on file reading");
@@ -62,7 +53,8 @@ public class SendFragment extends Fragment {
         return root;
     }
 
-    private void SendAllToGoogle(ArrayList<DataToSend> allData){
+    /*
+    private void SendAllToGoogle(ArrayList<GoogleData> allData){
         for(DataToSend singleData : allData){
             this.mEventTitle = singleData.getEventTitle();
             this.mDescription = singleData.getDescription();
@@ -151,5 +143,5 @@ public class SendFragment extends Fragment {
         ArrayList<Integer> mColor = colorUtility.getColorsArrayList();
         return mColor.indexOf(colorSelected);
 
-    }
+    }*/
 }
