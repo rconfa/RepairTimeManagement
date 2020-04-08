@@ -51,16 +51,6 @@ public class SignatureFragment extends Fragment {
         // view of the layout
         View root = inflater.inflate(R.layout.fragment_signature, container, false);
 
-        /*
-        Bundle bundle = this.getArguments();
-        // get bundle values
-        if (bundle != null) {
-            mDuration = bundle.getLong("durationMillis", -1);
-            mEndDate =  bundle.getLong("dateEnd", -1);
-            mEventTitle = bundle.getString("EventTitle", "");
-        }
-        */
-
         // Shared preference for get/set all the preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         
@@ -68,7 +58,7 @@ public class SignatureFragment extends Fragment {
         // Button to clear the signature
         Button mBtnClear = root.findViewById(R.id.btn_clear);
         // Button for send all data to calendar
-        Button mBtnSend = root.findViewById(R.id.btn_send);
+        final Button mBtnSend = root.findViewById(R.id.btn_send);
         // edit text for event description
         mEditTextDescription = root.findViewById(R.id.et_eventDesc);
         // signatureView for client signature
@@ -87,11 +77,25 @@ public class SignatureFragment extends Fragment {
         mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // set the event description
-                mSingletonEvent = GoogleData.getInstance();
-                mSingletonEvent.setDescription( mEditTextDescription.getText().toString());
+                // check if the user has insert a sign
+                if(mSignatureView.isBitmapEmpty()){
+                    // snackbar to send an Hint to the user
+                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
+                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            });
+                    snackbar.show();
+                }
+                else {
+                    // set the event description
+                    mSingletonEvent = GoogleData.getInstance();
+                    mSingletonEvent.setDescription(mEditTextDescription.getText().toString());
 
-                saveAllOnGoogle();
+                    saveAllOnGoogle();
+                }
             }
         });
 
