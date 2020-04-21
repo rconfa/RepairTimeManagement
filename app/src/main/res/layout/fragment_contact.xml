@@ -8,10 +8,10 @@
         android:layout_height="match_parent"
         android:cacheColorHint="@android:color/transparent"
         android:clickable="true"
+        android:focusable="true"
         android:listSelector="@android:color/transparent"
         android:longClickable="true"
-        android:paddingBottom="15dp"
-        android:scrollbarSize="0dp"
-        android:focusable="true" />
+        android:paddingBottom="10dp"
+        android:scrollbarSize="0dp" />
 
 </RelativeLayout>
