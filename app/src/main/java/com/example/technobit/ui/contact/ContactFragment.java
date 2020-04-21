@@ -117,6 +117,7 @@ public class ContactFragment extends Fragment
             mPosToBeRemoved.remove((Object) position); // I want to remove the obj not the index
         }
 
+        // remove delete icon
         if(this.mPosToBeRemoved.isEmpty())
             mMenuDeleteItem.setVisible(false);
         else
@@ -137,6 +138,7 @@ public class ContactFragment extends Fragment
     private ConfirmChoiceDialog.NoticeDialogListener confirmDeleteListener = new ConfirmChoiceDialog.NoticeDialogListener() {
         @Override
         public void onDialogPositiveClick() {
+            mMenuDeleteItem.setVisible(false); // remove delete icon
             // remove all items selected from file
             try {
                 mContactSingleton.delete(mPosToBeRemoved,getContext());
