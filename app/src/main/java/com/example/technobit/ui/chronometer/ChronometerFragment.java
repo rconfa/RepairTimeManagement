@@ -35,6 +35,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Calendar;
 import java.util.Date;
 
+// todo: non cancellare clienti durante running
 public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
     private ChronometerViewModel chronometerViewModel;
