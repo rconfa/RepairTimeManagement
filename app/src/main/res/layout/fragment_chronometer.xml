@@ -79,7 +79,6 @@
                 android:fontFamily="@font/product_sans_bold"
                 android:text="@string/chrono_stop"
                 android:textAlignment="center"
-                android:textColor="#DA252525"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -106,8 +105,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/product_sans_bold"
                 android:text="@string/chrono_start"
-                android:textAlignment="center"
-                android:textColor="#DA252525" />
+                android:textAlignment="center" />
         </LinearLayout>
     </LinearLayout>
 
