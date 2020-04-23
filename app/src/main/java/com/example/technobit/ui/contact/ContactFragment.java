@@ -1,5 +1,6 @@
 package com.example.technobit.ui.contact;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 
+// todo: back arrow when item are selected
 public class ContactFragment extends Fragment
         implements CardArrayAdapter.ItemLongClickListener, CardArrayAdapter.ItemClickListener {
 
@@ -93,7 +95,7 @@ public class ContactFragment extends Fragment
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.icon_remove:
-                performeRemovingContact();
+                performRemovingContact();
                 return true;
             case R.id.icon_add:
                 displayAddContactDialog();
@@ -109,12 +111,12 @@ public class ContactFragment extends Fragment
         // save the selected position
         boolean res = mCardArrayAdapter.savePositionToDelete(position);
         if(res) { // if I add the position I set the background
-            view.setBackgroundResource(R.drawable.card_background_selected);
             mPosToBeRemoved.add(position);
+            mCardArrayAdapter.notifyItemChanged(position); // update the card view (change background color)
         }
         else { // If I delete the position I set the default background
-            view.setBackgroundResource(R.drawable.card_background);
             mPosToBeRemoved.remove((Object) position); // I want to remove the obj not the index
+            mCardArrayAdapter.notifyItemChanged(position); // update the card view (change background color)
         }
 
         // remove delete icon
@@ -124,7 +126,7 @@ public class ContactFragment extends Fragment
             mMenuDeleteItem.setVisible(true);
     }
 
-    public void performeRemovingContact(){
+    public void performRemovingContact(){
         // Ask the user to confirm the action
         // get the message from the resource
         String message = getString(R.string.dialog_confirm_delete_message);
@@ -207,6 +209,7 @@ public class ContactFragment extends Fragment
     private void displaySnackbarError(){
         // create a snackbar with a positive message
         Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_file_error, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(Color.WHITE);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                 .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                     @Override
