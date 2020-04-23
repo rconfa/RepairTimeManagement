@@ -1,6 +1,7 @@
 package com.example.technobit.ui.chronometer;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -131,6 +132,7 @@ public class ChronometerFragment extends Fragment{
                 else{
                     // snackbar to send an Hint to the user
                     Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
+                    snackbar.setTextColor(Color.WHITE);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                                 @Override

@@ -12,7 +12,7 @@
         android:layout_marginBottom="15dp"
         android:gravity="center|center_horizontal"
         android:text="@string/dialog_add_contact_title"
-        android:textColor="@color/black"
+
         android:textSize="22sp" />
 
     <EditText

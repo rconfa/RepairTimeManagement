@@ -52,10 +52,8 @@ public class SignatureView extends View{
                 attrs, R.styleable.signature, 0, 0);
 
         try {
-            backgroundColor = typedArray.getColor(R.styleable.signature_backgroundColor,
-                    context.getResources().getColor(R.color.white));
-            penColor = typedArray.getColor(R.styleable.signature_penColor,
-                    context.getResources().getColor(R.color.penRoyalBlue));
+            backgroundColor = Color.WHITE;
+            penColor = Color.BLACK;
             penSize = typedArray.getDimension(R.styleable.signature_penSize,
                     context.getResources().getDimension(R.dimen.pen_size));
             enableSignature = typedArray.getBoolean(R.styleable.signature_enableSignature, true);

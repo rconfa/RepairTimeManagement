@@ -202,6 +202,7 @@ public class SignatureFragment extends Fragment {
 
                 // create a snackbar with a positive message
                 Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
+                snackbar.setTextColor(Color.WHITE);
                 snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                         .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                             @Override
