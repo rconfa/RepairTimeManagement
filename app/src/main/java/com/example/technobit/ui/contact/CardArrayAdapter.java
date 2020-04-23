@@ -1,11 +1,13 @@
 package com.example.technobit.ui.contact;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
@@ -28,6 +30,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         private TextView mTextViewEmail; // second line of the view (email)
         private ItemLongClickListener mLongClickListener;
         private ItemClickListener mClickListener;
+        private CardView mCard;
 
         // constructor
         private CardViewHolder(@NonNull View itemView, ItemLongClickListener lcl,
@@ -36,13 +39,13 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
             // get the textview item from ui
             this.mTextViewName = itemView.findViewById(R.id.tv_item_title);
             this.mTextViewEmail = itemView.findViewById(R.id.tv_item_email);
+            this.mCard = itemView.findViewById(R.id.card_contact);
 
             // setting the listener
             this.mLongClickListener = lcl;
             this.mClickListener = cl;
-
-            itemView.setOnLongClickListener(this); // setting the long click listener
-            itemView.setOnClickListener(this); // set the click listener
+            mCard.setOnClickListener(this);
+            mCard.setOnLongClickListener(this);
         }
 
         // action to be performed on long click
@@ -56,9 +59,17 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if(!mCardList.get(position).isCardSelected())
+            //if(!mCardList.get(position).isCardSelected()) // if the card is not selected
+            if(mCardChecked.isEmpty()) // if there are no card selected
                 mClickListener.onItemClick(v, position , mTextViewName.getText().toString(),
                         mTextViewEmail.getText().toString());
+        }
+
+        public void setCardBackgroundColor(boolean selected){
+            if (selected)
+                mCard.setCardBackgroundColor(Color.parseColor("#dedede"));
+            else
+                mCard.setCardBackgroundColor(Color.WHITE);
         }
     }
 
@@ -97,10 +108,8 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         // if the card is selected I change the transparent background
-        if(mCardList.get(position).isCardSelected())
-            holder.itemView.setBackgroundResource(R.drawable.card_background_selected);
-        else
-            holder.itemView.setBackgroundResource(R.drawable.card_background);
+        holder.setCardBackgroundColor(mCardList.get(position).isCardSelected());
+
 
         // setting the lines values
         holder.mTextViewName.setText(mCardList.get(position).getCompanyName());
@@ -166,7 +175,5 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         mCardChecked.clear(); // clear the checked arrayList
         notifyDataSetChanged(); // notify the change
     }
-
-
 
 }
