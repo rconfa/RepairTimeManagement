@@ -20,6 +20,7 @@ import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerSwatch;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
+import com.example.technobit.ui.customize.preference.RipPreference;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
@@ -28,7 +29,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmChoiceDialog.NoticeDialogListener{
     private static final String TAG = "ToolsFragment";
     private SharedPreferences mSharedPref;
-    private Preference mPreferenceAccount; // preference sulla scelta dell'account
+    private RipPreference mPreferenceAccount; // preference sulla scelta dell'account
     private Preference mPreferenceColor; // preference sulla scelta del colore
     private int mColorSelected; // colore selezionato
     private SwitchPreferenceCompat mPreferenceVibration;
@@ -48,6 +49,9 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         // Get all preference from XML
         // XML preference for google account
         mPreferenceAccount = findPreference("google_account");
+        // todo: rip only if come from the chronometer redirect dialog
+        mPreferenceAccount.setToRip(true);
+
         // XML preference for google calendar color
         mPreferenceColor = findPreference("google_color");
         // XML preference for vibration

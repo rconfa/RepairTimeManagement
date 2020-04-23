@@ -21,9 +21,10 @@
         app:title="@string/tools_account_calendar">
 
         <!-- summary definito in base a scelta utente-->
-        <Preference
+        <com.example.technobit.ui.customize.preference.RipPreference
+            android:background="@android:color/transparent"
             app:key="google_account"
-            app:title="@string/tools_select_account"/>
+            app:title="@string/tools_select_account" />
 
         <Preference
             app:key="google_color"
