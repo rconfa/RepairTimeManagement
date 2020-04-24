@@ -15,13 +15,26 @@
         android:id="@+id/nav_chrono"
         android:name="com.example.technobit.ui.chronometer.ChronometerFragment"
         android:label="@string/nav_header_title"
-        tools:layout="@layout/fragment_chronometer" />
+        tools:layout="@layout/fragment_chronometer" >
+        <action
+            android:id="@+id/action_nav_chrono_to_tools_rip_account"
+            app:destination="@id/nav_tools" >
+            <argument
+                android:name="rip_account"
+                android:defaultValue="true" />
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/nav_tools"
         android:name="com.example.technobit.ui.tools.ToolsFragment"
         android:label="@string/nav_header_title"
-        tools:layout="@xml/preferences" />
+        tools:layout="@xml/preferences" >
+        <argument
+            android:name="rip_account"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_send"

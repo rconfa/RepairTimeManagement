@@ -338,7 +338,8 @@ public class ChronometerFragment extends Fragment{
         @Override
         public void onDialogPositiveClick() {
             // go to the tools fragment to select email
-            Navigation.findNavController(getView()).navigate(R.id.nav_tools);
+            Navigation.findNavController(getView()).navigate(R.id.action_nav_chrono_to_tools_rip_account);
+           // Navigation.findNavController(getView()).navigate(R.id.nav_tools);
         }
     };
 
