@@ -80,7 +80,6 @@ public class ContactFragment extends Fragment
             mCardArrayAdapter.add(allContact); // add all list to adapter
     }
 
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         // Upload menu file with add/delete icons
@@ -88,6 +87,9 @@ public class ContactFragment extends Fragment
         // get the item for delete contact
         mMenuDeleteItem = menu.findItem(R.id.icon_remove);
         mMenuAddItem = menu.findItem(R.id.icon_add);
+
+        //((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+       // ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_menu_manage);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -225,5 +227,4 @@ public class ContactFragment extends Fragment
                 });
         snackbar.show();
     }
-
 }

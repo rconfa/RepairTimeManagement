@@ -9,8 +9,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 public class RipPreference extends Preference {
-
-
     boolean toRip;
 
     public RipPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
