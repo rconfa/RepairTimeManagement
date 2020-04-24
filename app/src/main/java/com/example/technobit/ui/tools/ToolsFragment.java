@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
@@ -23,6 +24,7 @@ import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.preference.RipPreference;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.material.snackbar.Snackbar;
 
 // TODO: light the email preference??!?!
 // TODO 2: Add preference for english/ita swapping?
@@ -38,10 +40,14 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
         //toolsViewModel = ViewModelProviders.of(this).get(ToolsViewModel.class);
 
         // display settings preference
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        // get navigation argument
+        boolean boolToRip = getArguments().getBoolean("rip_account");
 
         // SharedPreference to read and save user preference
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -50,7 +56,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         // XML preference for google account
         mPreferenceAccount = findPreference("google_account");
         // todo: rip only if come from the chronometer redirect dialog
-        mPreferenceAccount.setToRip(true);
+        mPreferenceAccount.setToRip(boolToRip);
 
         // XML preference for google calendar color
         mPreferenceColor = findPreference("google_color");
@@ -138,7 +144,6 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         // setting color filter for the drawable
         d.setColorFilter(colorFilter);
         mPreferenceColor.setIcon(d); // add the icon near xml preference
-
     }
 
     // True if the application is running on tablet, false otherwise
@@ -165,8 +170,9 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
 
 
     // --- ACCOUNT PREFERENCE ---
-
     private void accountChooser() {
+        // todo: check if there is internet connection
+
         // if there is no account connected start the intend for choose account and get permission
         if(mGoogleUtility.getAccount(getContext()) == null){
             // get signInClient and start the intent
@@ -188,7 +194,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     private void setAccountSummary(){
         // get the last signin account
         GoogleSignInAccount account = mGoogleUtility.getAccount(getContext());
-        if(account !=null) // if an account is signIn
+        if(account !=null)  // if an account is signIn
             mPreferenceAccount.setSummary(account.getEmail()); //set the account email as summary
         else
             mPreferenceAccount.setSummary("");
@@ -199,10 +205,22 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (resultCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             setAccountSummary();
+        }
+        else{
+            // snackbar to send an Hint to the user
+            Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_login_error, Snackbar.LENGTH_LONG);
+            snackbar.setTextColor(Color.WHITE);
+            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                    .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    });
+            snackbar.show();
         }
     }
 
