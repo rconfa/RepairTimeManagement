@@ -13,6 +13,8 @@
     <string name="tools_select_account">Seleziona un account</string>
     <string name="tools_select_color">Colore</string>Colore>/string>
     <string name="tools_select_color_summary">Seleziona un colore per gli eventi</string>
+    <string name="snackbar_login_error">Riprova più tardi</string>
+
 
     <!-- string for menu drawer -->
     <string name="menu_home">Contatti</string>
