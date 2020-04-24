@@ -55,4 +55,9 @@ public class RipPreference extends Preference {
             holder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
     }
+
+    public void deleteRip(){
+        this.toRip = false;
+        notifyChanged();
+    }
 }
