@@ -11,9 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -43,12 +41,10 @@ public class ChronometerFragment extends Fragment{
     private Chronometer chronometer;
     private long pauseOffset;
     private boolean running; // mi dice se il cronometro sta runnando
-    private FloatingActionButton fabChronoPlay;
+    private FloatingActionButton fabChronoPlay, fabStop;
     private Spinner sp;
     private String EventTitle = "";
     private int spinnerSelectionPos;
-    private LinearLayout linearLayButtonStop;
-    private TextView tvPlay;
     private Animation animBlink;
     private SharedPreferences sharedPref;
 
@@ -74,20 +70,11 @@ public class ChronometerFragment extends Fragment{
         // fab button for start/pause chronometer
         fabChronoPlay = root.findViewById(R.id.fab_start_pause);
         // Button for stop chronometer
-        Button buttonStop = root.findViewById(R.id.btn_stop);
-        // set size like the fab button
-        buttonStop.setHeight(fabChronoPlay.getHeight());
-        buttonStop.setWidth(fabChronoPlay.getWidth());
+        fabStop = root.findViewById(R.id.fab_stop);
 
         // spinner for client list
         sp = root.findViewById(R.id.spinner_choose_client);
 
-        // layer to display when chronometer is in pause
-        linearLayButtonStop = root.findViewById(R.id.lay_btn_stop);
-        linearLayButtonStop.setVisibility(View.GONE);
-
-        // textview under the fab button for play/pause
-        tvPlay = root.findViewById(R.id.txtView_Play);
         // load chronometer animation
         animBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
@@ -146,7 +133,7 @@ public class ChronometerFragment extends Fragment{
 
 
         // event on chronometer stop
-        buttonStop.setOnClickListener(new View.OnClickListener() {
+        fabStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 stopChronometer();
@@ -245,11 +232,9 @@ public class ChronometerFragment extends Fragment{
             // cancel the cronometer animation
             chronometer.clearAnimation();
             // change the image for the button play->pause
-            fabChronoPlay.setImageResource(android.R.drawable.ic_media_pause);
+            fabChronoPlay.setImageResource(R.drawable.ic_pause_70dp);
             // button stop can not be used during running
-            linearLayButtonStop.setVisibility(View.GONE);
-            // Change the text under the button play->pause
-            tvPlay.setText(getResources().getText(R.string.chrono_pause));
+            fabStop.setVisibility(View.GONE);
             // Set the chronometer base minus the paused time
             chronometer.setBase(base - pauseOffset);
             chronometer.start();
@@ -267,11 +252,9 @@ public class ChronometerFragment extends Fragment{
             // start the animation for the chronometer
             chronometer.startAnimation(animBlink);
             // Set button stop visible
-            linearLayButtonStop.setVisibility(View.VISIBLE);
-            // Change the text under the button pause->play
-            tvPlay.setText(getResources().getText(R.string.chrono_start));
+            fabStop.setVisibility(View.VISIBLE);
             // change the image for the button pause->play
-            fabChronoPlay.setImageResource(android.R.drawable.ic_media_play);
+            fabChronoPlay.setImageResource(R.drawable.ic_play_arrow_black_70dp);
             chronometer.stop();
             // Save the duration of the pause
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
@@ -296,24 +279,14 @@ public class ChronometerFragment extends Fragment{
         GoogleDataSingleton eventToSave = GoogleDataSingleton.initialize(3, EventTitle, null,
                 null, elapsedMillis, end.getTime());
 
-        /*
-        // add bundle value
-        Bundle bundle = new Bundle();
-        bundle.putLong("durationMillis", elapsedMillis);
-        bundle.putLong("dateEnd", end.getTime());
-        bundle.putString("EventTitle", EventTitle);
-        */
-
-
         // go to the signature fragment to complete the action
         Navigation.findNavController(getView()).navigate(R.id.nav_signature);
-
 
         // reset all the chronometer to initial values
         pauseOffset = 0;
         chronometer.setBase(SystemClock.elapsedRealtime());
         sp.setEnabled(true);
-        linearLayButtonStop.setVisibility(View.GONE);
+        fabStop.setVisibility(View.GONE);
     }
 
     private boolean checkAccountSelected(){
