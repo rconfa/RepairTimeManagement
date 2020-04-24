@@ -35,6 +35,7 @@ public class ContactFragment extends Fragment
     private ContactSingleton mContactSingleton;
     private ArrayList<Integer> mPosToBeRemoved;
     private MenuItem mMenuDeleteItem;
+    private MenuItem mMenuAddItem;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class ContactFragment extends Fragment
         inflater.inflate(R.menu.menu_contact, menu); //.xml file name
         // get the item for delete contact
         mMenuDeleteItem = menu.findItem(R.id.icon_remove);
+        mMenuAddItem = menu.findItem(R.id.icon_add);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -120,10 +122,14 @@ public class ContactFragment extends Fragment
         }
 
         // remove delete icon
-        if(this.mPosToBeRemoved.isEmpty())
+        if(this.mPosToBeRemoved.isEmpty()) {
             mMenuDeleteItem.setVisible(false);
-        else
+            mMenuAddItem.setVisible(true);
+        }
+        else {
             mMenuDeleteItem.setVisible(true);
+            mMenuAddItem.setVisible(false);
+        }
     }
 
     public void performRemovingContact(){
@@ -141,6 +147,7 @@ public class ContactFragment extends Fragment
         @Override
         public void onDialogPositiveClick() {
             mMenuDeleteItem.setVisible(false); // remove delete icon
+            mMenuAddItem.setVisible(true);
             // remove all items selected from file
             try {
                 mContactSingleton.delete(mPosToBeRemoved,getContext());
