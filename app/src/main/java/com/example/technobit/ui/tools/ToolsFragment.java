@@ -22,14 +22,14 @@ import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerSwatch;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.preference.RipPreference;
+import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.snackbar.Snackbar;
 
 import static android.app.Activity.RESULT_OK;
 
-// TODO: light the email preference??!?!
-// TODO 2: Add preference for english/ita swapping?
+// TODO: Add preference for english/ita swapping?
 public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmChoiceDialog.NoticeDialogListener{
     private static final String TAG = "ToolsFragment";
     private SharedPreferences mSharedPref;
@@ -57,7 +57,6 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         // Get all preference from XML
         // XML preference for google account
         mPreferenceAccount = findPreference("google_account");
-        // todo: rip only if come from the chronometer redirect dialog
         mPreferenceAccount.setToRip(boolToRip);
 
         // XML preference for google calendar color
@@ -173,22 +172,26 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
 
     // --- ACCOUNT PREFERENCE ---
     private void accountChooser() {
-        // todo: check if there is internet connection
-
-        // if there is no account connected start the intend for choose account and get permission
-        if(mGoogleUtility.getAccount(getContext()) == null){
-            // get signInClient and start the intent
-            Intent signInIntent = mGoogleUtility.getSignInClient(getContext()).getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+        boolean internet = new SmartphoneControlUtility(getContext()).checkInternetConnection();
+        if(internet){
+            // if there is no account connected start the intend for choose account and get permission
+            if(mGoogleUtility.getAccount(getContext()) == null){
+                // get signInClient and start the intent
+                Intent signInIntent = mGoogleUtility.getSignInClient(getContext()).getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+            else{// if an account it's already signIn
+                // listner for the dialog
+                ConfirmChoiceDialog.NoticeDialogListener listener = this;
+                // get the message from the resource
+                String message = getString(R.string.dialog_confirm_signOut_message);
+                // Create an instance of the dialog fragment and show it
+                DialogFragment dialog = new ConfirmChoiceDialog(" ", message,listener);
+                dialog.show(getParentFragmentManager(), TAG);
+            }
         }
-        else{// if an account it's already signIn
-            // listner for the dialog
-            ConfirmChoiceDialog.NoticeDialogListener listener = this;
-            // get the message from the resource
-            String message = getString(R.string.dialog_confirm_signOut_message);
-            // Create an instance of the dialog fragment and show it
-            DialogFragment dialog = new ConfirmChoiceDialog(" ", message,listener);
-            dialog.show(getParentFragmentManager(), TAG);
+        else{
+            showSnackbar(R.string.snackbar_internet_connection_error);
         }
     }
 
@@ -215,17 +218,20 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
             mPreferenceAccount.deleteRip();
         }
         else{
-            // snackbar to send an Hint to the user
-            Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_login_error, Snackbar.LENGTH_LONG);
-            snackbar.setTextColor(Color.WHITE);
-            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                    .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-            snackbar.show();
+            showSnackbar(R.string.snackbar_login_error);
         }
+    }
+
+    private void showSnackbar(int id_text_string){
+        Snackbar snackbar = Snackbar.make(getView(), id_text_string, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                });
+        snackbar.show();
     }
 
     @Override
