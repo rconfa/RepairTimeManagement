@@ -26,6 +26,8 @@ import com.example.technobit.utilities.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.snackbar.Snackbar;
 
+import static android.app.Activity.RESULT_OK;
+
 // TODO: light the email preference??!?!
 // TODO 2: Add preference for english/ita swapping?
 public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmChoiceDialog.NoticeDialogListener{
@@ -205,10 +207,12 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (resultCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             setAccountSummary();
+            // deleting the rip if setting
+            mPreferenceAccount.deleteRip();
         }
         else{
             // snackbar to send an Hint to the user
@@ -235,7 +239,6 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     }
 
     // --- VIBRATION PREFERENCE ---
-
     private void vibrationChange() {
         // Saving the choice into sharedPreference
         SharedPreferences.Editor editor = mSharedPref.edit();
