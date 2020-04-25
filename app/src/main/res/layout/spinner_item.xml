@@ -9,7 +9,7 @@
     android:layout_height="wrap_content"
     android:fontFamily="@font/product_sans_bold"
     android:textAlignment="center"
-    android:textColor="@color/colorAccent"
+    android:textColor="@color/colorPrimary"
     android:textSize="24sp"
     android:textStyle="bold"
     tools:text="Testo di prova" />
