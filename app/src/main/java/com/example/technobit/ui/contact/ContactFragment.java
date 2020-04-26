@@ -33,7 +33,6 @@ public class ContactFragment extends Fragment
     private ContactViewModel contactViewModel;
     private CardArrayAdapter mCardArrayAdapter;
     private ContactSingleton mContactSingleton;
-    private ArrayList<Integer> mPosToBeRemoved;
     private MenuItem mMenuDeleteItem;
     private MenuItem mMenuAddItem;
 
@@ -48,8 +47,7 @@ public class ContactFragment extends Fragment
 
         // save the singleton instance
         mContactSingleton = ContactSingleton.getInstance(getContext());
-        // list of position to removed
-        mPosToBeRemoved = new ArrayList<>();
+
 
         // setting the recycle view for the fragment
         RecyclerView recView = root.findViewById(R.id.contact_listview);
@@ -113,18 +111,11 @@ public class ContactFragment extends Fragment
     @Override
     public void onItemLongClick(View view, int position) {
         // save the selected position
-        boolean res = mCardArrayAdapter.savePositionToDelete(position);
-        if(res) { // if I add the position I set the background
-            mPosToBeRemoved.add(position);
-            mCardArrayAdapter.notifyItemChanged(position); // update the card view (change background color)
-        }
-        else { // If I delete the position I set the default background
-            mPosToBeRemoved.remove((Object) position); // I want to remove the obj not the index
-            mCardArrayAdapter.notifyItemChanged(position); // update the card view (change background color)
-        }
+        mCardArrayAdapter.savePositionToDelete(position);
+        mCardArrayAdapter.notifyItemChanged(position); // update the card view (change background color)
 
         // remove delete icon
-        if(this.mPosToBeRemoved.isEmpty()) {
+        if(mCardArrayAdapter.getPositionToDelete().isEmpty()) {
             mMenuDeleteItem.setVisible(false);
             mMenuAddItem.setVisible(true);
         }
@@ -150,15 +141,13 @@ public class ContactFragment extends Fragment
         public void onDialogPositiveClick() {
             mMenuDeleteItem.setVisible(false); // remove delete icon
             mMenuAddItem.setVisible(true);
-            // remove all items selected from file
             try {
-                mContactSingleton.delete(mPosToBeRemoved,getContext());
-                // clear the list of items to be removed
-                mPosToBeRemoved.clear();
+                // remove all items selected from file
+                mContactSingleton.delete(mCardArrayAdapter.getPositionToDelete(),getContext());
                 // remove all items from the listview
                 mCardArrayAdapter.removeSelected();
             } catch (IOException e) {
-                displaySnackbarError();
+                displaySnackbarError(R.string.snackbar_file_error);
             }
         }
     };
@@ -179,10 +168,14 @@ public class ContactFragment extends Fragment
         @Override
         public void onDialogPositiveClick(Contact c, int position) {
             try {
-                mContactSingleton.addContact(c, getContext());
-                mCardArrayAdapter.add(new Card(c));
+                // Add the contact only if the name is not duplicate
+                boolean added = mContactSingleton.addContact(c, getContext());
+                if (added)
+                    mCardArrayAdapter.add(new Card(c));
+                else
+                    displaySnackbarError(R.string.snackbar_duplicate_contact);
             } catch (IOException e) {
-                displaySnackbarError();
+                displaySnackbarError(R.string.snackbar_file_error);
             }
 
         }
@@ -209,15 +202,15 @@ public class ContactFragment extends Fragment
                 mContactSingleton.updateContact(c, position, getContext());
                 mCardArrayAdapter.modify(temp,position);
             } catch (IOException e) {
-                displaySnackbarError();
+                displaySnackbarError(R.string.snackbar_file_error);
             }
 
         }
     };
 
-    private void displaySnackbarError(){
+    private void displaySnackbarError(int stringId){
         // create a snackbar with a positive message
-        Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_file_error, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(getView(), stringId, Snackbar.LENGTH_LONG);
         snackbar.setTextColor(Color.WHITE);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                 .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {

@@ -51,13 +51,18 @@ public class ContactSingleton {
             clienti.remove(index);
     }
 
-    public void addContact(Contact c_temp, Context c) throws IOException {
+    public boolean addContact(Contact c_temp, Context c) throws IOException {
         if(clienti == null)
             clienti = new  ArrayList<>();
 
-        dc.writeToFile(c_temp, c); // Add the new contact to file
-        // if no errors I add the contact to list
-        clienti.add(c_temp);
+        if(!clienti.contains(c_temp)) {
+            dc.writeToFile(c_temp, c); // Add the new contact to file
+            // if no errors I add the contact to list
+            clienti.add(c_temp);
+            return true;
+        }
+
+        return false;
     }
 
     public void updateContact(Contact toUpdate, int pos, Context c) throws IOException {

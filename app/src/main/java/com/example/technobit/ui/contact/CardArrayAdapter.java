@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.CardViewHolder> {
     private ArrayList<Card> mCardList = new ArrayList<>(); // arrayList contains all contact
-    private ArrayList<Card> mCardChecked = new ArrayList<>(); // arrayList contains all contact checked
+    private ArrayList<Integer> mCardChecked = new ArrayList<>(); // arrayList contains all contact checked
     private ItemLongClickListener mLongClickListener; // long press listener
     private ItemClickListener mClickListener; // on click listener
 
@@ -121,10 +121,12 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         return mCardList.size();
     }
 
-    // add new card
+    // add new card only if it's not duplicate
     public void add(Card object) {
-        mCardList.add(object); // add the obj to list
-        notifyDataSetChanged(); // notify the change
+        if(!mCardList.contains(object)) {
+            mCardList.add(object); // add the obj to list
+            notifyDataSetChanged(); // notify the change
+        }
     }
 
     // add new card
@@ -146,34 +148,34 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     }
 
     /*
-       I add the position if is not in the arrayList yet and return true
-       else I delete the position from the arrayList and return false
+       I add the position if is not in the arrayList yet
+       else I delete the position from the arrayList
     */
-    public boolean savePositionToDelete(int pos){
+    public void savePositionToDelete(int pos){
         Card getCard = mCardList.get(pos);
 
         // Check if the card is in arrayList yet
-        if(mCardChecked.contains(getCard)){
-            mCardChecked.remove(getCard); // remove the card
+        if(mCardChecked.contains(pos)){
+            mCardChecked.remove((Integer) pos); // remove the card
             getCard.setCardSelection(false); // set the checked value as false
-            return false;
         }
         else{
             getCard.setCardSelection(true); // Setting the card as checked
-            mCardChecked.add(getCard); // add the card to the arrayList
+            mCardChecked.add(pos); // add the card to the arrayList
         }
-        return true;
     }
 
     // remove from the arraylist all the element
     public void removeSelected(){
-        // remove the deleted item from the list
-        for(Card c : mCardChecked) {
-            mCardList.remove(c);
-        }
+        // remove the selected item from the list
+        for(int i:mCardChecked)
+           mCardList.remove(i);
 
         mCardChecked.clear(); // clear the checked arrayList
         notifyDataSetChanged(); // notify the change
     }
 
+    public ArrayList<Integer> getPositionToDelete() {
+        return mCardChecked;
+    }
 }

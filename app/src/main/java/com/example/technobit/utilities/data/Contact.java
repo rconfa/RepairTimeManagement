@@ -42,4 +42,18 @@ public class Contact {
 
         return null;
     }
+
+    // method to check if two contact are equals
+    @Override
+    public boolean equals(Object object)
+    {
+        boolean sameSame = false;
+
+        if (object instanceof Contact)
+        {
+            sameSame = this.company_name.equals(((Contact) object).company_name);
+        }
+
+        return sameSame;
+    }
 }
