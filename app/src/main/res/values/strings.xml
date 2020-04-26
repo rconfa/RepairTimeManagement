@@ -65,7 +65,7 @@
     <!-- string for contact fragment-->
     <string name="snackbar_file_error">Impossibile completare l\'azione</string>
     <string name="dialog_confirm_delete_message"> Sei sicuro di voler  rimuovere i contatti selezionati? </string>
-
+    <string name="snackbar_duplicate_contact">Contatto già esistente!</string>
 
     <string-array name="default_color_choice_values" translatable="false">
         <item>#F6BF26</item>
