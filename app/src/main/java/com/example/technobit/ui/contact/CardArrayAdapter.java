@@ -14,6 +14,7 @@ import com.example.technobit.R;
 import com.example.technobit.utilities.data.Contact;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.CardViewHolder> {
@@ -177,5 +178,12 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
 
     public ArrayList<Integer> getPositionToDelete() {
         return mCardChecked;
+    }
+
+    // sort the arrayList in ascending order
+    // Better because delete action is performed rarely, so it's better to sort instead of
+    // saving the card in the arrayList (space saving)
+    public void sortPosToDelete(){
+        Collections.sort(mCardChecked, Collections.reverseOrder());
     }
 }

@@ -142,6 +142,10 @@ public class ContactFragment extends Fragment
             mMenuDeleteItem.setVisible(false); // remove delete icon
             mMenuAddItem.setVisible(true);
             try {
+                // sort the array (descending) because I delete the item by position
+                // so if the user select pos1, posN when I try to delete the posN
+                // the position doesn't exist anymore
+                mCardArrayAdapter.sortPosToDelete();
                 // remove all items selected from file
                 mContactSingleton.delete(mCardArrayAdapter.getPositionToDelete(),getContext());
                 // remove all items from the listview
