@@ -49,6 +49,8 @@
     <string name="event_descr">"Descrizione dell'evento…"</string>
     <string name="btn_send">INVIA</string>
     <string name="btn_clear">CLEAR</string>
+    <string name="snackbar_bitmap_error">Firma assente!</string>
+
 
     <!-- string per la custom dialog -->
     <string name="dialog_add_contact_title">Nuovo contatto</string>

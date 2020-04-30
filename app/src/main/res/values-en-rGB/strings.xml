@@ -36,4 +36,5 @@
     <string name="snackbar_login_error">Try later</string>
     <string name="snackbar_internet_connection_error">Activate internet connection</string>
     <string name="snackbar_duplicate_contact">Contact already exists!</string>
+    <string name="snackbar_bitmap_error">No signature!</string>
 </resources>
