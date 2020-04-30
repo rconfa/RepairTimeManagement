@@ -1,6 +1,8 @@
 package com.example.technobit.ui.send;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,25 +14,32 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
+import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
+import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
+import com.example.technobit.utilities.googleService.calendar.InsertToGoogleCalendar;
+import com.example.technobit.utilities.googleService.drive.InsertToGoogleDrive;
 import com.example.technobit.utilities.notSendedData.GoogleData;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class SendFragment extends Fragment {
+public class SendFragment extends Fragment  {
 
     private SendViewModel sendViewModel;
     private SharedPreferences mSharedPref;
     private ArrayList<GoogleData> allData;
-    private int parsingIndex;
-    private int numberOfExecution, totToExecute;
-
+    private int parsedData = 0, totalData = 0;
+    private Context mContext;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         //sendViewModel = ViewModelProviders.of(this).get(SendViewModel.class);
         View root = inflater.inflate(R.layout.fragment_send, container, false);
+
+        mContext = getContext();
         final TextView textView = root.findViewById(R.id.text_send);
 
         // Shared preference for get/set all the preference
@@ -45,98 +54,87 @@ public class SendFragment extends Fragment {
 
         if(allData!=null) {
             textView.setText("find " + allData.size() + " event not sended yet");
-            //SendAllToGoogle(allData);
+            SendAllToGoogle(allData);
         }
         else
             textView.setText("Error on file reading");
 
 
-        // View root = inflater.inflate(R.layout.fragment_signature, container, false);
         return root;
     }
 
-    /*
-    private void SendAllToGoogle(ArrayList<GoogleData> allData) {
-        GoogleData singleData = new GoogleData();
-        numberOfExecution = 0;
-        totToExecute = allData.size();
-
-        for (parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
+    private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
+        GoogleData singleData;
+        totalData = allData.size();
+        for (int parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
             singleData = allData.get(parsingIndex);
             if (singleData.getCase() != 2) {
                 sendToCalendar(singleData);
             }
             else{
-                sentToDrive(singleData);
+                sentToDrive(singleData, parsingIndex);
             }
         }
 
-        // delete the file
-        try {
-            new FileGoogle().delete(getContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for(GoogleData data:allData) {
-            try {
-                new FileGoogle().writeAllToFile(data, getContext());
-            } catch (IOException e) {
-                e.printStackTrace();
+        new Thread() {
+            public void run() {
+                while(totalData != parsedData){
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    new GoogleData().writeAll(allData, mContext);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        }.start();
+
     }
 
 
-    private void sentToDrive(GoogleData singleData) {
-        // Insert the image on google drive
-        AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(singleData.getEventTitle(),
-                getBitmapFile(singleData.getImage()), getContext(), mDriveResponse);
-        gDrive.execute();
+    private void sentToDrive(final GoogleData singleData, final int index) {
+        final File imageFile = getBitmapFile(singleData.getImage());
+        new InsertToGoogleDrive(singleData.getEventTitle(), imageFile, mContext,
+                new GoogleAsyncResponse(){
+                    @Override
+                    public void processFinish(String attachment) {
+                        if (!attachment.equals("false")) {
+                            singleData.setImage(attachment);
+                            // update data in the arrayList
+                            allData.set(index, singleData);
+                            // delete the image
+                            imageFile.delete();
+
+                            sendToCalendar(singleData);
+                        }
+                    }
+                }).start();
     }
 
-    private void sendToCalendar(GoogleData data){
+    private void sendToCalendar(final GoogleData data){
         // when the image is upload I add the event on calendar
-        int color = getColorInt(); // get the color that the user has choose
+        int color = 3; //getColorInt(); // get the color that the user has choose
         // insert the event on calendar
         Date endDate = new Date(data.getEventEnd());
 
-        AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(data.getEventTitle(),
-                data.getDescription(), endDate, data.getEventDuration(), color, getContext(),
-                mCalendarResponse, data.getImage());
-        gCal.execute();
+        new InsertToGoogleCalendar(data.getEventTitle(), data.getDescription(), endDate,
+                data.getEventDuration(), color, mContext,data.getImage(),
+                new  GoogleAsyncResponse(){
+                    @Override
+                    public void processFinish(String result) {
+                        parsedData++;
+                        if(result.equals("true"))
+                            allData.remove(data);
+                        else
+                            System.err.println("to vibbb");
+                    }
+                }).start();
 
     }
-
-
-    // Implement the interface to handle the asyncTask response for google calendar insert
-    private GoogleAsyncResponse mCalendarResponse = new GoogleAsyncResponse(){
-        @Override
-        public void processFinish(String result) {
-            if(result.equals("true"))
-                allData.remove(parsingIndex);
-
-            numberOfExecution++;
-        }
-    };
-
-    // Implement the interface to handle the asyncTask response for google drive uploading
-    private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
-        @Override
-        public void processFinish(String attachment) {
-            if(attachment != null) {
-                GoogleData dataToAdd = allData.get(parsingIndex);
-
-                // delete the bitmap file, is useless now
-                getBitmapFile(dataToAdd.getImage()).delete();
-
-                dataToAdd.setImage(attachment);
-                // modify the array list in case the google calendar fail
-                allData.set(parsingIndex, dataToAdd);
-                sendToCalendar(dataToAdd);
-            }
-        }
-    };
 
     private int getColorInt(){
         String defColor = getResources().getString(R.string.default_color_str);
@@ -152,5 +150,6 @@ public class SendFragment extends Fragment {
 
     private File getBitmapFile(String filepath){
         return new File(filepath);
-    }*/
+    }
+
 }

@@ -30,7 +30,7 @@ public class InsertToGoogleCalendar extends Thread {
     private int mEventColor;
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private String mAttachments;
-    private GoogleAsyncResponse mdelegate = null;
+    private GoogleAsyncResponse mdelegate;
 
     public InsertToGoogleCalendar(String mEventTitle, String mEventDescription,
                                   Date mEndDate, long mEndMillis, int mEventColor,
