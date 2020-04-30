@@ -19,7 +19,7 @@ import com.google.api.services.drive.model.File;
 
 import java.io.IOException;
 
-// this class perform an image upload in google drive
+// AsyncTask will be deprecated in android R
 public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
     private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private Drive mService; // google drive service
@@ -57,7 +57,12 @@ public class AsyncInsertGoogleDrive extends AsyncTask<String, Void, String> {
 
         Drive.Files.Create fileDrive = mService.files().create(fileMetadata, mediaContent);
 
-        fileDrive.getMediaHttpUploader().setProgressListener(new CustomProgressListener());
+        MediaHttpUploader uploader = fileDrive.getMediaHttpUploader();
+        uploader.setProgressListener(new CustomProgressListener());
+        uploader.setDirectUploadEnabled(false);
+        uploader.setChunkSize(MediaHttpUploader.MINIMUM_CHUNK_SIZE);
+
+       // fileDrive.getMediaHttpUploader().setProgressListener(new CustomProgressListener());
 
         File result = fileDrive.setFields("webViewLink").execute();
 

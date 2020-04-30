@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-// this class perform an insert in google calendar
+// AsyncTask will be deprecated in android R
 public class AsyncInsertGoogleCalendar extends AsyncTask<String, Void, String> {
     private final Calendar mService;
     private String mEventTitle, mEventDescription;

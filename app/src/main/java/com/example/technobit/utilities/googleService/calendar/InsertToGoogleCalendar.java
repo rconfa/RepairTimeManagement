@@ -22,16 +22,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+// this class perform an insert in google calendar
 public class InsertToGoogleCalendar extends Thread {
     private final Calendar mService;
     private String mEventTitle, mEventDescription;
     private long mElapsedMillis;
     private Date mEndDate;
     private int mEventColor;
-    private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
     private String mAttachments;
     private GoogleAsyncResponse mdelegate;
 
+    // constructor with parameters
     public InsertToGoogleCalendar(String mEventTitle, String mEventDescription,
                                   Date mEndDate, long mEndMillis, int mEventColor,
                                   Context mContext,
@@ -50,11 +51,13 @@ public class InsertToGoogleCalendar extends Thread {
         GoogleAccountCredential credential = gu.getCredential(mContext);
 
         if(account != null && credential!=null) {
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+
             NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             credential.setSelectedAccount(account.getAccount()); // set the account
             // build the calendar service
             mService = new com.google.api.services.calendar.Calendar.Builder(
-                    HTTP_TRANSPORT, mJsonFactory, credential)
+                    HTTP_TRANSPORT, jsonFactory, credential)
                     .setApplicationName(mContext.getString(R.string.app_name))
                     .build();
         }

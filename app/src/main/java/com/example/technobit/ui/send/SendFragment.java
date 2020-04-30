@@ -43,11 +43,11 @@ public class SendFragment extends Fragment  {
         final TextView textView = root.findViewById(R.id.text_send);
 
         // Shared preference for get/set all the preference
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 
 
         try {
-            allData = new GoogleData().getAll(getContext());
+            allData = new GoogleData().getAll(mContext);
         } catch (IOException e) {
             allData = null;
         }

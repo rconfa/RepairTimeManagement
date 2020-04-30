@@ -16,8 +16,9 @@ import com.google.api.services.drive.model.File;
 
 import java.io.IOException;
 
+// this class perform an image upload in google drive
 public class InsertToGoogleDrive extends Thread {
-    private static final JsonFactory mJsonFactory = JacksonFactory.getDefaultInstance();
+
     private Drive mService; // google drive service
     private String mImageName; // name for the image
     private java.io.File mFilepath; // local image filepath
@@ -35,10 +36,11 @@ public class InsertToGoogleDrive extends Thread {
         GoogleAccountCredential credential = gu.getCredential(mContext);
 
         if(account != null && credential!=null) {
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             NetHttpTransport HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             credential.setSelectedAccount(account.getAccount()); // set the account
             // build the drive service
-            mService = new Drive.Builder(HTTP_TRANSPORT, mJsonFactory, credential)
+            mService = new Drive.Builder(HTTP_TRANSPORT, jsonFactory, credential)
                     .setApplicationName(mContext.getString(R.string.app_name))
                     .build();
         }
@@ -53,7 +55,7 @@ public class InsertToGoogleDrive extends Thread {
 
         Drive.Files.Create fileDrive = mService.files().create(fileMetadata, mediaContent);
 
-        // fileDrive.getMediaHttpUploader().setProgressListener(new AsyncInsertGoogleDrive.CustomProgressListener());
+        // fileDrive.getMediaHttpUploader().setProgressListener(new CustomProgressListener());
 
         File result = fileDrive.setFields("webViewLink").execute();
 
