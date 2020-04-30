@@ -47,10 +47,10 @@ public class SignatureFragment extends Fragment {
        // mViewModel = ViewModelProviders.of(this).get(SignatureViewModel.class);
 
         // view of the layout
-        View root = inflater.inflate(R.layout.fragment_signature, container, false);
+        final View root = inflater.inflate(R.layout.fragment_signature, container, false);
 
         // Shared preference for get/set all the preference
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(root.getContext());
         
         // get all UI object
         // Button to clear the signature
@@ -78,7 +78,7 @@ public class SignatureFragment extends Fragment {
                 // check if the user has insert a sign
                 if(mSignatureView.isBitmapEmpty()){
                     // snackbar to send an Hint to the user
-                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(root, R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                                 @Override
@@ -113,7 +113,7 @@ public class SignatureFragment extends Fragment {
 
     // Close the keyboard if open
     private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(mEditTextDescription.getWindowToken(), 0);
         }
@@ -206,7 +206,7 @@ public class SignatureFragment extends Fragment {
                 GoogleDataSingleton.reset(); // it all sent, I reset the value to null
 
                 // create a snackbar with a positive message
-                Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
+                Snackbar snackbar = Snackbar.make(requireView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
                 snackbar.setTextColor(Color.WHITE);
                 snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                         .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
@@ -237,7 +237,7 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mSignatureView.isBitmapEmpty()){
-            File file = new File(getContext().getFilesDir() + "/" +
+            File file = new File(requireContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() +".jpeg");
             OutputStream os;
             try {
@@ -258,7 +258,7 @@ public class SignatureFragment extends Fragment {
     }
 
     private void deleteBitmapFile(){
-        File file = new File(getContext().getFilesDir() + "/" +
+        File file = new File(requireContext().getFilesDir() + "/" +
                 GoogleDataSingleton.getData().getEventTitle() + ".jpeg");
         file.delete();
     }
