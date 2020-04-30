@@ -21,8 +21,8 @@ import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.signatureview.SignatureView;
 import com.example.technobit.utilities.SmartphoneControlUtility;
 import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.example.technobit.utilities.googleService.calendar.AsyncInsertGoogleCalendar;
-import com.example.technobit.utilities.googleService.drive.AsyncInsertGoogleDrive;
+import com.example.technobit.utilities.googleService.calendar.InsertToGoogleCalendar;
+import com.example.technobit.utilities.googleService.drive.InsertToGoogleDrive;
 import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -40,7 +40,7 @@ public class SignatureFragment extends Fragment {
     private EditText mEditTextDescription;
     private SignatureView mSignatureView;
     private SharedPreferences mSharedPref;
-    private GoogleDataSingleton mSingletonEvent;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -89,7 +89,6 @@ public class SignatureFragment extends Fragment {
                 }
                 else {
                     // set the event description
-                    mSingletonEvent = GoogleDataSingleton.getInstance();
                     GoogleDataSingleton.getData().setDescription(mEditTextDescription.getText().toString());
 
                     saveAllOnGoogle();
@@ -150,34 +149,27 @@ public class SignatureFragment extends Fragment {
         if(file != null){
             GoogleDataSingleton.getData().setImage(file.getPath());
             GoogleDataSingleton.getData().setCase(2);
-            // Insert the image on google drive
-            AsyncInsertGoogleDrive gDrive = new AsyncInsertGoogleDrive(GoogleDataSingleton.getData().getEventTitle(),
-                    file, getContext(), mDriveResponse);
-            gDrive.execute();
+
+            new InsertToGoogleDrive(GoogleDataSingleton.getData().getEventTitle(),
+                    file, getContext(),mDriveResponse).start();
+
+
         }
+        // todo: else
     }
 
     // Implement the interface to handle the asyncTask response for google drive uploading
     private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
         @Override
         public void processFinish(String attachment) {
-            if(attachment != null) {
+            if (!attachment.equals("false")) {
                 // setting the attachment and the case in singleton
                 GoogleDataSingleton.getData().setImage(attachment);
                 GoogleDataSingleton.getData().setCase(1);
 
                 // delete the bitmap file, is useless now
                 deleteBitmapFile();
-                // when the image is upload I add the event on calendar
-                int color = getColorInt(); // get the color that the user has choose
-                // insert the event on calendar
-                Date endDate = new Date(GoogleDataSingleton.getData().getEventEnd());
-
-                AsyncInsertGoogleCalendar gCal = new AsyncInsertGoogleCalendar(GoogleDataSingleton.getData().getEventTitle(),
-                        GoogleDataSingleton.getData().getDescription(), endDate,
-                        GoogleDataSingleton.getData().getEventDuration(), color, getContext(),
-                        mCalendarResponse, attachment);
-                gCal.execute();
+                sendToCalendar();
             }
             else {
                 // check if the user let vibrate the smartphone
@@ -187,10 +179,23 @@ public class SignatureFragment extends Fragment {
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
                 // go back to the precedent activity
-                getActivity().onBackPressed();
+                getParentFragmentManager().popBackStack();
             }
         }
     };
+
+    private void sendToCalendar(){
+        // when the image is upload I add the event on calendar
+        int color = getColorInt(); // get the color that the user has choose
+        // insert the event on calendar
+        Date endDate = new Date(GoogleDataSingleton.getData().getEventEnd());
+
+
+        new InsertToGoogleCalendar(GoogleDataSingleton.getData().getEventTitle(),
+                GoogleDataSingleton.getData().getDescription(), endDate,
+                GoogleDataSingleton.getData().getEventDuration(), color, getContext(),
+                GoogleDataSingleton.getData().getImage(),mCalendarResponse).start();
+    }
 
     // Implement the interface to handle the asyncTask response for google calendar insert
     private GoogleAsyncResponse mCalendarResponse = new GoogleAsyncResponse(){
@@ -210,8 +215,9 @@ public class SignatureFragment extends Fragment {
                             }
                         });
                 snackbar.show();
+
                 // go back to the precedent activity
-                getActivity().onBackPressed();
+                getParentFragmentManager().popBackStack();
             }
             else{
                 // check if the user let vibrate the smartphone
@@ -221,7 +227,7 @@ public class SignatureFragment extends Fragment {
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
                 // go back to the precedent activity
-                getActivity().onBackPressed();
+                getParentFragmentManager().popBackStack();
             }
         }
     };
@@ -233,7 +239,7 @@ public class SignatureFragment extends Fragment {
         if(!mSignatureView.isBitmapEmpty()){
             File file = new File(getContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() +".jpeg");
-            OutputStream os = null;
+            OutputStream os;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
                 Bitmap b = getImage();
@@ -251,10 +257,10 @@ public class SignatureFragment extends Fragment {
         return null;
     }
 
-    private boolean deleteBitmapFile(){
+    private void deleteBitmapFile(){
         File file = new File(getContext().getFilesDir() + "/" +
                 GoogleDataSingleton.getData().getEventTitle() + ".jpeg");
-        return file.delete();
+        file.delete();
     }
 
     @Override
