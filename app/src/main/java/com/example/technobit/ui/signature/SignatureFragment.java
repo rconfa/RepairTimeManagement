@@ -78,7 +78,7 @@ public class SignatureFragment extends Fragment {
                 // check if the user has insert a sign
                 if(mSignatureView.isBitmapEmpty()){
                     // snackbar to send an Hint to the user
-                    Snackbar snackbar = Snackbar.make(root, R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(root, R.string.snackbar_bitmap_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                                 @Override
@@ -89,8 +89,10 @@ public class SignatureFragment extends Fragment {
                 }
                 else {
                     // set the event description
+                    // todo: save data if screen change portrait -> landscape (no su file notSave.txt)
                     GoogleDataSingleton.getData().setDescription(mEditTextDescription.getText().toString());
-
+                    mSignatureView.setEnableSignature(false);
+                    mEditTextDescription.setEnabled(false);
                     saveAllOnGoogle();
                 }
             }

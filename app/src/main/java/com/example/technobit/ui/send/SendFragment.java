@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+// todo: getColorInt da sistemare
+// todo 2: sistemare swap activity mentre thread stanno andando
 public class SendFragment extends Fragment  {
 
     private SendViewModel sendViewModel;

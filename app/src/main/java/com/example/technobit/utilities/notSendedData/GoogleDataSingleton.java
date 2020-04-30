@@ -20,6 +20,7 @@ public class GoogleDataSingleton {
     public static synchronized GoogleDataSingleton getInstance(){
         if(instance==null){
             instance=new GoogleDataSingleton();
+            data = new GoogleData();
         }
         return instance;
     }
@@ -61,6 +62,10 @@ public class GoogleDataSingleton {
     }
 
     public static synchronized GoogleData getData(){
-        return data;
+        if(instance!=null){
+            return data;
+        }
+        else
+            return null;
     }
 }
