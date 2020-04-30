@@ -53,7 +53,7 @@ public class GoogleDataSingleton {
 
     public static synchronized boolean saveInstance(Context c) throws IOException {
         if(instance!=null){
-            new FileGoogle().writeAllToFile(data,c);
+            new FileGoogle().writeToFile(data,c);
         }
 
         reset();

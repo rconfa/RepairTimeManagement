@@ -129,4 +129,9 @@ public class GoogleData {
             this.mImage = null;
         }
     }
+
+    public void writeAll(ArrayList<GoogleData> datas, Context context) throws IOException {
+        new FileGoogle().writeAllToFile(datas, context);
+    }
+
 }
