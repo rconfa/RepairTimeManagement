@@ -1,4 +1,4 @@
-package com.example.technobit.utilities.data;
+package com.example.technobit.utils.contact;
 
 import android.content.Context;
 

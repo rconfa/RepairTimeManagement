@@ -1,6 +1,6 @@
 package com.example.technobit.ui.contact;
 
-import com.example.technobit.utilities.data.Contact;
+import com.example.technobit.utils.contact.Contact;
 
 // Class that represent a single contact like a card to be added in the recycle view.
 public class Card extends Contact {

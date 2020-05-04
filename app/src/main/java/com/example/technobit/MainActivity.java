@@ -11,7 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
+import com.example.technobit.utils.dataNotSent.GoogleDataSingleton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;

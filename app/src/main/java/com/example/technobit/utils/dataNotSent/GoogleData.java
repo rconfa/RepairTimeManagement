@@ -1,4 +1,4 @@
-package com.example.technobit.utilities.notSendedData;
+package com.example.technobit.utils.dataNotSent;
 
 import android.content.Context;
 
@@ -27,9 +27,8 @@ public class GoogleData {
     private Long mEventDuration, mEventEnd; // duration and end time for the event
     private int mCase;
 
-
     // constructor with parameter
-    public GoogleData(int mCase, String mEventTitle, String mDescription, String mAttachment,
+    protected GoogleData(int mCase, String mEventTitle, String mDescription, String mAttachment,
                        Long mEventDuration, Long mEventEnd) {
         this.setCase(mCase);
         this.setEventTitle(mEventTitle);
@@ -112,7 +111,7 @@ public class GoogleData {
     }
 
 
-    public void readFromString(String line) {
+    protected void readFromString(String line) {
         String[] unzippedData = line.split(";");
 
         this.mCase = Integer.parseInt(unzippedData[0]);

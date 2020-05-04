@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
-import com.example.technobit.utilities.data.Contact;
+import com.example.technobit.utils.contact.Contact;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.example.technobit.utilities.notSendedData;
+package com.example.technobit.utils.dataNotSent;
 
 import android.content.Context;
 
@@ -8,12 +8,8 @@ public class GoogleDataSingleton {
     private static GoogleDataSingleton instance;
     private static GoogleData data;
 
-    public GoogleDataSingleton() {
+    private GoogleDataSingleton() {
         data = null;
-    }
-
-    private void setData(GoogleData data) {
-        this.data = data;
     }
 
     // get the instance

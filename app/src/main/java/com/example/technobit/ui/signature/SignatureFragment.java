@@ -9,21 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
+import com.example.technobit.databinding.FragmentSignatureBinding;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
-import com.example.technobit.ui.customize.signatureview.SignatureView;
-import com.example.technobit.utilities.SmartphoneControlUtility;
-import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.example.technobit.utilities.googleService.calendar.InsertToGoogleCalendar;
-import com.example.technobit.utilities.googleService.drive.InsertToGoogleDrive;
-import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
+import com.example.technobit.utils.Constants;
+import com.example.technobit.utils.SmartphoneControlUtility;
+import com.example.technobit.utils.dataNotSent.GoogleDataSingleton;
+import com.example.technobit.utils.googleService.GoogleAsyncResponse;
+import com.example.technobit.utils.googleService.calendar.InsertToGoogleCalendar;
+import com.example.technobit.utils.googleService.drive.InsertToGoogleDrive;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedOutputStream;
@@ -36,34 +34,22 @@ import java.util.Date;
 
 public class SignatureFragment extends Fragment {
 
-    private SignatureViewModel mViewModel;
-    private EditText mEditTextDescription;
-    private SignatureView mSignatureView;
+    private FragmentSignatureBinding mBinding;
     private SharedPreferences mSharedPref;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-       // mViewModel = ViewModelProviders.of(this).get(SignatureViewModel.class);
-
-        // view of the layout
-        final View root = inflater.inflate(R.layout.fragment_signature, container, false);
+        mBinding = FragmentSignatureBinding.inflate(inflater, container,false);
+        View view = mBinding.getRoot();
 
         // Shared preference for get/set all the preference
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(root.getContext());
-        
-        // get all UI object
-        // Button to clear the signature
-        Button mBtnClear = root.findViewById(R.id.btn_clear);
-        // Button for send all data to calendar
-        final Button mBtnSend = root.findViewById(R.id.btn_send);
-        // edit text for event description
-        mEditTextDescription = root.findViewById(R.id.et_eventDesc);
-        // signatureView for client signature
-        mSignatureView = root.findViewById(R.id.signature_view);
+        mSharedPref = requireContext().getSharedPreferences(
+                Constants.TOOLS_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
+
 
         // Event on click on button "clear"
-        mBtnClear.setOnClickListener(new View.OnClickListener() {
+        mBinding.btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clearCanvas(); // clear the canvas
@@ -72,13 +58,13 @@ public class SignatureFragment extends Fragment {
 
 
         // Event on click on button "send"
-        mBtnSend.setOnClickListener(new View.OnClickListener() {
+        mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // check if the user has insert a sign
-                if(mSignatureView.isBitmapEmpty()){
+                if(mBinding.signatureView.isBitmapEmpty()){
                     // snackbar to send an Hint to the user
-                    Snackbar snackbar = Snackbar.make(root, R.string.snackbar_bitmap_error, Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(view, R.string.snackbar_bitmap_error, Snackbar.LENGTH_LONG);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
                                 @Override
@@ -90,9 +76,9 @@ public class SignatureFragment extends Fragment {
                 else {
                     // set the event description
                     // todo: save data if screen change portrait -> landscape (no su file notSave.txt)
-                    GoogleDataSingleton.getData().setDescription(mEditTextDescription.getText().toString());
-                    mSignatureView.setEnableSignature(false);
-                    mEditTextDescription.setEnabled(false);
+                    GoogleDataSingleton.getData().setDescription(mBinding.etEventDesc.getText().toString());
+                    mBinding.signatureView.setEnableSignature(false);
+                    mBinding.etEventDesc.setEnabled(false);
                     saveAllOnGoogle();
                 }
             }
@@ -100,7 +86,7 @@ public class SignatureFragment extends Fragment {
 
 
         // If the editText no longer as the focus I close the keyboard
-        mEditTextDescription.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mBinding.etEventDesc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus){
@@ -109,7 +95,7 @@ public class SignatureFragment extends Fragment {
             }
         });
 
-        return root;
+        return view;
     }
 
 
@@ -117,26 +103,25 @@ public class SignatureFragment extends Fragment {
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
-            imm.hideSoftInputFromWindow(mEditTextDescription.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(mBinding.etEventDesc.getWindowToken(), 0);
         }
     }
 
     // Clear the canvas
     private void clearCanvas(){
-        mSignatureView.clearCanvas();
+        mBinding.signatureView.clearCanvas();
     }
 
     // get the signature image
     private Bitmap getImage(){
-        return mSignatureView.getSignatureBitmap();
+        return mBinding.signatureView.getSignatureBitmap();
     }
 
 
     private int getColorInt(){
-        String defColor = getResources().getString(R.string.default_color_str);
-        int defaultColorValue = Color.parseColor(defColor);
+        int defaultColorValue = Color.parseColor(Constants.default_color);
         // Get the selected color from the shared preference
-        int colorSelected = mSharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
+        int colorSelected = mSharedPref.getInt(Constants.TOOLS_SHARED_PREF_GOOGLE_COLOR, defaultColorValue);
 
         // get all color list defined
         ColorUtility colorUtility = new ColorUtility(getContext());
@@ -175,7 +160,7 @@ public class SignatureFragment extends Fragment {
             }
             else {
                 // check if the user let vibrate the smartphone
-                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
+                boolean canVib = mSharedPref.getBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, true);
 
                 if(canVib)
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
@@ -223,7 +208,7 @@ public class SignatureFragment extends Fragment {
             }
             else{
                 // check if the user let vibrate the smartphone
-                boolean canVib = mSharedPref.getBoolean(getString(R.string.shared_vibration), true);
+                boolean canVib = mSharedPref.getBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, true);
 
                 if(canVib)
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
@@ -238,7 +223,7 @@ public class SignatureFragment extends Fragment {
     // return the file on success, null on error
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
-        if(!mSignatureView.isBitmapEmpty()){
+        if(!mBinding.signatureView.isBitmapEmpty()){
             File file = new File(requireContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() +".jpeg");
             OutputStream os;

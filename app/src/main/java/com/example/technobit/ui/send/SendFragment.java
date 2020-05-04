@@ -7,30 +7,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 
-import com.example.technobit.R;
+import com.example.technobit.databinding.FragmentSendBinding;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
-import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.example.technobit.utilities.googleService.calendar.InsertToGoogleCalendar;
-import com.example.technobit.utilities.googleService.drive.InsertToGoogleDrive;
-import com.example.technobit.utilities.notSendedData.GoogleData;
+import com.example.technobit.utils.Constants;
+import com.example.technobit.utils.dataNotSent.GoogleData;
+import com.example.technobit.utils.googleService.GoogleAsyncResponse;
+import com.example.technobit.utils.googleService.calendar.InsertToGoogleCalendar;
+import com.example.technobit.utils.googleService.drive.InsertToGoogleDrive;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-// todo: getColorInt da sistemare
 // todo 2: sistemare swap activity mentre thread stanno andando
 public class SendFragment extends Fragment  {
-
-    private SendViewModel sendViewModel;
-    private SharedPreferences mSharedPref;
     private ArrayList<GoogleData> allData;
     private int parsedData = 0, totalData = 0;
     private Context mContext;
@@ -38,31 +33,22 @@ public class SendFragment extends Fragment  {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        //sendViewModel = ViewModelProviders.of(this).get(SendViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_send, container, false);
+        FragmentSendBinding mBinding = FragmentSendBinding.inflate(inflater, container,false);
+        View view = mBinding.getRoot();
 
         mContext = getContext();
-        final TextView textView = root.findViewById(R.id.text_send);
-
-        // Shared preference for get/set all the preference
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-
 
         try {
             allData = new GoogleData().getAll(mContext);
+            mBinding.textSend.setText("find " + allData.size() + " event not sended yet");
+            SendAllToGoogle(allData);
         } catch (IOException e) {
             allData = null;
+            mBinding.textSend.setText("Error on file reading");
         }
 
-        if(allData!=null) {
-            textView.setText("find " + allData.size() + " event not sended yet");
-            SendAllToGoogle(allData);
-        }
-        else
-            textView.setText("Error on file reading");
 
-
-        return root;
+        return view;
     }
 
     private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
@@ -119,7 +105,7 @@ public class SendFragment extends Fragment  {
 
     private void sendToCalendar(final GoogleData data){
         // when the image is upload I add the event on calendar
-        int color = 3; //getColorInt(); // get the color that the user has choose
+        int color = getColorInt(); // get the color that the user has choose
         // insert the event on calendar
         Date endDate = new Date(data.getEventEnd());
 
@@ -139,10 +125,12 @@ public class SendFragment extends Fragment  {
     }
 
     private int getColorInt(){
-        String defColor = getResources().getString(R.string.default_color_str);
-        int defaultColorValue = Color.parseColor(defColor);
+        int defaultColorValue = Color.parseColor(Constants.default_color);
+        SharedPreferences sharedPref = requireContext().getSharedPreferences(
+                Constants.TOOLS_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
+
         // Get the selected color from the shared preference
-        int colorSelected = mSharedPref.getInt(getString(R.string.shared_saved_color), defaultColorValue);
+        int colorSelected = sharedPref.getInt(Constants.TOOLS_SHARED_PREF_GOOGLE_COLOR, defaultColorValue);
 
         // get all color list defined
         ColorUtility colorUtility = new ColorUtility(getContext());

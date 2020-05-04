@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.technobit.R;
-import com.example.technobit.utilities.data.Contact;
+import com.example.technobit.utils.contact.Contact;
 
 // class to add a new contact or modify an existing one
 public class ManageContactDialog extends DialogFragment {

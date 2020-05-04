@@ -1,10 +1,10 @@
-package com.example.technobit.utilities.googleService.drive;
+package com.example.technobit.utils.googleService.drive;
 
 import android.content.Context;
 
 import com.example.technobit.R;
-import com.example.technobit.utilities.googleService.GoogleAsyncResponse;
-import com.example.technobit.utilities.googleService.GoogleUtility;
+import com.example.technobit.utils.googleService.GoogleAsyncResponse;
+import com.example.technobit.utils.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.FileContent;

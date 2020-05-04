@@ -13,13 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.technobit.R;
+import com.example.technobit.databinding.FragmentContactBinding;
 import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.ui.customize.dialog.ManageContactDialog;
-import com.example.technobit.utilities.data.Contact;
-import com.example.technobit.utilities.data.ContactSingleton;
+import com.example.technobit.utils.contact.Contact;
+import com.example.technobit.utils.contact.ContactSingleton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
@@ -41,20 +41,18 @@ public class ContactFragment extends Fragment
 
         // setto true le opzioni del menu, cosi posso visualizare le icone
         setHasOptionsMenu(true);
-
-        //contactViewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_contact, container, false);
+        FragmentContactBinding mBinding = FragmentContactBinding.inflate(inflater, container,false);
+        View view = mBinding.getRoot();
 
         // save the singleton instance
         mContactSingleton = ContactSingleton.getInstance(getContext());
 
 
         // setting the recycle view for the fragment
-        RecyclerView recView = root.findViewById(R.id.contact_listview);
-        recView.setHasFixedSize(true); // no change the layout size, better performance
+        mBinding.contactListview.setHasFixedSize(true); // no change the layout size, better performance
         // setting layout
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recView.setLayoutManager(layoutManager);
+        mBinding.contactListview.setLayoutManager(layoutManager);
 
         // adapter for the recycle view
         mCardArrayAdapter = new CardArrayAdapter();
@@ -66,9 +64,9 @@ public class ContactFragment extends Fragment
         mCardArrayAdapter.mySetClickListener(this);
 
         // set the adapter for the listview
-        recView.setAdapter(mCardArrayAdapter);
+        mBinding.contactListview.setAdapter(mCardArrayAdapter);
 
-        return root;
+        return view;
     }
 
     private void addContactToAdapter() {
@@ -86,8 +84,6 @@ public class ContactFragment extends Fragment
         mMenuDeleteItem = menu.findItem(R.id.icon_remove);
         mMenuAddItem = menu.findItem(R.id.icon_add);
 
-        //((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-       // ((AppCompatActivity) getActivity()).getSupportActionBar().setIcon(R.drawable.ic_menu_manage);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -125,7 +121,7 @@ public class ContactFragment extends Fragment
         }
     }
 
-    public void performRemovingContact(){
+    private void performRemovingContact(){
         // Ask the user to confirm the action
         // get the message from the resource
         String message = getString(R.string.dialog_confirm_delete_message);
@@ -214,7 +210,7 @@ public class ContactFragment extends Fragment
 
     private void displaySnackbarError(int stringId){
         // create a snackbar with a positive message
-        Snackbar snackbar = Snackbar.make(getView(), stringId, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(requireView(), stringId, Snackbar.LENGTH_LONG);
         snackbar.setTextColor(Color.WHITE);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                 .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {

@@ -1,5 +1,6 @@
 package com.example.technobit.ui.tools;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -13,7 +14,6 @@ import android.view.View;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.example.technobit.R;
@@ -22,8 +22,9 @@ import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerDialog;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerSwatch;
 import com.example.technobit.ui.customize.dialog.colorDialog.ColorUtility;
 import com.example.technobit.ui.customize.preference.RipPreference;
-import com.example.technobit.utilities.SmartphoneControlUtility;
-import com.example.technobit.utilities.googleService.GoogleUtility;
+import com.example.technobit.utils.Constants;
+import com.example.technobit.utils.SmartphoneControlUtility;
+import com.example.technobit.utils.googleService.GoogleUtility;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -43,21 +44,22 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 
-        //toolsViewModel = ViewModelProviders.of(this).get(ToolsViewModel.class);
-
         // display settings preference
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         // get navigation argument
-        boolean boolToRip = getArguments().getBoolean("rip_account");
+        boolean boolToRip = requireArguments().getBoolean("rip_account");
 
         // SharedPreference to read and save user preference
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSharedPref = requireContext().getSharedPreferences(
+                Constants.TOOLS_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
         // Get all preference from XML
         // XML preference for google account
         mPreferenceAccount = findPreference("google_account");
-        mPreferenceAccount.setToRip(boolToRip);
+
+        if (mPreferenceAccount!=null)
+            mPreferenceAccount.setToRip(boolToRip);
 
         // XML preference for google calendar color
         mPreferenceColor = findPreference("google_color");
@@ -105,12 +107,11 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     // method for setting the xml color preference
     private void settingColorXMLPreference() {
         // Setting the icon for color preference with the selected one or the default one if no one is selected yet
-        // getting the default color from resource
-        String def_color = getResources().getString(R.string.default_color_str);
+
         // parsing to int the default color
-        int mDefaultColor = Color.parseColor(def_color);
+        int mDefaultColor = Color.parseColor(Constants.default_color);
         // Get the user selected color from the sharedPreference if exists otherwise set it as the default color
-        mColorSelected = mSharedPref.getInt(getString(R.string.shared_saved_color), mDefaultColor);
+        mColorSelected = mSharedPref.getInt(Constants.TOOLS_SHARED_PREF_GOOGLE_COLOR, mDefaultColor);
         // Add an icon near the xml color preference to display the selected color
         setColorIcon();
     }
@@ -164,7 +165,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
             setColorIcon();
             // write the selected color on sharedPreference
             SharedPreferences.Editor editor = mSharedPref.edit();
-            editor.putInt(getString(R.string.shared_saved_color), mColorSelected);
+            editor.putInt(Constants.TOOLS_SHARED_PREF_GOOGLE_COLOR, mColorSelected);
             editor.apply();
         }
     };
@@ -223,7 +224,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     }
 
     private void showSnackbar(int id_text_string){
-        Snackbar snackbar = Snackbar.make(getView(), id_text_string, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(requireView(), id_text_string, Snackbar.LENGTH_LONG);
         snackbar.setTextColor(Color.WHITE);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                 .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
@@ -248,7 +249,7 @@ public class ToolsFragment extends PreferenceFragmentCompat implements ConfirmCh
     private void vibrationChange() {
         // Saving the choice into sharedPreference
         SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putBoolean(getString(R.string.shared_vibration), !mPreferenceVibration.isChecked());
+        editor.putBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, !mPreferenceVibration.isChecked());
         editor.apply();
     }
 

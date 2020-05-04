@@ -1,5 +1,6 @@
 package com.example.technobit.ui.chronometer;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,25 +12,22 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Chronometer;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.preference.PreferenceManager;
 
 import com.example.technobit.R;
+import com.example.technobit.databinding.FragmentChronometerBinding;
 import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
-import com.example.technobit.utilities.data.ContactSingleton;
-import com.example.technobit.utilities.notSendedData.GoogleDataSingleton;
+import com.example.technobit.utils.Constants;
+import com.example.technobit.utils.contact.ContactSingleton;
+import com.example.technobit.utils.dataNotSent.GoogleDataSingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
@@ -39,25 +37,28 @@ import java.util.Date;
 public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
     private ChronometerViewModel chronometerViewModel;
-    private Chronometer mChronometer;
     private long mPauseOffset;
-    private boolean mChronometerIsRunnig; // mi dice se il cronometro sta runnando
-    private FloatingActionButton mFabChronoPlay, mFabStop;
-    private Spinner mSpinnerContact;
+    private boolean chronoIsRunnig; // mi dice se il cronometro sta runnando
     private String mEventTitle = "";
     private int mSpinnerSelectionPos;
     private Animation mAnimBlink;
     private SharedPreferences mSharedPref;
     private NavController mNavigator;
+    private FragmentChronometerBinding mBinding;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // model della classe
-        chronometerViewModel = ViewModelProviders.of(this).get(ChronometerViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_chronometer, container, false);
+        //chronometerViewModel = ViewModelProviders.of(this).get(ChronometerViewModel.class);
+
+        mBinding = FragmentChronometerBinding.inflate(inflater, container, false);
+        View view = mBinding.getRoot();
+
 
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSharedPref = requireContext().getSharedPreferences(
+                Constants.CHRONOMETER_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
         // if the user don't select the email I ask if he want to choose it now.
         if (!checkAccountSelected())
@@ -66,32 +67,22 @@ public class ChronometerFragment extends Fragment{
         // get the singleton instance
         ContactSingleton sg = ContactSingleton.getInstance(getContext());
 
-        // Get all ui object
-        mChronometer = root.findViewById(R.id.chrono);
-        // fab button for start/pause chronometer
-        mFabChronoPlay = root.findViewById(R.id.fab_start_pause);
-        // Button for stop chronometer
-        mFabStop = root.findViewById(R.id.fab_stop);
-
-        // spinner for client list
-        mSpinnerContact = root.findViewById(R.id.spinner_choose_client);
-
         // load chronometer animation
         mAnimBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
 
         // Init dello spinner
         mSpinnerSelectionPos = 0; // Default selected index, 0 = hint for the spinner
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(root.getContext(),
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(),
                 R.layout.spinner_item, sg.getContactNameList());
         arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         arrayAdapter.insert(getResources().getString(R.string.spinner_hint),0);
-        mSpinnerContact.setAdapter(arrayAdapter);
+        mBinding.spinnerChooseClient.setAdapter(arrayAdapter);
 
 
         // LISTENER
         // event on client choose from the spinner
-        mSpinnerContact.setOnItemSelectedListener(
+        mBinding.spinnerChooseClient.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         // If the view is not null (ex: rotate the screen produce null view)
@@ -109,17 +100,18 @@ public class ChronometerFragment extends Fragment{
 
 
         // Event on chronometer start
-        mFabChronoPlay.setOnClickListener(new View.OnClickListener() {
+        mBinding.fabStartPause.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // check if the user have selected a client
                 if(mSpinnerSelectionPos != 0){
                     // Spinner is not enable yet.
-                    mSpinnerContact.setEnabled(false);
+                    mBinding.spinnerChooseClient.setEnabled(false);
                     startChronometer(SystemClock.elapsedRealtime());
                 }
                 else{
                     // snackbar to send an Hint to the user
-                    Snackbar snackbar = Snackbar.make(getView(), R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(requireView(),
+                            R.string.snackbar_start_error, Snackbar.LENGTH_LONG);
                     snackbar.setTextColor(Color.WHITE);
                     snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
                             .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
@@ -134,7 +126,7 @@ public class ChronometerFragment extends Fragment{
 
 
         // event on chronometer stop
-        mFabStop.setOnClickListener(new View.OnClickListener() {
+        mBinding.fabStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 stopChronometer();
@@ -143,106 +135,106 @@ public class ChronometerFragment extends Fragment{
 
         mNavigator = NavHostFragment.findNavController(this);
 
-        return root;
+        return view;
     }
 
 
     @Override
     public void onResume(){
 
-        int state = mSharedPref.getInt("chrono_state", 2);
+        int state = mSharedPref.getInt(Constants.CHRONOMETER_SHARED_PREF_STATE,2);
 
         // state = 2 nothing to recover
         if(state != 2) {
-            int sp_pos = mSharedPref.getInt("spinner_pos", 0);
-            mSpinnerContact.setSelection(sp_pos); // set the choosen client
-            mSpinnerContact.setEnabled(false);
+            int sp_pos = mSharedPref.getInt(Constants.CHRONOMETER_SHARED_PREF_SELECTED_CONTACT,0);
+            mBinding.spinnerChooseClient.setSelection(sp_pos); // set the choosen client
+            mBinding.spinnerChooseClient.setEnabled(false);
 
-            mChronometerIsRunnig = false;
+            chronoIsRunnig = false;
 
             // If there is something to recover, 0=running, 1=pausa
             if (state == 0) {
-                long base = mSharedPref.getLong("chronoBase", SystemClock.elapsedRealtime());
+                long base = mSharedPref.getLong(Constants.CHRONOMETER_SHARED_PREF_TIME,
+                        SystemClock.elapsedRealtime());
                 mPauseOffset = 0;
                 startChronometer(base);
             } else if (state == 1) {
-                mPauseOffset = mSharedPref.getLong("timeAppStopped", 0);
-                mChronometer.setBase(SystemClock.elapsedRealtime() - mPauseOffset);
-                mChronometerIsRunnig = true;
+                mPauseOffset = mSharedPref.getLong(Constants.CHRONOMETER_SHARED_PREF_TIME_PAUSE,0);
+                mBinding.chrono.setBase(SystemClock.elapsedRealtime() - mPauseOffset);
+                chronoIsRunnig = true;
                 pauseChronometer();
             }
         }
 
         // Delete the used preference
-        mSharedPref.edit().remove("chrono_state").remove("spinner_pos")
-                .remove("chronoBase").remove("timeAppStopped").apply();
+        mSharedPref.edit().clear().apply();
 
 
         super.onResume();
     }
 
     @Override
-    public void onDestroy() {
-        // If the chronometer is init() save the state
-        if(mChronometer != null)
-            saveAll();
+    public void onDestroyView() {
+        // save the state
+        saveAll();
 
-        super.onDestroy();
+        super.onDestroyView();
+        mBinding = null;
     }
+
 
     @Override
     public void onPause(){
         // If the chronometer is init() save the state
-        if(mChronometer != null)
-            saveAll();
+        saveAll();
         super.onPause();
     }
 
     private void saveAll(){
-        mChronometer.stop();
+        mBinding.chrono.stop();
         SharedPreferences.Editor editor = mSharedPref.edit();
 
 
         // If chronometer not equal 00:00 then there is an exe to be saved
-        if(!mChronometer.getText().equals("00:00")){
+        if(!mBinding.chrono.getText().equals("00:00")){
             // save the spinner position
-            editor.putInt("spinner_pos", mSpinnerSelectionPos);
+            editor.putInt(Constants.CHRONOMETER_SHARED_PREF_SELECTED_CONTACT, mSpinnerSelectionPos);
 
             // Save the chronometer base
-            editor.putLong("chronoBase", mChronometer.getBase());
+            editor.putLong(Constants.CHRONOMETER_SHARED_PREF_TIME, mBinding.chrono.getBase());
 
             // Save if the chronometer is running or is on pause
-            if(mChronometerIsRunnig){
-                editor.putInt("chrono_state", 0); // 0 = running
+            if(chronoIsRunnig){
+                editor.putInt(Constants.CHRONOMETER_SHARED_PREF_STATE,0); // 0 = running
             }
             else{ // was in pause
-                editor.putInt("chrono_state", 1); // 1 = pause
-                editor.putLong("timeAppStopped", mPauseOffset);
+                editor.putInt(Constants.CHRONOMETER_SHARED_PREF_STATE,1); // 1 = pause
+                editor.putLong(Constants.CHRONOMETER_SHARED_PREF_TIME_PAUSE, mPauseOffset);
             }
 
         }
         else
-            editor.putInt("chrono_state", 2); // 2 = stop, not start yet
+            editor.putInt(Constants.CHRONOMETER_SHARED_PREF_STATE,2); // 2 = stop, not start yet
 
 
-        // Write in synchronized mode all the preference
-        editor.commit();
+        // Write all preferences
+        editor.apply();
     }
 
     private void startChronometer(long base) {
         // start the chronometer if is not running yet
-        if (!mChronometerIsRunnig) {
+        if (!chronoIsRunnig) {
             // cancel the cronometer animation
-            mChronometer.clearAnimation();
+            mBinding.chrono.clearAnimation();
             // change the image for the button play->pause
-            mFabChronoPlay.setImageResource(R.drawable.ic_pause_70dp);
+            mBinding.fabStartPause.setImageResource(R.drawable.ic_pause_70dp);
             // button stop can not be used during running
-            mFabStop.setVisibility(View.GONE);
+            mBinding.fabStop.setVisibility(View.GONE);
             // Set the chronometer base minus the paused time
-            mChronometer.setBase(base - mPauseOffset);
-            mChronometer.start();
+            mBinding.chrono.setBase(base - mPauseOffset);
+            mBinding.chrono.start();
             mPauseOffset = 0; // set the pause to zero.
-            mChronometerIsRunnig = true;
+            chronoIsRunnig = true;
         }
         else { // Chronometer is running so I set it on pause
             pauseChronometer();
@@ -251,32 +243,32 @@ public class ChronometerFragment extends Fragment{
     }
 
     private void pauseChronometer() {
-        if (mChronometerIsRunnig) {
+        if (chronoIsRunnig) {
             // start the animation for the chronometer
-            mChronometer.startAnimation(mAnimBlink);
+            mBinding.chrono.startAnimation(mAnimBlink);
             // Set button stop visible
-            mFabStop.setVisibility(View.VISIBLE);
+            mBinding.fabStop.setVisibility(View.VISIBLE);
             // change the image for the button pause->play
-            mFabChronoPlay.setImageResource(R.drawable.ic_play_arrow_black_70dp);
-            mChronometer.stop();
+            mBinding.fabStartPause.setImageResource(R.drawable.ic_play_arrow_black_70dp);
+            mBinding.chrono.stop();
             // Save the duration of the pause
-            mPauseOffset = SystemClock.elapsedRealtime() - mChronometer.getBase();
-            mChronometerIsRunnig = false;
+            mPauseOffset = SystemClock.elapsedRealtime() - mBinding.chrono.getBase();
+            chronoIsRunnig = false;
         }
     }
 
     private void stopChronometer(){
-        mChronometer.stop();
+        mBinding.chrono.stop();
 
         // clear the animation
-        mChronometer.clearAnimation();
+        mBinding.chrono.clearAnimation();
         // set the chronometer as not running
-        mChronometerIsRunnig = false;
+        chronoIsRunnig = false;
 
         // get the ended date
         Date end =  Calendar.getInstance().getTime();
         // time of duration
-        long elapsedMillis = (SystemClock.elapsedRealtime() - mChronometer.getBase());
+        long elapsedMillis = (SystemClock.elapsedRealtime() - mBinding.chrono.getBase());
 
         // Initialize the instance of CalendarEvent with the known value.
         GoogleDataSingleton.initialize(3, mEventTitle, null,
@@ -287,9 +279,9 @@ public class ChronometerFragment extends Fragment{
 
         // reset all the chronometer to initial values
         mPauseOffset = 0;
-        mChronometer.setBase(SystemClock.elapsedRealtime());
-        mSpinnerContact.setEnabled(true);
-        mFabStop.setVisibility(View.GONE);
+        mBinding.chrono.setBase(SystemClock.elapsedRealtime());
+        mBinding.spinnerChooseClient.setEnabled(true);
+        mBinding.fabStop.setVisibility(View.GONE);
     }
 
     private boolean checkAccountSelected(){

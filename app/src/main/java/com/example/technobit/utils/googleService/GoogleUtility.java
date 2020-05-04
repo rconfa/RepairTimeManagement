@@ -1,4 +1,4 @@
-package com.example.technobit.utilities.googleService;
+package com.example.technobit.utils.googleService;
 
 import android.content.Context;
 

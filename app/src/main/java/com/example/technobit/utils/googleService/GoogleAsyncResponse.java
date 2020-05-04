@@ -1,4 +1,4 @@
-package com.example.technobit.utilities.googleService;
+package com.example.technobit.utils.googleService;
 
 public interface GoogleAsyncResponse {
     void processFinish(String output);
