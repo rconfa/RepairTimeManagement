@@ -25,6 +25,7 @@
     <!-- string for contact icon menu-->
     <string name="contact_menu_add">Nuovo</string>
     <string name="contact_menu_delete">Rimuovi</string>
+    <string name="snackbar_contact_no_delete_permitted">Prima ferma il cronometro</string>
 
     <!-- string fragment chronometro-->
     <string name="chrono_start">START</string>

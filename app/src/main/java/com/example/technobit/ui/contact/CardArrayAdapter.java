@@ -66,7 +66,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
                         mTextViewEmail.getText().toString());
         }
 
-        public void setCardBackgroundColor(boolean selected){
+        private void setCardBackgroundColor(boolean selected){
             if (selected)
                 mCard.setCardBackgroundColor(Color.parseColor("#dedede"));
             else
@@ -131,7 +131,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     }
 
     // add new card
-    public void modify(Card object, int position) {
+    void modify(Card object, int position) {
         mCardList.set(position, object);
         notifyDataSetChanged(); // notify the change
     }
@@ -172,6 +172,13 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         for(int i:mCardChecked)
            mCardList.remove(i);
 
+        mCardChecked.clear(); // clear the checked arrayList
+        notifyDataSetChanged(); // notify the change
+    }
+
+    public void clearSelectedCard(){
+        for(int i:mCardChecked)
+            mCardList.get(i).setCardSelection(false);
         mCardChecked.clear(); // clear the checked arrayList
         notifyDataSetChanged(); // notify the change
     }

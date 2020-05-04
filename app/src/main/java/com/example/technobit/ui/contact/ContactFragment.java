@@ -1,5 +1,7 @@
 package com.example.technobit.ui.contact;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import com.example.technobit.R;
 import com.example.technobit.databinding.FragmentContactBinding;
 import com.example.technobit.ui.customize.dialog.ConfirmChoiceDialog;
 import com.example.technobit.ui.customize.dialog.ManageContactDialog;
+import com.example.technobit.utils.Constants;
 import com.example.technobit.utils.contact.Contact;
 import com.example.technobit.utils.contact.ContactSingleton;
 import com.google.android.material.snackbar.Snackbar;
@@ -122,21 +125,30 @@ public class ContactFragment extends Fragment
     }
 
     private void performRemovingContact(){
-        // Ask the user to confirm the action
-        // get the message from the resource
-        String message = getString(R.string.dialog_confirm_delete_message);
-        // Create an instance of the dialog fragment and show it
-        DialogFragment dialog = new ConfirmChoiceDialog(" ", message,confirmDeleteListener);
-        dialog.show(getParentFragmentManager(), TAG);
+        SharedPreferences sharedPref = requireContext().getSharedPreferences(
+                Constants.CHRONOMETER_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
+        if (sharedPref.contains(Constants.CHRONOMETER_SHARED_PREF_TIME))
+            displaySnackbarError(R.string.snackbar_contact_no_delete_permitted);
+        else {
+            // Ask the user to confirm the action
+            // get the message from the resource
+            String message = getString(R.string.dialog_confirm_delete_message);
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new ConfirmChoiceDialog(" ", message, confirmDeleteListener);
+            dialog.show(getParentFragmentManager(), TAG);
+        }
+
+        mCardArrayAdapter.clearSelectedCard();
+        mMenuDeleteItem.setVisible(false); // remove delete icon
+        mMenuAddItem.setVisible(true);
     }
 
     // listner for the dialog
     private ConfirmChoiceDialog.NoticeDialogListener confirmDeleteListener = new ConfirmChoiceDialog.NoticeDialogListener() {
         @Override
         public void onDialogPositiveClick() {
-            mMenuDeleteItem.setVisible(false); // remove delete icon
-            mMenuAddItem.setVisible(true);
+
             try {
                 // sort the array (descending) because I delete the item by position
                 // so if the user select pos1, posN when I try to delete the posN

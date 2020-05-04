@@ -37,4 +37,5 @@
     <string name="snackbar_internet_connection_error">Activate internet connection</string>
     <string name="snackbar_duplicate_contact">Contact already exists!</string>
     <string name="snackbar_bitmap_error">No signature!</string>
+    <string name="snackbar_contact_no_delete_permitted">First stop the chronometer</string>
 </resources>

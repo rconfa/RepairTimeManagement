@@ -33,12 +33,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Calendar;
 import java.util.Date;
 
-// todo: non cancellare clienti durante running
 public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
-    private ChronometerViewModel chronometerViewModel;
     private long mPauseOffset;
-    private boolean chronoIsRunnig; // mi dice se il cronometro sta runnando
+    private boolean chronoIsRunning; // mi dice se il cronometro sta runnando
     private String mEventTitle = "";
     private int mSpinnerSelectionPos;
     private Animation mAnimBlink;
@@ -48,10 +46,6 @@ public class ChronometerFragment extends Fragment{
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        // model della classe
-        //chronometerViewModel = ViewModelProviders.of(this).get(ChronometerViewModel.class);
-
         mBinding = FragmentChronometerBinding.inflate(inflater, container, false);
         View view = mBinding.getRoot();
 
@@ -150,7 +144,7 @@ public class ChronometerFragment extends Fragment{
             mBinding.spinnerChooseClient.setSelection(sp_pos); // set the choosen client
             mBinding.spinnerChooseClient.setEnabled(false);
 
-            chronoIsRunnig = false;
+            chronoIsRunning = false;
 
             // If there is something to recover, 0=running, 1=pausa
             if (state == 0) {
@@ -161,7 +155,7 @@ public class ChronometerFragment extends Fragment{
             } else if (state == 1) {
                 mPauseOffset = mSharedPref.getLong(Constants.CHRONOMETER_SHARED_PREF_TIME_PAUSE,0);
                 mBinding.chrono.setBase(SystemClock.elapsedRealtime() - mPauseOffset);
-                chronoIsRunnig = true;
+                chronoIsRunning = true;
                 pauseChronometer();
             }
         }
@@ -204,7 +198,7 @@ public class ChronometerFragment extends Fragment{
             editor.putLong(Constants.CHRONOMETER_SHARED_PREF_TIME, mBinding.chrono.getBase());
 
             // Save if the chronometer is running or is on pause
-            if(chronoIsRunnig){
+            if(chronoIsRunning){
                 editor.putInt(Constants.CHRONOMETER_SHARED_PREF_STATE,0); // 0 = running
             }
             else{ // was in pause
@@ -223,7 +217,7 @@ public class ChronometerFragment extends Fragment{
 
     private void startChronometer(long base) {
         // start the chronometer if is not running yet
-        if (!chronoIsRunnig) {
+        if (!chronoIsRunning) {
             // cancel the cronometer animation
             mBinding.chrono.clearAnimation();
             // change the image for the button play->pause
@@ -234,7 +228,7 @@ public class ChronometerFragment extends Fragment{
             mBinding.chrono.setBase(base - mPauseOffset);
             mBinding.chrono.start();
             mPauseOffset = 0; // set the pause to zero.
-            chronoIsRunnig = true;
+            chronoIsRunning = true;
         }
         else { // Chronometer is running so I set it on pause
             pauseChronometer();
@@ -243,7 +237,7 @@ public class ChronometerFragment extends Fragment{
     }
 
     private void pauseChronometer() {
-        if (chronoIsRunnig) {
+        if (chronoIsRunning) {
             // start the animation for the chronometer
             mBinding.chrono.startAnimation(mAnimBlink);
             // Set button stop visible
@@ -253,7 +247,7 @@ public class ChronometerFragment extends Fragment{
             mBinding.chrono.stop();
             // Save the duration of the pause
             mPauseOffset = SystemClock.elapsedRealtime() - mBinding.chrono.getBase();
-            chronoIsRunnig = false;
+            chronoIsRunning = false;
         }
     }
 
@@ -263,7 +257,7 @@ public class ChronometerFragment extends Fragment{
         // clear the animation
         mBinding.chrono.clearAnimation();
         // set the chronometer as not running
-        chronoIsRunnig = false;
+        chronoIsRunning = false;
 
         // get the ended date
         Date end =  Calendar.getInstance().getTime();
