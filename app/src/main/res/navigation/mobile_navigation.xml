@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_contact"
-        android:name="com.example.technobit.ui.contact.ContactFragment"
+        android:name="com.technobit.repair_timer.ui.contact.ContactFragment"
         android:label="@string/nav_header_title"
         tools:layout="@layout/fragment_contact" />
 
     <fragment
         android:id="@+id/nav_chrono"
-        android:name="com.example.technobit.ui.chronometer.ChronometerFragment"
+        android:name="com.technobit.repair_timer.ui.chronometer.ChronometerFragment"
         android:label="@string/nav_header_title"
         tools:layout="@layout/fragment_chronometer" >
         <action
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/nav_tools"
-        android:name="com.example.technobit.ui.tools.ToolsFragment"
+        android:name="com.technobit.repair_timer.ui.tools.ToolsFragment"
         android:label="@string/nav_header_title"
         tools:layout="@xml/preferences" >
         <argument
@@ -38,13 +38,13 @@
 
     <fragment
         android:id="@+id/nav_send"
-        android:name="com.example.technobit.ui.send.SendFragment"
+        android:name="com.technobit.repair_timer.ui.send.SendFragment"
         android:label="@string/nav_header_title"
         tools:layout="@layout/fragment_send" />
 
     <!-- add item to navigate into signature fragment -->
     <fragment
         android:id="@+id/nav_signature"
-        android:name="com.example.technobit.ui.signature.SignatureFragment"
+        android:name="com.technobit.repair_timer.ui.signature.SignatureFragment"
         tools:layout="@layout/fragment_signature" />
 </navigation>

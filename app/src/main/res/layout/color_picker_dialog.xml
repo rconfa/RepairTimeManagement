@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:gravity="center" />
 
-        <com.example.technobit.ui.customize.dialog.colorDialog.ColorPickerPalette
+        <com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorPickerPalette
             android:id="@+id/color_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
