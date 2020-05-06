@@ -61,7 +61,9 @@ public class GoogleDataSingleton {
         if(instance!=null){
             return data;
         }
-        else
-            return null;
+        else {
+            data = new GoogleData();
+            return data;
+        }
     }
 }

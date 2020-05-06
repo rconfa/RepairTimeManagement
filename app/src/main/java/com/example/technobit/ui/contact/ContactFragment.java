@@ -33,7 +33,6 @@ public class ContactFragment extends Fragment
         implements CardArrayAdapter.ItemLongClickListener, CardArrayAdapter.ItemClickListener {
 
     private static final String TAG = "ContactFragment";
-    private ContactViewModel contactViewModel;
     private CardArrayAdapter mCardArrayAdapter;
     private ContactSingleton mContactSingleton;
     private MenuItem mMenuDeleteItem;

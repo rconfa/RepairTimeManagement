@@ -78,6 +78,7 @@ public class SignatureFragment extends Fragment {
                     // todo: save data if screen change portrait -> landscape (no su file notSave.txt)
                     GoogleDataSingleton.getData().setDescription(mBinding.etEventDesc.getText().toString());
                     mBinding.signatureView.setEnableSignature(false);
+                    mBinding.signatureView.setEnabled(false);
                     mBinding.etEventDesc.setEnabled(false);
                     saveAllOnGoogle();
                 }
@@ -94,6 +95,7 @@ public class SignatureFragment extends Fragment {
                 }
             }
         });
+
 
         return view;
     }
@@ -203,8 +205,8 @@ public class SignatureFragment extends Fragment {
                         });
                 snackbar.show();
 
-                // go back to the precedent activity
-                getParentFragmentManager().popBackStack();
+                // go back to the precedent fragment
+                requireActivity().onBackPressed();
             }
             else{
                 // check if the user let vibrate the smartphone
@@ -213,8 +215,8 @@ public class SignatureFragment extends Fragment {
                 if(canVib)
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
-                // go back to the precedent activity
-                getParentFragmentManager().popBackStack();
+                // go back to the precedent fragment
+                requireActivity().onBackPressed();
             }
         }
     };

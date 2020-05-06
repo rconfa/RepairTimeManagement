@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 
+import java.util.Objects;
+
 // Class for smartphone utility like shaking, send notification...
 public class SmartphoneControlUtility {
     private Context mContext;
@@ -20,23 +22,19 @@ public class SmartphoneControlUtility {
     public void shake() {
         // based of the Sdk version perform a shake of 600 millis.
         if (Build.VERSION.SDK_INT >= 26) {
-            ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(600, VibrationEffect.DEFAULT_AMPLITUDE));
+            ((Vibrator) Objects.requireNonNull(mContext.getSystemService(Context.VIBRATOR_SERVICE))).vibrate(VibrationEffect.createOneShot(600, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            ((Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE)).vibrate(600);
+            ((Vibrator) Objects.requireNonNull(mContext.getSystemService(Context.VIBRATOR_SERVICE))).vibrate(600);
         }
 
     }
 
     public boolean checkInternetConnection(){
         ConnectivityManager manager =(ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = Objects.requireNonNull(manager).getActiveNetworkInfo();
         if (null != activeNetwork) {
-            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI){
-                return true;
-            }
-            if(activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE){
-                return true;
-            }
+            return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ||
+                    activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
         }
 
         return false;
