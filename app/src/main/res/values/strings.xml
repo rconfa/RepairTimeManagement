@@ -81,4 +81,9 @@
         <item>#D50000</item>
     </string-array>
 
+    <!--- string for send fragment -->
+    <string name="send_text_info">Trovati %1$d eventi non inviati</string>
+    <string name="send_text_error">Nessun evento trovato!</string>
+    <string name="send_text_upload">Invio dei tuoi eventi …</string>
+    <string name="send_text_progress" translatable="false">%1$d%%</string>
 </resources>

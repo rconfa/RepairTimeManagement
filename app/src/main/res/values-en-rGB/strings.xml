@@ -38,4 +38,7 @@
     <string name="snackbar_duplicate_contact">Contact already exists!</string>
     <string name="snackbar_bitmap_error">No signature!</string>
     <string name="snackbar_contact_no_delete_permitted">First stop the chronometer</string>
+    <string name="send_text_info">Found %1$d unsent events</string>
+    <string name="send_text_error">No events found!</string>
+    <string name="send_text_upload">Sending your events …</string>
 </resources>

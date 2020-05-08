@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
+import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import com.technobit.repair_timer.utils.dataNotSent.GoogleData;
 import com.technobit.repair_timer.utils.googleService.GoogleAsyncResponse;
 import com.technobit.repair_timer.utils.googleService.calendar.InsertToGoogleCalendar;
@@ -27,33 +29,50 @@ import java.util.Date;
 // todo 2: sistemare swap activity mentre thread stanno andando
 public class SendFragment extends Fragment  {
     private ArrayList<GoogleData> allData;
-    private int parsedData = 0, totalData = 0;
+    private int parsedData = 0, totalData = 0, mEventColor;
     private Context mContext;
-
+    private FragmentSendBinding mBinding;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        FragmentSendBinding mBinding = FragmentSendBinding.inflate(inflater, container,false);
+        mBinding = FragmentSendBinding.inflate(inflater, container,false);
         View view = mBinding.getRoot();
 
+        // get the context
         mContext = getContext();
 
         try {
             allData = new GoogleData().getAll(mContext);
-            mBinding.textSend.setText("find " + allData.size() + " event not sended yet");
-            SendAllToGoogle(allData);
+            if(allData.size() > 0) {
+                // set the button for sending all visible
+                mBinding.btnSend.setVisibility(View.VISIBLE);
+                // setting text
+                mBinding.textInfo.setText(getString(R.string.send_text_info, allData.size()));
+            }
         } catch (IOException e) {
             allData = null;
-            mBinding.textSend.setText("Error on file reading");
+            mBinding.textInfo.setText(getString(R.string.send_text_error));
         }
 
-
+        mBinding.btnSend.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                mBinding.btnSend.setVisibility(View.GONE);
+                mBinding.textInfo.setText(getString(R.string.send_text_upload));
+                mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
+                mBinding.progressBar.setMax(allData.size());
+                mBinding.progressBar.setProgress(0);
+                mBinding.textPercentage.setText(getString(R.string.send_text_progress, 0));
+                SendAllToGoogle(allData);
+            }
+        });
         return view;
     }
 
     private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
         GoogleData singleData;
         totalData = allData.size();
+        mEventColor = getColorInt(); // get the color that the user has choose
         for (int parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
             singleData = allData.get(parsingIndex);
             if (singleData.getCase() != 2) {
@@ -64,6 +83,7 @@ public class SendFragment extends Fragment  {
             }
         }
 
+        // thread for delete sent data from file when finish.
         new Thread() {
             public void run() {
                 while(totalData != parsedData){
@@ -99,29 +119,32 @@ public class SendFragment extends Fragment  {
 
                             sendToCalendar(singleData);
                         }
+                        else
+                            safe_vibrate();
                     }
                 }).start();
     }
 
     private void sendToCalendar(final GoogleData data){
         // when the image is upload I add the event on calendar
-        int color = getColorInt(); // get the color that the user has choose
         // insert the event on calendar
         Date endDate = new Date(data.getEventEnd());
 
         new InsertToGoogleCalendar(data.getEventTitle(), data.getDescription(), endDate,
-                data.getEventDuration(), color, mContext,data.getImage(),
+                data.getEventDuration(), mEventColor, mContext,data.getImage(),
                 new  GoogleAsyncResponse(){
                     @Override
                     public void processFinish(String result) {
                         parsedData++;
+                        int val = (parsedData * 100) / totalData; // calculate the progress
+                        safe_update_ui(val); // Update ui
+
                         if(result.equals("true"))
                             allData.remove(data);
                         else
-                            System.err.println("to vibbb");
+                            safe_vibrate();
                     }
                 }).start();
-
     }
 
     private int getColorInt(){
@@ -142,4 +165,36 @@ public class SendFragment extends Fragment  {
         return new File(filepath);
     }
 
+    private void safe_update_ui(final int value){
+        // shake the smartphone if the fragment is available
+        if(this.isAdded()) {
+            requireActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // progress value update
+                    mBinding.progressBar.setProgress(value);
+                    mBinding.textPercentage.setText(
+                            getString(R.string.send_text_progress, value));
+                }
+            });
+        }
+    }
+
+    private void safe_vibrate(){
+        // shake the smartphone if the fragment is available
+        if(this.isAdded()) {
+            // check if the user let vibrate the smartphone
+            SharedPreferences mSharedPref = requireContext().getSharedPreferences(
+                    Constants.TOOLS_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
+            final boolean canVib = mSharedPref.getBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, true);
+
+            requireActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (canVib)
+                        new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+                }
+            });
+        }
+    }
 }
