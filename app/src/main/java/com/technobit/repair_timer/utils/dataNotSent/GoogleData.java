@@ -120,7 +120,7 @@ public class GoogleData {
         toRet.mEventDuration = Long.decode(unzippedData[3]);
         toRet.mEventEnd = Long.decode(unzippedData[4]);
         // if case == 3 then there are no description and no imageData
-        if(mCase != 3) {
+        if(toRet.mCase != 3) {
             toRet.mDescription = unzippedData[2];
             toRet.mImage = unzippedData[5];
         }

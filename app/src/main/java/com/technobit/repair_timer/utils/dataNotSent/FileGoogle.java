@@ -36,19 +36,20 @@ public class FileGoogle {
         ArrayList<GoogleData> data = new ArrayList<>();
 
         File f = new File(context.getFilesDir() + "/" + filename);
-        if(f.exists()) {
-            InputStreamReader input = new InputStreamReader(context.openFileInput(filename));
-            BufferedReader in = new BufferedReader(input);
-            String line;
-            //GoogleData toAdd = new GoogleData();
-            while ((line = in.readLine()) != null) {
-                //toAdd.readFromString(line); // Retrieve the data from the line
-                data.add(new GoogleData().readFromString(line)); // adding the data to list
-            }
 
-            in.close();
+        InputStreamReader input = new InputStreamReader(context.openFileInput(filename));
+        BufferedReader in = new BufferedReader(input);
+        String line;
+        //GoogleData toAdd = new GoogleData();
+        while ((line = in.readLine()) != null) {
+            //toAdd.readFromString(line); // Retrieve the data from the line
+            data.add(new GoogleData().readFromString(line)); // adding the data to list
         }
+
+        in.close();
+
         return data;
+
     }
 
     // Re-write writing the array list
