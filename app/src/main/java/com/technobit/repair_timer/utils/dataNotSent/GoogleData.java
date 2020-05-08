@@ -111,22 +111,25 @@ public class GoogleData {
     }
 
 
-    protected void readFromString(String line) {
+    protected GoogleData readFromString(String line) {
+        GoogleData toRet = new GoogleData();
         String[] unzippedData = line.split(";");
 
-        this.mCase = Integer.parseInt(unzippedData[0]);
-        this.mEventTitle = unzippedData[1];
-        this.mEventDuration = Long.decode(unzippedData[3]);
-        this.mEventEnd = Long.decode(unzippedData[4]);
+        toRet.mCase = Integer.parseInt(unzippedData[0]);
+        toRet.mEventTitle = unzippedData[1];
+        toRet.mEventDuration = Long.decode(unzippedData[3]);
+        toRet.mEventEnd = Long.decode(unzippedData[4]);
         // if case == 3 then there are no description and no imageData
         if(mCase != 3) {
-            this.mDescription = unzippedData[2];
-            this.mImage = unzippedData[5];
+            toRet.mDescription = unzippedData[2];
+            toRet.mImage = unzippedData[5];
         }
         else{
-            this.mDescription = null;
-            this.mImage = null;
+            toRet.mDescription = null;
+            toRet.mImage = null;
         }
+
+        return toRet;
     }
 
     public void writeAll(ArrayList<GoogleData> datas, Context context) throws IOException {
