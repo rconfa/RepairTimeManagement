@@ -144,7 +144,11 @@ public class SignatureFragment extends Fragment {
 
 
         }
-        // todo: else
+        else{
+            GoogleDataSingleton.getData().setImage(null);
+            GoogleDataSingleton.getData().setCase(3);
+            sendToCalendar();
+        }
     }
 
     // Implement the interface to handle the asyncTask response for google drive uploading
@@ -168,7 +172,7 @@ public class SignatureFragment extends Fragment {
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
                 // go back to the precedent activity
-                getParentFragmentManager().popBackStack();
+                safe_press_back();
             }
         }
     };
@@ -216,7 +220,7 @@ public class SignatureFragment extends Fragment {
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
                 // go back to the precedent activity
-                getParentFragmentManager().popBackStack();
+                safe_press_back();
             }
         }
     };
@@ -254,7 +258,7 @@ public class SignatureFragment extends Fragment {
 
     @Override
     // if the user destroy this fragment without send the info on google I save all into file
-    public void onDestroy() {
+    public void onDestroyView() {
         if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
             try {
                 GoogleDataSingleton.saveInstance(getContext());
@@ -262,6 +266,18 @@ public class SignatureFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        super.onDestroy();
+        super.onDestroyView();
+    }
+
+    private void safe_press_back(){
+        // Go back to the precedent activity if the fragment is available
+        if(this.isAdded()) {
+            requireActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    requireActivity().onBackPressed();
+                }
+            });
+        }
     }
 }
