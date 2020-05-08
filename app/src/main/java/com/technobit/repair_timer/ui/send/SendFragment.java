@@ -49,6 +49,8 @@ public class SendFragment extends Fragment  {
                 // setting text
                 mBinding.textInfo.setText(getString(R.string.send_text_info, allData.size()));
             }
+            else
+                mBinding.textInfo.setText(getString(R.string.send_text_error));
         } catch (IOException e) {
             allData = null;
             mBinding.textInfo.setText(getString(R.string.send_text_error));
