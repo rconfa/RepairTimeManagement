@@ -213,7 +213,7 @@ public class SignatureFragment extends Fragment {
                 snackbar.show();
 
                 // go back to the precedent activity
-                getParentFragmentManager().popBackStack();
+                safe_press_back();
             }
             else{
                 // check if the user let vibrate the smartphone
