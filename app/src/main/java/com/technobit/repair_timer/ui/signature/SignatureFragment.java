@@ -29,8 +29,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class SignatureFragment extends Fragment {
 
@@ -142,8 +144,7 @@ public class SignatureFragment extends Fragment {
             GoogleDataSingleton.getData().setImage(file.getPath());
             GoogleDataSingleton.getData().setCase(2);
 
-            new InsertToGoogleDrive(GoogleDataSingleton.getData().getEventTitle(),
-                    file, getContext(),mDriveResponse).start();
+            new InsertToGoogleDrive(file, getContext(),mDriveResponse).start();
 
 
         }
@@ -233,8 +234,10 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mBinding.signatureView.isBitmapEmpty()){
+            String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
             File file = new File(requireContext().getFilesDir() + "/" +
-                    GoogleDataSingleton.getData().getEventTitle() +".jpeg");
+                    GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
+                    + ".jpeg");
             OutputStream os;
             try {
                 os = new BufferedOutputStream(new FileOutputStream(file));
@@ -254,8 +257,10 @@ public class SignatureFragment extends Fragment {
     }
 
     private void deleteBitmapFile(){
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         File file = new File(requireContext().getFilesDir() + "/" +
-                GoogleDataSingleton.getData().getEventTitle() + ".jpeg");
+                GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
+                + ".jpeg");
         file.delete();
     }
 
@@ -284,20 +289,8 @@ public class SignatureFragment extends Fragment {
 
     // go back to the previews fragment and saved the instance of the event that is not sent
     private void safe_press_back(){
-
-
         // check if the fragment is available
         if(this.isAdded()) {
-            /*
-            // if there is some data not sent to google I save it
-            if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
-                try {
-                    GoogleDataSingleton.saveInstance(requireContext());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }*/
-
             // Go back to the precedent activity
             requireActivity().runOnUiThread(new Runnable() {
                 @Override

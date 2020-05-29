@@ -20,13 +20,11 @@ import java.io.IOException;
 public class InsertToGoogleDrive extends Thread {
 
     private Drive mService; // google drive service
-    private String mImageName; // name for the image
     private java.io.File mFilepath; // local image filepath
     private GoogleAsyncResponse mdelegate;
 
-    public InsertToGoogleDrive(String mImageName, java.io.File mFilepath, Context mContext,
+    public InsertToGoogleDrive(java.io.File mFilepath, Context mContext,
                                   GoogleAsyncResponse mdelegate) {
-        this.mImageName = mImageName;
         this.mFilepath = mFilepath;
         this.mdelegate = mdelegate;
 
@@ -50,7 +48,7 @@ public class InsertToGoogleDrive extends Thread {
 
     private String insertImage() throws IOException {
         File fileMetadata = new File();
-        fileMetadata.setName(mImageName);
+        fileMetadata.setName(this.mFilepath.getName());
         FileContent mediaContent = new FileContent("image/jpeg", mFilepath);
 
         Drive.Files.Create fileDrive = mService.files().create(fileMetadata, mediaContent);

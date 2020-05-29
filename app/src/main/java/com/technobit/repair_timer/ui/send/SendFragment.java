@@ -108,7 +108,7 @@ public class SendFragment extends Fragment  {
 
     private void sentToDrive(final GoogleData singleData, final int index) {
         final File imageFile = getBitmapFile(singleData.getImage());
-        new InsertToGoogleDrive(singleData.getEventTitle(), imageFile, mContext,
+        new InsertToGoogleDrive(imageFile, mContext,
                 new GoogleAsyncResponse(){
                     @Override
                     public void processFinish(String attachment) {
