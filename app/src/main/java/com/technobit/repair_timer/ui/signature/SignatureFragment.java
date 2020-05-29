@@ -267,9 +267,38 @@ public class SignatureFragment extends Fragment {
         GoogleDataSingleton.reset();
     }
 
+    @Override
+    public void onDestroyView() {
+        // if there is some data not sent to google I save it
+        if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
+            try {
+                GoogleDataSingleton.saveInstance(getContext());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.onDestroyView();
+    }
+
+
+    // go back to the previews fragment and saved the instance of the event that is not sent
     private void safe_press_back(){
-        // Go back to the precedent activity if the fragment is available
+
+
+        // check if the fragment is available
         if(this.isAdded()) {
+            /*
+            // if there is some data not sent to google I save it
+            if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
+                try {
+                    GoogleDataSingleton.saveInstance(requireContext());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }*/
+
+            // Go back to the precedent activity
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
