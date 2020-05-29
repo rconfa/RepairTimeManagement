@@ -25,14 +25,23 @@ public class GoogleDataSingleton {
     public static synchronized GoogleDataSingleton initialize(int mCase, String mEventTitle, String mDescription,
                                                      String mImage, Long mEventDuration,
                                                      Long mEventEnd){
-        GoogleData temp = new GoogleData(mCase,mEventTitle,mDescription,mImage,mEventDuration,mEventEnd);
-
-
         if(instance==null){
             instance=new GoogleDataSingleton();
         }
 
-        data = temp;
+        data = new GoogleData(mCase,mEventTitle,mDescription,mImage,mEventDuration,mEventEnd);
+
+        return instance;
+    }
+
+    // initialize the instance with value
+    public static synchronized GoogleDataSingleton StringInitialize(String toUnzip){
+        if(instance==null){
+            instance=new GoogleDataSingleton();
+        }
+
+        data = new GoogleData().readFromString(toUnzip);
+
         return instance;
     }
 

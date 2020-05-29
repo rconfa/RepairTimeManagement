@@ -43,6 +43,10 @@ public class SignatureFragment extends Fragment {
         mBinding = FragmentSignatureBinding.inflate(inflater, container,false);
         View view = mBinding.getRoot();
 
+        if (savedInstanceState != null) {
+            GoogleDataSingleton.StringInitialize(savedInstanceState.getString(Constants.SAVE_INSTANCE_GOOGLE));
+        }
+
         // Shared preference for get/set all the preference
         mSharedPref = requireContext().getSharedPreferences(
                 Constants.TOOLS_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
@@ -75,7 +79,6 @@ public class SignatureFragment extends Fragment {
                 }
                 else {
                     // set the event description
-                    // todo: save data if screen change portrait -> landscape (no su file notSave.txt)
                     GoogleDataSingleton.getData().setDescription(mBinding.etEventDesc.getText().toString());
                     mBinding.signatureView.setEnableSignature(false);
                     mBinding.signatureView.setEnabled(false);
@@ -257,16 +260,11 @@ public class SignatureFragment extends Fragment {
     }
 
     @Override
-    // if the user destroy this fragment without send the info on google I save all into file
-    public void onDestroyView() {
-        if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
-            try {
-                GoogleDataSingleton.saveInstance(getContext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        super.onDestroyView();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(Constants.SAVE_INSTANCE_GOOGLE, GoogleDataSingleton.getData().toString());
+        GoogleDataSingleton.reset();
     }
 
     private void safe_press_back(){
