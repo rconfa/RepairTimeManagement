@@ -26,48 +26,62 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-// todo 2: sistemare swap activity mentre thread stanno andando
 public class SendFragment extends Fragment  {
     private ArrayList<GoogleData> allData;
     private int parsedData = 0, totalData = 0, mEventColor;
     private Context mContext;
     private FragmentSendBinding mBinding;
+    private SharedPreferences mSharedPref;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         mBinding = FragmentSendBinding.inflate(inflater, container,false);
         View view = mBinding.getRoot();
 
-        // get the context
-        mContext = getContext();
+        mSharedPref = requireContext().getSharedPreferences(
+                Constants.SEND_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
-        try {
-            allData = new GoogleData().getAll(mContext);
-            if(allData.size() > 0) {
-                // set the button for sending all visible
-                mBinding.btnSend.setVisibility(View.VISIBLE);
-                // setting text
-                mBinding.textInfo.setText(getString(R.string.send_text_info, allData.size()));
-            }
-            else
+        boolean canSend = mSharedPref.getBoolean(Constants.SEND_SHARED_PREF_ALLOW, true);
+
+        if(canSend) {
+            // get the context
+            mContext = getContext();
+
+            try {
+                allData = new GoogleData().getAll(mContext);
+                if (allData.size() > 0) {
+                    // set the button for sending all visible
+                    mBinding.btnSend.setVisibility(View.VISIBLE);
+                    // setting text
+                    mBinding.textInfo.setText(getString(R.string.send_text_info, allData.size()));
+                } else
+                    mBinding.textInfo.setText(getString(R.string.send_text_error));
+            } catch (IOException e) {
+                allData = null;
                 mBinding.textInfo.setText(getString(R.string.send_text_error));
-        } catch (IOException e) {
-            allData = null;
-            mBinding.textInfo.setText(getString(R.string.send_text_error));
-        }
-
-        mBinding.btnSend.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                mBinding.btnSend.setVisibility(View.GONE);
-                mBinding.textInfo.setText(getString(R.string.send_text_upload));
-                mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
-                mBinding.progressBar.setMax(allData.size());
-                mBinding.progressBar.setProgress(0);
-                mBinding.textPercentage.setText(getString(R.string.send_text_progress, 0));
-                SendAllToGoogle(allData);
             }
-        });
+
+            mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferences.Editor editor = mSharedPref.edit();
+                    editor.putBoolean(Constants.SEND_SHARED_PREF_ALLOW, false);
+                    editor.apply();
+
+                    mBinding.btnSend.setVisibility(View.GONE);
+                    mBinding.textInfo.setText(getString(R.string.send_text_upload));
+                    mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
+                    mBinding.progressBar.setMax(allData.size());
+                    mBinding.progressBar.setProgress(0);
+                    mBinding.textPercentage.setText(getString(R.string.send_text_progress, 0));
+                    SendAllToGoogle(allData);
+                }
+            });
+        }
+        else
+            mBinding.textInfo.setText(getString(R.string.background_send_feedback));
+
         return view;
     }
 
@@ -77,6 +91,7 @@ public class SendFragment extends Fragment  {
         mEventColor = getColorInt(); // get the color that the user has choose
         for (int parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
             singleData = allData.get(parsingIndex);
+
             if (singleData.getCase() != 2) {
                 sendToCalendar(singleData);
             }
@@ -95,11 +110,18 @@ public class SendFragment extends Fragment  {
                         e.printStackTrace();
                     }
                 }
+
+                if(allData.size()>0){
+                    mBinding.textInfo.setText(getString(R.string.send_text_fail));
+                }
                 try {
                     new GoogleData().writeAll(allData, mContext);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                SharedPreferences.Editor editor = mSharedPref.edit();
+                editor.clear(); // remove all values
+                editor.apply();
             }
         }.start();
 
@@ -121,8 +143,12 @@ public class SendFragment extends Fragment  {
 
                             sendToCalendar(singleData);
                         }
-                        else
+                        else{
+                            parsedData++;
+                            int val = (parsedData * 100) / totalData; // calculate the progress
+                            safe_update_ui(val); // Update ui
                             safe_vibrate();
+                        }
                     }
                 }).start();
     }

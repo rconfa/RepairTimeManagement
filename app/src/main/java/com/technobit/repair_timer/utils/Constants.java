@@ -17,4 +17,7 @@ public class Constants {
     public static final String EVENT_NOT_SENT_FILENAME = "notSent.txt";
 
     public static final String SAVE_INSTANCE_GOOGLE = "gData";
+
+    public static final String SEND_SHARED_PREF_FILENAME = "send_shared_preferences";
+    public static final String SEND_SHARED_PREF_ALLOW = "can_send";
 }
