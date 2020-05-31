@@ -51,6 +51,7 @@ public class ConfirmChoiceDialog extends DialogFragment {
         })
         .setNegativeButton(R.string.dialog_btn_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                mListener.onDialogCancel();
                 dismiss(); // dismiss the dialog
             }
         });

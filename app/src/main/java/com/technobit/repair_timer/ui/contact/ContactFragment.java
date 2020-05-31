@@ -162,6 +162,8 @@ public class ContactFragment extends Fragment
             } catch (IOException e) {
                 displaySnackbarError(R.string.snackbar_file_error);
             }
+            mMenuDeleteItem.setVisible(false); // remove delete icon
+            mMenuAddItem.setVisible(true);
         }
 
         @Override
