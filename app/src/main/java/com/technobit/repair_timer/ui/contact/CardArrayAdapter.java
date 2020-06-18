@@ -130,13 +130,6 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         }
     }
 
-    // add new card
-    void modify(Card object, int position) {
-        mCardList.set(position, object);
-        notifyDataSetChanged(); // notify the change
-    }
-
-
     // Add multiple card
     public void add(ArrayList<Contact> list_card){
         if(list_card == null)
@@ -146,6 +139,7 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
             temp = new Card(s);
             mCardList.add(temp);
         }
+        notifyDataSetChanged(); // notify the change
     }
 
     /*
@@ -166,16 +160,6 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
         }
     }
 
-    // remove from the arraylist all the element
-    public void removeSelected(){
-        // remove the selected item from the list
-        for(int i:mCardChecked)
-           mCardList.remove(i);
-
-        mCardChecked.clear(); // clear the checked arrayList
-        notifyDataSetChanged(); // notify the change
-    }
-
     public void clearSelectedCard(){
         for(int i:mCardChecked)
             mCardList.get(i).setCardSelection(false);
@@ -192,5 +176,9 @@ public class CardArrayAdapter extends RecyclerView.Adapter<CardArrayAdapter.Card
     // saving the card in the arrayList (space saving)
     public void sortPosToDelete(){
         Collections.sort(mCardChecked, Collections.reverseOrder());
+    }
+
+    public void clear(){
+        mCardList.clear();
     }
 }

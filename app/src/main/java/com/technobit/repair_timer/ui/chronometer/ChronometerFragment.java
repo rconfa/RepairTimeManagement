@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -26,8 +27,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentChronometerBinding;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
+import com.technobit.repair_timer.ui.model.SharedViewModel;
 import com.technobit.repair_timer.utils.Constants;
-import com.technobit.repair_timer.utils.contact.ContactSingleton;
 import com.technobit.repair_timer.utils.dataNotSent.GoogleDataSingleton;
 
 import java.util.Calendar;
@@ -47,7 +48,7 @@ public class ChronometerFragment extends Fragment{
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentChronometerBinding.inflate(inflater, container, false);
-        View view = mBinding.getRoot();
+        final View view = mBinding.getRoot();
 
 
         // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
@@ -58,21 +59,21 @@ public class ChronometerFragment extends Fragment{
         if (!checkAccountSelected())
             askToSelectEmail();
 
-        // get the singleton instance
-        ContactSingleton sg = ContactSingleton.getInstance(getContext());
-
         // load chronometer animation
         mAnimBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
+        SharedViewModel model = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Init dello spinner
         mSpinnerSelectionPos = 0; // Default selected index, 0 = hint for the spinner
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(),
-                R.layout.spinner_item, sg.getContactNameList());
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        arrayAdapter.insert(getResources().getString(R.string.spinner_hint),0);
-        mBinding.spinnerChooseClient.setAdapter(arrayAdapter);
 
+        // Updating UI, add all item to the adapter
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(),
+                R.layout.spinner_item, model.getContactsName(getContext()));
+
+        arrayAdapter.insert(getResources().getString(R.string.spinner_hint), 0);
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        mBinding.spinnerChooseClient.setAdapter(arrayAdapter);
 
         // LISTENER
         // event on client choose from the spinner
@@ -163,7 +164,6 @@ public class ChronometerFragment extends Fragment{
         // Delete the used preference
         mSharedPref.edit().clear().apply();
 
-
         super.onResume();
     }
 
@@ -171,7 +171,6 @@ public class ChronometerFragment extends Fragment{
     public void onDestroyView() {
         // save the state
         saveAll();
-
         super.onDestroyView();
         mBinding = null;
     }

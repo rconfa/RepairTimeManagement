@@ -7,15 +7,15 @@ import java.util.ArrayList;
 
 // Class that implement Singleton pattern
 // store all the contact list that can be used in all class.
-public class ContactSingleton {
-    private static ContactSingleton instance;
+public class ContactRepository {
+    private static ContactRepository instance;
 
     // Global variable
     private  ArrayList<Contact> clienti;
     private FileContact dc;
 
     // Restrict the constructor from being instantiated
-    private ContactSingleton(Context c){
+    private ContactRepository(Context c){
         dc = new FileContact();
 
         // Read all contact from file
@@ -74,9 +74,9 @@ public class ContactSingleton {
         clienti.set(pos, toUpdate); // update into client list
     }
 
-    public static synchronized ContactSingleton getInstance(Context c){
+    public static synchronized ContactRepository getInstance(Context c){
         if(instance==null){
-            instance=new ContactSingleton(c);
+            instance=new ContactRepository(c);
         }
         return instance;
     }

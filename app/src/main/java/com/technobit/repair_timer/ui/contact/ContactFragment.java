@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -21,33 +24,33 @@ import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentContactBinding;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
 import com.technobit.repair_timer.ui.customize.dialog.ManageContactDialog;
+import com.technobit.repair_timer.ui.model.SharedViewModel;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.contact.Contact;
-import com.technobit.repair_timer.utils.contact.ContactSingleton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-// todo: back arrow when item are selected
 public class ContactFragment extends Fragment
         implements CardArrayAdapter.ItemLongClickListener, CardArrayAdapter.ItemClickListener {
 
     private static final String TAG = "ContactFragment";
     private CardArrayAdapter mCardArrayAdapter;
-    private ContactSingleton mContactSingleton;
     private MenuItem mMenuDeleteItem;
     private MenuItem mMenuAddItem;
+    private SharedViewModel mContactViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        // setto true le opzioni del menu, cosi posso visualizare le icone
+        // Setting menu for visualizing icon
         setHasOptionsMenu(true);
         FragmentContactBinding mBinding = FragmentContactBinding.inflate(inflater, container,false);
         View view = mBinding.getRoot();
 
-        // save the singleton instance
-        mContactSingleton = ContactSingleton.getInstance(getContext());
+        // Create a ViewModel the first time the system calls a Fragment's onViewCreated() method.
+        // Re-created fragments receive the same CountryNewsViewModel instance created by the first Fragment.
+        mContactViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
 
         // setting the recycle view for the fragment
@@ -58,8 +61,6 @@ public class ContactFragment extends Fragment
 
         // adapter for the recycle view
         mCardArrayAdapter = new CardArrayAdapter();
-        // add all item to the adapter
-        addContactToAdapter();
 
         // set the long click listener and the click listener equal to my local listener
         mCardArrayAdapter.mySetLongClickListener(this);
@@ -68,14 +69,27 @@ public class ContactFragment extends Fragment
         // set the adapter for the listview
         mBinding.contactListview.setAdapter(mCardArrayAdapter);
 
-        return view;
-    }
+        // The observer associated with the object that holds the list of contacts.
+        final Observer<ArrayList<Contact>> observer = new Observer<ArrayList<Contact>>() {
+            @Override
+            public void onChanged(ArrayList<Contact> contacts) {
+                // Updating UI, add all item to the adapter
+                mCardArrayAdapter.clear();
+                mCardArrayAdapter.add(contacts);
+            }
 
-    private void addContactToAdapter() {
-        // get all contact from file
-        ArrayList<Contact> allContact = mContactSingleton.getContactList();
-        if(allContact != null) // if there is some contact
-            mCardArrayAdapter.add(allContact); // add all list to adapter
+        };
+
+        // The LiveData object that holds the list of contacts.
+        LiveData<ArrayList<Contact>> liveData = mContactViewModel.getContacts(getContext());
+
+        /*
+         * We set the relationship between the Observer and the LiveData object
+         * that holds the Resource associated with the list of contacts.
+         */
+        liveData.observe(getViewLifecycleOwner(), observer);
+
+        return view;
     }
 
     @Override
@@ -156,12 +170,11 @@ public class ContactFragment extends Fragment
                 // the position doesn't exist anymore
                 mCardArrayAdapter.sortPosToDelete();
                 // remove all items selected from file
-                mContactSingleton.delete(mCardArrayAdapter.getPositionToDelete(),getContext());
-                // remove all items from the listview
-                mCardArrayAdapter.removeSelected();
+                mContactViewModel.deleteContact(mCardArrayAdapter.getPositionToDelete(), getContext());
             } catch (IOException e) {
                 displaySnackbarError(R.string.snackbar_file_error);
             }
+
             mMenuDeleteItem.setVisible(false); // remove delete icon
             mMenuAddItem.setVisible(true);
         }
@@ -191,11 +204,10 @@ public class ContactFragment extends Fragment
         public void onDialogPositiveClick(Contact c, int position) {
             try {
                 // Add the contact only if the name is not duplicate
-                boolean added = mContactSingleton.addContact(c, getContext());
-                if (added)
-                    mCardArrayAdapter.add(new Card(c));
-                else
+                boolean success = mContactViewModel.addContact(c, getContext());
+                if(!success)
                     displaySnackbarError(R.string.snackbar_duplicate_contact);
+
             } catch (IOException e) {
                 displaySnackbarError(R.string.snackbar_file_error);
             }
@@ -219,10 +231,8 @@ public class ContactFragment extends Fragment
     private ManageContactDialog.NoticeDialogListener mUpdateContactListener = new ManageContactDialog.NoticeDialogListener() {
         @Override
         public void onDialogPositiveClick(Contact c, int position) {
-            Card temp = new Card(c);
             try {
-                mContactSingleton.updateContact(c, position, getContext());
-                mCardArrayAdapter.modify(temp,position);
+                mContactViewModel.updateContact(c, position, getContext());
             } catch (IOException e) {
                 displaySnackbarError(R.string.snackbar_file_error);
             }
