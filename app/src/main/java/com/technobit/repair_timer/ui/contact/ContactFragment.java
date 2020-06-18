@@ -49,7 +49,7 @@ public class ContactFragment extends Fragment
         View view = mBinding.getRoot();
 
         // Create a ViewModel the first time the system calls a Fragment's onViewCreated() method.
-        // Re-created fragments receive the same CountryNewsViewModel instance created by the first Fragment.
+        // Re-created fragments receive the same mContactViewModel instance created by the first Fragment.
         mContactViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
 
