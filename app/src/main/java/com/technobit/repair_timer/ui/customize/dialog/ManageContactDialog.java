@@ -84,7 +84,7 @@ public class ManageContactDialog extends DialogFragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count!=0) // if the name is not empty set the yes but to visible
+                if(s.length()!=0) // if the name is not empty set the yes but to visible
                     yes.setVisibility(View.VISIBLE);
                 else
                     yes.setVisibility(View.INVISIBLE);
