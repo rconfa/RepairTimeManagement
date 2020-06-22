@@ -176,14 +176,14 @@ public class ChronometerFragment extends Fragment{
     }
 
 
-    /*
+
     @Override
     public void onPause(){
         // If the chronometer is init() save the state
         saveAll();
         super.onPause();
     }
-    */
+
 
     private void saveAll(){
         mBinding.chrono.stop();
