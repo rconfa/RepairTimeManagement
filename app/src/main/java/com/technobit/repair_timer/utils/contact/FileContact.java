@@ -2,6 +2,8 @@ package com.technobit.repair_timer.utils.contact;
 
 import android.content.Context;
 
+import com.technobit.repair_timer.utils.Constants;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -10,15 +12,14 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class FileContact {
-    private static final String filename = "clienti.txt";
 
     // legge un file txt e riporta tutti i dati come array
     public ArrayList<Contact> readFile(Context context) throws IOException {
         ArrayList<Contact> names = new ArrayList<>();
 
-        File f = new File(context.getFilesDir() + "/" + filename);
+        File f = new File(context.getFilesDir() + "/" + Constants.CONTACTS_FILENAME);
         if(f.exists()) {
-            InputStreamReader input = new InputStreamReader(context.openFileInput(filename));
+            InputStreamReader input = new InputStreamReader(context.openFileInput(Constants.CONTACTS_FILENAME));
             BufferedReader in = new BufferedReader(input);
             String line;
             Contact toAdd;
@@ -36,7 +37,7 @@ public class FileContact {
 
     private void writeAllToFile(ArrayList<Contact> datas, Context context) throws IOException {
         // scrivo sul file
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(filename, Context.MODE_PRIVATE));
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(Constants.CONTACTS_FILENAME, Context.MODE_PRIVATE));
         // scrivo tutte le stringhe
         for (Contact s:datas) {
             outputStreamWriter.write(s.toString()+"\n");
@@ -47,7 +48,7 @@ public class FileContact {
     public void writeToFile(Contact data, Context context) throws IOException {
 
         // scrivo sul file
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(filename, Context.MODE_APPEND));
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(Constants.CONTACTS_FILENAME, Context.MODE_APPEND));
        // Write the data on file using toString method
         outputStreamWriter.write(data.toString()+"\n");
 
@@ -59,7 +60,7 @@ public class FileContact {
     public void delete(ArrayList<Integer> pos,Context context) throws IOException {
         ArrayList<Contact> names = new ArrayList<>();
 
-        InputStreamReader input = new InputStreamReader(context.openFileInput(filename));
+        InputStreamReader input = new InputStreamReader(context.openFileInput(Constants.CONTACTS_FILENAME));
         BufferedReader in = new BufferedReader(input);
         String line;
         int numLine = 0;
@@ -81,7 +82,7 @@ public class FileContact {
     public void update(Contact toUpdate, int pos, Context c) throws IOException {
         ArrayList<Contact> names = new ArrayList<>();
 
-        InputStreamReader input = new InputStreamReader(c.openFileInput(filename));
+        InputStreamReader input = new InputStreamReader(c.openFileInput(Constants.CONTACTS_FILENAME));
         BufferedReader in = new BufferedReader(input);
         String line;
         int numLine = 0;

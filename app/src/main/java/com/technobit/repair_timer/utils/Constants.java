@@ -15,6 +15,7 @@ public class Constants {
     public static final String CHRONOMETER_SHARED_PREF_TIME_PAUSE = "chrono_time_pause";
 
     public static final String EVENT_NOT_SENT_FILENAME = "notSent.txt";
+    public static final String CONTACTS_FILENAME = "clienti.txt";
 
     public static final String SAVE_INSTANCE_GOOGLE = "gData";
 
