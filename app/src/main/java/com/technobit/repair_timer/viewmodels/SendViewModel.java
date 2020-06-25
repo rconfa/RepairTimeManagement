@@ -17,14 +17,15 @@ public class SendViewModel extends ViewModel {
     private MutableLiveData<Integer> progress;
 
     public MutableLiveData<ArrayList<GoogleData>> getDatas(Context mContext){
-        if(datas == null) {
-            datas = new MutableLiveData<>();
-            try {
-                datas.setValue(new GoogleDataRepository().getAll(mContext));
-            } catch (IOException e) {
-                datas = new MutableLiveData<>(); // restore all if there is some error
-            }
+        // not check if datas is null because I need to update the arrayList each time
+        // the user ask for send fragment!!
+        datas = new MutableLiveData<>();
+        try {
+            datas.setValue(new GoogleDataRepository().getAll(mContext));
+        } catch (IOException e) {
+            datas = new MutableLiveData<>(); // restore all if there is some error
         }
+
         return datas;
     }
 
