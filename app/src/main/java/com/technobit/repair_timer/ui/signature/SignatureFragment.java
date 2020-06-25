@@ -155,8 +155,6 @@ public class SignatureFragment extends Fragment {
             GoogleDataSingleton.getData().setCase(2);
 
             new InsertToGoogleDrive(file, getContext(),mDriveResponse).start();
-
-
         }
         else{
             GoogleDataSingleton.getData().setImage(null);
@@ -169,16 +167,7 @@ public class SignatureFragment extends Fragment {
     private GoogleAsyncResponse mDriveResponse = new GoogleAsyncResponse(){
         @Override
         public void processFinish(String attachment) {
-            if (!attachment.equals("false")) {
-                // setting the attachment and the case in singleton
-                GoogleDataSingleton.getData().setImage(attachment);
-                GoogleDataSingleton.getData().setCase(1);
-
-                // delete the bitmap file, is useless now
-                deleteBitmapFile();
-                sendToCalendar();
-            }
-            else {
+            if(attachment.equals("noInternet") || attachment.equals("false")){
                 // check if the user let vibrate the smartphone
                 boolean canVib = mSharedPref.getBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, true);
 
@@ -187,6 +176,15 @@ public class SignatureFragment extends Fragment {
 
                 // go back to the precedent activity
                 safe_press_back();
+            }
+            else {
+                // setting the attachment and the case in singleton
+                GoogleDataSingleton.getData().setImage(attachment);
+                GoogleDataSingleton.getData().setCase(1);
+
+                // delete the bitmap file, is useless now
+                deleteBitmapFile();
+                sendToCalendar();
             }
         }
     };

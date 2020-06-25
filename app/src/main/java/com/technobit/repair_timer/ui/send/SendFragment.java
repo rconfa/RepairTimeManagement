@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
@@ -22,6 +25,7 @@ import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
+import com.technobit.repair_timer.viewmodels.SendViewModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,12 +34,11 @@ import java.util.Collections;
 import java.util.Date;
 
 public class SendFragment extends Fragment  {
-    private ArrayList<GoogleData> allData;
-    private int parsedData = 0, totalData = 0, mEventColor;
+    private int parsedData, totalData, mEventColor;
     private Context mContext;
     private FragmentSendBinding mBinding;
     private SharedPreferences mSharedPref;
-
+    private SendViewModel mSendViewModel;
     public SendFragment() {
         // Required empty public constructor
     }
@@ -48,6 +51,8 @@ public class SendFragment extends Fragment  {
                              ViewGroup container, Bundle savedInstanceState) {
 
         mBinding = FragmentSendBinding.inflate(inflater, container, false);
+        parsedData = 0;
+        totalData = 0;
         return mBinding.getRoot();
     }
 
@@ -63,39 +68,77 @@ public class SendFragment extends Fragment  {
             // get the context
             mContext = getContext();
 
-            try {
-                allData = new GoogleDataRepository().getAll(mContext);
-                if (allData.size() > 0) {
-                    // set the button for sending all visible
-                    mBinding.btnSend.setVisibility(View.VISIBLE);
-                    // setting text
-                    mBinding.textInfo.setText(getString(R.string.send_text_info, allData.size()));
-                } else
-                    mBinding.textInfo.setText(getString(R.string.send_text_error));
-            } catch (IOException e) {
-                allData = null;
-                mBinding.textInfo.setText(getString(R.string.send_text_error));
-            }
+            // Create a ViewModel the first time the system calls a Fragment's onViewCreated() method.
+            // Re-created fragments receive the same mContactViewModel instance created by the first Fragment.
+            mSendViewModel = new ViewModelProvider(requireActivity()).get(SendViewModel.class);
 
-            mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
+            // The observer associated with the object that holds the list of data to send.
+            final Observer<ArrayList<GoogleData>> observer = new Observer<ArrayList<GoogleData>>() {
                 @Override
-                public void onClick(View view) {
-                    SharedPreferences.Editor editor = mSharedPref.edit();
-                    editor.putBoolean(Constants.SEND_SHARED_PREF_ALLOW, false);
-                    editor.apply();
-
-                    mBinding.btnSend.setVisibility(View.GONE);
-                    mBinding.textInfo.setText(getString(R.string.send_text_upload));
-                    mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
-                    mBinding.progressBar.setMax(allData.size());
-                    mBinding.progressBar.setProgress(0);
-                    mBinding.textPercentage.setText(getString(R.string.send_text_progress, 0));
-                    SendAllToGoogle(allData);
+                public void onChanged(ArrayList<GoogleData> datas) {
+                    if(datas.size() > 0){
+                        // set the button for sending all visible
+                        mBinding.btnSend.setVisibility(View.VISIBLE);
+                        setButtonListener();
+                        // setting text
+                        mBinding.textInfo.setText(getString(R.string.send_text_info, datas.size()));
+                        mBinding.progressBar.setMax(datas.size());
+                    }
                 }
-            });
+
+            };
+
+            // The LiveData object that holds the list of data to send.
+            LiveData<ArrayList<GoogleData>> liveData = mSendViewModel.getDatas(mContext);
+
+            /*
+             * We set the relationship between the Observer and the LiveData object
+             * that holds the Resource associated with the list of contacts.
+             */
+            liveData.observe(getViewLifecycleOwner(), observer);
+
+
+            // The observer associated with the object that holds the list of data to send.
+            final Observer<Integer> progressObserver = new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer value) {
+                    // progress value update
+                    mBinding.progressBar.setProgress(value);
+                    mBinding.textPercentage.setText(
+                            getString(R.string.send_text_progress, value));
+                }
+
+            };
+
+            // The LiveData object that holds the % of progress.
+            LiveData<Integer> progress = mSendViewModel.getProgress();
+
+            /*
+             * We set the relationship between the Observer and the LiveData object
+             * that holds the % of progress.
+             */
+            progress.observe(getViewLifecycleOwner(), progressObserver);
         }
         else
             mBinding.textInfo.setText(getString(R.string.background_send_feedback));
+
+
+    }
+
+    private void setButtonListener(){
+        mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = mSharedPref.edit();
+                editor.putBoolean(Constants.SEND_SHARED_PREF_ALLOW, false);
+                editor.apply();
+
+                mBinding.btnSend.setVisibility(View.GONE);
+                mBinding.textInfo.setText(getString(R.string.send_text_upload));
+                mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
+                SendAllToGoogle(mSendViewModel.getListValue());
+            }
+        });
     }
 
     private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
@@ -153,7 +196,7 @@ public class SendFragment extends Fragment  {
                         if (!attachment.equals("false")) {
                             singleData.setImage(attachment);
                             // update data in the arrayList
-                            allData.set(index, singleData);
+                            mSendViewModel.updateSingleData(index, singleData);
                             // delete the image
                             imageFile.delete();
 
@@ -181,10 +224,11 @@ public class SendFragment extends Fragment  {
                     public void processFinish(String result) {
                         parsedData++;
                         int val = (parsedData * 100) / totalData; // calculate the progress
+
                         safe_update_ui(val); // Update ui
 
                         if(result.equals("true"))
-                            allData.set(index, null);
+                            mSendViewModel.updateSingleData(index, null);
                         else
                             safe_vibrate();
                     }
@@ -209,20 +253,19 @@ public class SendFragment extends Fragment  {
         return new File(filepath);
     }
 
+
     private void safe_update_ui(final int value){
         // shake the smartphone if the fragment is available
         if(this.isAdded()) {
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    // progress value update
-                    mBinding.progressBar.setProgress(value);
-                    mBinding.textPercentage.setText(
-                            getString(R.string.send_text_progress, value));
+                    mSendViewModel.updateProgress(value);
                 }
             });
         }
     }
+
 
     private void safe_vibrate(){
         // shake the smartphone if the fragment is available
