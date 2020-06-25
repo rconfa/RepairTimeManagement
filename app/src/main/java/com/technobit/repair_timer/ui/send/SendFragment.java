@@ -26,6 +26,7 @@ import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 public class SendFragment extends Fragment  {
@@ -105,7 +106,7 @@ public class SendFragment extends Fragment  {
             singleData = allData.get(parsingIndex);
 
             if (singleData.getCase() != 2) {
-                sendToCalendar(singleData);
+                sendToCalendar(singleData, parsingIndex);
             }
             else{
                 sentToDrive(singleData, parsingIndex);
@@ -123,9 +124,12 @@ public class SendFragment extends Fragment  {
                     }
                 }
 
+                allData.removeAll(Collections.singleton(null));
                 if(allData.size()>0){
                     mBinding.textInfo.setText(getString(R.string.send_text_fail));
                 }
+                else
+                    mBinding.textInfo.setText(getString(R.string.send_text_completed));
                 try {
                     new GoogleDataRepository().writeAll(allData, mContext);
                 } catch (IOException e) {
@@ -153,7 +157,7 @@ public class SendFragment extends Fragment  {
                             // delete the image
                             imageFile.delete();
 
-                            sendToCalendar(singleData);
+                            sendToCalendar(singleData, index);
                         }
                         else{
                             parsedData++;
@@ -165,7 +169,7 @@ public class SendFragment extends Fragment  {
                 }).start();
     }
 
-    private void sendToCalendar(final GoogleData data){
+    private void sendToCalendar(final GoogleData data, final int index){
         // when the image is upload I add the event on calendar
         // insert the event on calendar
         Date endDate = new Date(data.getEventEnd());
@@ -180,7 +184,7 @@ public class SendFragment extends Fragment  {
                         safe_update_ui(val); // Update ui
 
                         if(result.equals("true"))
-                            allData.remove(data);
+                            allData.set(index, null);
                         else
                             safe_vibrate();
                     }
