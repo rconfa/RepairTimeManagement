@@ -2,6 +2,8 @@ package com.technobit.repair_timer.repositories.contact;
 
 // this class represent the data of a single contact.
 
+import androidx.annotation.NonNull;
+
 public class Contact {
     private String company_name; // name of the company
     private String email; // email of the company
@@ -26,6 +28,7 @@ public class Contact {
         return email;
     }
 
+    @NonNull
     public String toString(){
         return this.company_name +";" + this.email;
     }

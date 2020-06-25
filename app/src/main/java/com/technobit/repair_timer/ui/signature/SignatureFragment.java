@@ -275,7 +275,7 @@ public class SignatureFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString(Constants.SAVE_INSTANCE_GOOGLE, GoogleDataSingleton.getData().toString());
