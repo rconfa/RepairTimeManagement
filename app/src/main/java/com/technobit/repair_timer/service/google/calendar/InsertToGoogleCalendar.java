@@ -15,6 +15,7 @@ import com.google.api.services.calendar.model.EventDateTime;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
 import com.technobit.repair_timer.service.google.GoogleUtility;
+import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class InsertToGoogleCalendar extends Thread {
     private int mEventColor;
     private String mAttachments;
     private GoogleAsyncResponse mdelegate;
+    private Context mContext;
 
     // constructor with parameters
     public InsertToGoogleCalendar(String mEventTitle, String mEventDescription,
@@ -44,6 +46,7 @@ public class InsertToGoogleCalendar extends Thread {
         this.mEventColor = mEventColor;
         this.mAttachments = mAttachments;
         this.mdelegate = mdelegate;
+        this.mContext = mContext;
 
         // get account and credential from google Utility
         GoogleUtility gu = GoogleUtility.getInstance();
@@ -123,13 +126,17 @@ public class InsertToGoogleCalendar extends Thread {
     @Override
     public void run() {
         if(mService != null) {
-            try {
-                insertEvent(); // insert the event into calendar
-                mdelegate.processFinish("true");
-            } catch (IOException e) {
-                e.printStackTrace();
-                mdelegate.processFinish("false");
+            if(new SmartphoneControlUtility(mContext).checkInternetConnection()) {
+                try {
+                    insertEvent(); // insert the event into calendar
+                    mdelegate.processFinish("true");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mdelegate.processFinish("false");
+                }
             }
+            else
+                mdelegate.processFinish("noInternet");
         }
         else {
             mdelegate.processFinish("false");

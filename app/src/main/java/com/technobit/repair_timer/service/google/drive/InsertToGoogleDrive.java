@@ -13,6 +13,7 @@ import com.google.api.services.drive.model.File;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
 import com.technobit.repair_timer.service.google.GoogleUtility;
+import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 
 import java.io.IOException;
 
@@ -22,11 +23,12 @@ public class InsertToGoogleDrive extends Thread {
     private Drive mService; // google drive service
     private java.io.File mFilepath; // local image filepath
     private GoogleAsyncResponse mdelegate;
-
+    private Context mContext;
     public InsertToGoogleDrive(java.io.File mFilepath, Context mContext,
                                   GoogleAsyncResponse mdelegate) {
         this.mFilepath = mFilepath;
         this.mdelegate = mdelegate;
+        this.mContext = mContext;
 
         // get account and credential from google Utility
         GoogleUtility gu = GoogleUtility.getInstance();
@@ -64,13 +66,17 @@ public class InsertToGoogleDrive extends Thread {
     @Override
     public void run() {
         if(mService != null) {
-            try {
-                String result = insertImage(); // upload an image into google drive
-                mdelegate.processFinish(result);
-            } catch (IOException e) {
-                e.printStackTrace();
-                mdelegate.processFinish("false");
+            if(new SmartphoneControlUtility(mContext).checkInternetConnection()) {
+                try {
+                    String result = insertImage(); // upload an image into google drive
+                    mdelegate.processFinish(result);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mdelegate.processFinish("false");
+                }
             }
+            else
+                mdelegate.processFinish("noInternet");
         }
         else {
             mdelegate.processFinish("false");
