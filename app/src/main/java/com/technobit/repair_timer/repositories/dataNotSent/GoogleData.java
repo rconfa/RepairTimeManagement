@@ -1,11 +1,6 @@
-package com.technobit.repair_timer.utils.dataNotSent;
-
-import android.content.Context;
+package com.technobit.repair_timer.repositories.dataNotSent;
 
 import androidx.annotation.NonNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /*  This class store values that need to send into google drive/calendar.
     If there some error while sending or app crash it saves data into file.
@@ -20,8 +15,6 @@ import java.util.ArrayList;
     3) If the app crash before the user sign and insert the description
     3;EventTitle;eventDuration;eventEndTime
  */
-
-// todo: create a class data and a class for the instance
 public class GoogleData {
     private String mEventTitle, mDescription, mImage; // title, descripion and attachment for the event
     private Long mEventDuration, mEventEnd; // duration and end time for the event
@@ -106,10 +99,6 @@ public class GoogleData {
                 mEventEnd + ";" + mImage;
     }
 
-    public ArrayList<GoogleData> getAll(Context mContext) throws IOException {
-        return new FileGoogle().readFile(mContext);
-    }
-
 
     protected GoogleData readFromString(String line) {
         GoogleData toRet = new GoogleData();
@@ -132,8 +121,6 @@ public class GoogleData {
         return toRet;
     }
 
-    public void writeAll(ArrayList<GoogleData> datas, Context context) throws IOException {
-        new FileGoogle().writeAllToFile(datas, context);
-    }
+
 
 }

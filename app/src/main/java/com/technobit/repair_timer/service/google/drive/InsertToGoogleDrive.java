@@ -1,4 +1,4 @@
-package com.technobit.repair_timer.utils.googleService.drive;
+package com.technobit.repair_timer.service.google.drive;
 
 import android.content.Context;
 
@@ -11,8 +11,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.technobit.repair_timer.R;
-import com.technobit.repair_timer.utils.googleService.GoogleAsyncResponse;
-import com.technobit.repair_timer.utils.googleService.GoogleUtility;
+import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
+import com.technobit.repair_timer.service.google.GoogleUtility;
 
 import java.io.IOException;
 

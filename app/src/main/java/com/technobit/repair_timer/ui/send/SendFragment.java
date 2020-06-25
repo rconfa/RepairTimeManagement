@@ -9,17 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleData;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataRepository;
+import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
+import com.technobit.repair_timer.service.google.calendar.InsertToGoogleCalendar;
+import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
-import com.technobit.repair_timer.utils.dataNotSent.GoogleData;
-import com.technobit.repair_timer.utils.googleService.GoogleAsyncResponse;
-import com.technobit.repair_timer.utils.googleService.calendar.InsertToGoogleCalendar;
-import com.technobit.repair_timer.utils.googleService.drive.InsertToGoogleDrive;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +35,24 @@ public class SendFragment extends Fragment  {
     private FragmentSendBinding mBinding;
     private SharedPreferences mSharedPref;
 
+    public SendFragment() {
+        // Required empty public constructor
+    }
+
+    public static SendFragment newInstance() {
+        return new SendFragment();
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        mBinding = FragmentSendBinding.inflate(inflater, container,false);
-        View view = mBinding.getRoot();
+        mBinding = FragmentSendBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mSharedPref = requireContext().getSharedPreferences(
                 Constants.SEND_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
@@ -49,7 +63,7 @@ public class SendFragment extends Fragment  {
             mContext = getContext();
 
             try {
-                allData = new GoogleData().getAll(mContext);
+                allData = new GoogleDataRepository().getAll(mContext);
                 if (allData.size() > 0) {
                     // set the button for sending all visible
                     mBinding.btnSend.setVisibility(View.VISIBLE);
@@ -81,8 +95,6 @@ public class SendFragment extends Fragment  {
         }
         else
             mBinding.textInfo.setText(getString(R.string.background_send_feedback));
-
-        return view;
     }
 
     private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
@@ -115,7 +127,7 @@ public class SendFragment extends Fragment  {
                     mBinding.textInfo.setText(getString(R.string.send_text_fail));
                 }
                 try {
-                    new GoogleData().writeAll(allData, mContext);
+                    new GoogleDataRepository().writeAll(allData, mContext);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

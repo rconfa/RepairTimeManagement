@@ -1,4 +1,4 @@
-package com.technobit.repair_timer.utils.googleService.calendar;
+package com.technobit.repair_timer.service.google.calendar;
 
 import android.content.Context;
 
@@ -13,8 +13,8 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttachment;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.technobit.repair_timer.R;
-import com.technobit.repair_timer.utils.googleService.GoogleAsyncResponse;
-import com.technobit.repair_timer.utils.googleService.GoogleUtility;
+import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
+import com.technobit.repair_timer.service.google.GoogleUtility;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.technobit.repair_timer.R;
-import com.technobit.repair_timer.utils.contact.Contact;
+import com.technobit.repair_timer.repositories.contact.Contact;
 
 // class to add a new contact or modify an existing one
 public class ManageContactDialog extends DialogFragment {

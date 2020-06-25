@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,10 +27,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentChronometerBinding;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
-import com.technobit.repair_timer.ui.model.SharedViewModel;
 import com.technobit.repair_timer.utils.Constants;
-import com.technobit.repair_timer.utils.dataNotSent.GoogleDataSingleton;
+import com.technobit.repair_timer.viewmodels.SharedViewModel;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -45,13 +46,25 @@ public class ChronometerFragment extends Fragment{
     private NavController mNavigator;
     private FragmentChronometerBinding mBinding;
 
+    public ChronometerFragment() {
+        // Required empty public constructor
+    }
+
+    public static ChronometerFragment newInstance() {
+        return new ChronometerFragment();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentChronometerBinding.inflate(inflater, container, false);
-        final View view = mBinding.getRoot();
+        return mBinding.getRoot();
 
+    }
 
-        // salvo le shared preference per gestire lettura/salvataggio delle preferenze già inserite
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // save shared preference to manage existing preference
         mSharedPref = requireContext().getSharedPreferences(
                 Constants.CHRONOMETER_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
 
@@ -129,8 +142,6 @@ public class ChronometerFragment extends Fragment{
         });
 
         mNavigator = NavHostFragment.findNavController(this);
-
-        return view;
     }
 
 
@@ -174,8 +185,6 @@ public class ChronometerFragment extends Fragment{
         super.onDestroyView();
         mBinding = null;
     }
-
-
 
     @Override
     public void onPause(){

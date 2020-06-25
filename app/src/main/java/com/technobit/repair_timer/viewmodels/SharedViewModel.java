@@ -1,12 +1,12 @@
-package com.technobit.repair_timer.ui.model;
+package com.technobit.repair_timer.viewmodels;
 
 import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.technobit.repair_timer.utils.contact.Contact;
-import com.technobit.repair_timer.utils.contact.ContactRepository;
+import com.technobit.repair_timer.repositories.contact.Contact;
+import com.technobit.repair_timer.repositories.contact.ContactRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;

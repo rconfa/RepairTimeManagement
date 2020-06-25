@@ -19,6 +19,7 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
+import com.technobit.repair_timer.service.google.GoogleUtility;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorPickerDialog;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorPickerSwatch;
@@ -26,7 +27,6 @@ import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.ui.customize.preference.RipPreference;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
-import com.technobit.repair_timer.utils.googleService.GoogleUtility;
 
 import static android.app.Activity.RESULT_OK;
 

@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.technobit.repair_timer.R;
-import com.technobit.repair_timer.utils.contact.Contact;
+import com.technobit.repair_timer.repositories.contact.Contact;
 
 import java.util.ArrayList;
 import java.util.Collections;

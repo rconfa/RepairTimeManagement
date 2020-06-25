@@ -1,4 +1,4 @@
-package com.technobit.repair_timer.utils.dataNotSent;
+package com.technobit.repair_timer.repositories.dataNotSent;
 
 import android.content.Context;
 

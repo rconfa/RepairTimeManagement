@@ -1,4 +1,4 @@
-package com.technobit.repair_timer.utils.googleService;
+package com.technobit.repair_timer.service.google;
 
 import android.content.Context;
 

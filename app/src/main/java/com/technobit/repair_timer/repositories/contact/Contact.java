@@ -1,4 +1,4 @@
-package com.technobit.repair_timer.utils.contact;
+package com.technobit.repair_timer.repositories.contact;
 
 // this class represent the data of a single contact.
 

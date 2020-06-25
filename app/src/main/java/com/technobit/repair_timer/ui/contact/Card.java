@@ -1,6 +1,6 @@
 package com.technobit.repair_timer.ui.contact;
 
-import com.technobit.repair_timer.utils.contact.Contact;
+import com.technobit.repair_timer.repositories.contact.Contact;
 
 // Class that represent a single contact like a card to be added in the recycle view.
 public class Card extends Contact {

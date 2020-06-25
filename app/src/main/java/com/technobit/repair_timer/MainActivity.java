@@ -12,7 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.technobit.repair_timer.utils.dataNotSent.GoogleDataSingleton;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
 
 import java.io.IOException;
 

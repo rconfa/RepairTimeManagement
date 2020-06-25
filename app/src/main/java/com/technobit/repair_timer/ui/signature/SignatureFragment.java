@@ -11,18 +11,19 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSignatureBinding;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
+import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
+import com.technobit.repair_timer.service.google.calendar.InsertToGoogleCalendar;
+import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
-import com.technobit.repair_timer.utils.dataNotSent.GoogleDataSingleton;
-import com.technobit.repair_timer.utils.googleService.GoogleAsyncResponse;
-import com.technobit.repair_timer.utils.googleService.calendar.InsertToGoogleCalendar;
-import com.technobit.repair_timer.utils.googleService.drive.InsertToGoogleDrive;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -39,12 +40,24 @@ public class SignatureFragment extends Fragment {
     private FragmentSignatureBinding mBinding;
     private SharedPreferences mSharedPref;
 
+    public SignatureFragment() {
+        // Required empty public constructor
+    }
+
+    public static SignatureFragment newInstance() {
+        return new SignatureFragment();
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        mBinding = FragmentSignatureBinding.inflate(inflater, container,false);
-        View view = mBinding.getRoot();
+        mBinding = FragmentSignatureBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null) {
             GoogleDataSingleton.StringInitialize(savedInstanceState.getString(Constants.SAVE_INSTANCE_GOOGLE));
         }
@@ -100,9 +113,6 @@ public class SignatureFragment extends Fragment {
                 }
             }
         });
-
-
-        return view;
     }
 
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -22,11 +23,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentContactBinding;
+import com.technobit.repair_timer.repositories.contact.Contact;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
 import com.technobit.repair_timer.ui.customize.dialog.ManageContactDialog;
-import com.technobit.repair_timer.ui.model.SharedViewModel;
 import com.technobit.repair_timer.utils.Constants;
-import com.technobit.repair_timer.utils.contact.Contact;
+import com.technobit.repair_timer.viewmodels.SharedViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,14 +40,29 @@ public class ContactFragment extends Fragment
     private MenuItem mMenuDeleteItem;
     private MenuItem mMenuAddItem;
     private SharedViewModel mContactViewModel;
+    private FragmentContactBinding mBinding;
+
+    public ContactFragment() {
+        // Required empty public constructor
+    }
+
+    public static ContactFragment newInstance() {
+        return new ContactFragment();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         // Setting menu for visualizing icon
         setHasOptionsMenu(true);
-        FragmentContactBinding mBinding = FragmentContactBinding.inflate(inflater, container,false);
-        View view = mBinding.getRoot();
+        mBinding = FragmentContactBinding.inflate(inflater, container,false);
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
 
         // Create a ViewModel the first time the system calls a Fragment's onViewCreated() method.
         // Re-created fragments receive the same mContactViewModel instance created by the first Fragment.
@@ -89,9 +105,7 @@ public class ContactFragment extends Fragment
          */
         liveData.observe(getViewLifecycleOwner(), observer);
 
-        return view;
     }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         // Upload menu file with add/delete icons
