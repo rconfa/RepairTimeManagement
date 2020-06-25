@@ -30,13 +30,14 @@ public class SendViewModel extends ViewModel {
         return datas;
     }
 
+    /*
     public ArrayList<GoogleData> getListValue(){
         if(datas != null){
             return datas.getValue();
         }
 
         return null;
-    }
+    }*/
 
     public void updateDatas(Context mContext){
         try {
@@ -47,7 +48,7 @@ public class SendViewModel extends ViewModel {
     }
 
     public GoogleData getSingleData(int index){
-        if(datas != null) {
+        if(datas.getValue() != null) {
             return datas.getValue().get(index);
         }
 
@@ -55,7 +56,7 @@ public class SendViewModel extends ViewModel {
     }
 
     public int getDataSize(){
-        if(datas != null) {
+        if(datas.getValue() != null) {
             return datas.getValue().size();
         }
 
@@ -63,7 +64,7 @@ public class SendViewModel extends ViewModel {
     }
 
     public void clearNullData(){
-        if(datas != null) {
+        if(datas.getValue() != null) {
             datas.getValue().removeAll(Collections.singleton(null));
         }
     }

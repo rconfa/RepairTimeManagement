@@ -82,15 +82,7 @@ public class SignatureFragment extends Fragment {
             public void onClick(View view) {
                 // check if the user has insert a sign
                 if(mBinding.signatureView.isBitmapEmpty()){
-                    // snackbar to send an Hint to the user
-                    Snackbar snackbar = Snackbar.make(view, R.string.snackbar_bitmap_error, Snackbar.LENGTH_LONG);
-                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                }
-                            });
-                    snackbar.show();
+                    displaySnackbar(R.string.snackbar_bitmap_error);
                 }
                 else {
                     // set the event description
@@ -174,6 +166,8 @@ public class SignatureFragment extends Fragment {
                 if(canVib)
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
 
+                displaySnackbar(R.string.snackbar_no_internet);
+
                 // go back to the precedent activity
                 safe_press_back();
             }
@@ -209,17 +203,7 @@ public class SignatureFragment extends Fragment {
             // if result == null the event is no added on google
             if(result.equals("true")) {
                 GoogleDataSingleton.reset(); // it all sent, I reset the value to null
-
-                // create a snackbar with a positive message
-                Snackbar snackbar = Snackbar.make(requireView(), R.string.snackbar_send_positive, Snackbar.LENGTH_LONG);
-                snackbar.setTextColor(Color.WHITE);
-                snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
-                        .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                            }
-                        });
-                snackbar.show();
+                displaySnackbar(R.string.snackbar_send_positive);
 
                 // go back to the precedent activity
                 safe_press_back();
@@ -230,6 +214,8 @@ public class SignatureFragment extends Fragment {
 
                 if(canVib)
                     new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+
+                displaySnackbar(R.string.snackbar_no_internet);
 
                 // go back to the precedent activity
                 safe_press_back();
@@ -308,4 +294,18 @@ public class SignatureFragment extends Fragment {
             });
         }
     }
+
+    private void displaySnackbar(int stringId){
+        // create a snackbar with a positive message
+        Snackbar snackbar = Snackbar.make(requireView(), stringId, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                });
+        snackbar.show();
+    }
+
 }

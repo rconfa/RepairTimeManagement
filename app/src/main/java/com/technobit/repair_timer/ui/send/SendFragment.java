@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
 import com.technobit.repair_timer.repositories.dataNotSent.GoogleData;
@@ -127,14 +127,30 @@ public class SendFragment extends Fragment  {
         mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = mSharedPref.edit();
-                editor.putBoolean(Constants.SEND_SHARED_PREF_ALLOW, false);
-                editor.apply();
 
-                mBinding.btnSend.setVisibility(View.GONE);
-                mBinding.textInfo.setText(getString(R.string.send_text_upload));
-                mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
-                SendAllToGoogle();
+                if(new SmartphoneControlUtility(mContext).checkInternetConnection()) {
+                    SharedPreferences.Editor editor = mSharedPref.edit();
+                    editor.putBoolean(Constants.SEND_SHARED_PREF_ALLOW, false);
+                    editor.apply();
+
+                    mBinding.btnSend.setVisibility(View.GONE);
+                    mBinding.textInfo.setText(getString(R.string.send_text_upload));
+                    mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
+                    SendAllToGoogle();
+                }
+                else {
+                    // snackbar to send an Hint to the user
+                    Snackbar snackbar = Snackbar.make(requireView(),
+                            R.string.snackbar_no_internet, Snackbar.LENGTH_LONG);
+                    snackbar.setTextColor(Color.WHITE);
+                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary))
+                            .setAction(getString(R.string.snackbar_close_btn), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                }
+                            });
+                    snackbar.show();
+                }
             }
         });
     }
@@ -255,9 +271,12 @@ public class SendFragment extends Fragment  {
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    /*
                     Log.d("SEND", Integer.toString(totalData));
                     Log.d("SEND", Integer.toString(parsedData));
                     Log.d("SEND", Integer.toString(value));
+                    */
+
                     mSendViewModel.updateProgress(value);
                 }
             });

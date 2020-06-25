@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     // if the user destroy the application I save the data not sent
-    public void onDestroy() {
+    public void onPause() {
         // if there is some data not sent to google I save it
         if(GoogleDataSingleton.isInstanceNull()) { // if the instance is not null I save it.
             try {
