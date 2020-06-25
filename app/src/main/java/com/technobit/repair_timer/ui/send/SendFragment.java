@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
 import com.technobit.repair_timer.repositories.dataNotSent.GoogleData;
-import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataRepository;
 import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
 import com.technobit.repair_timer.service.google.calendar.InsertToGoogleCalendar;
 import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
@@ -28,9 +28,7 @@ import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import com.technobit.repair_timer.viewmodels.SendViewModel;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 public class SendFragment extends Fragment  {
@@ -136,22 +134,22 @@ public class SendFragment extends Fragment  {
                 mBinding.btnSend.setVisibility(View.GONE);
                 mBinding.textInfo.setText(getString(R.string.send_text_upload));
                 mBinding.linearLayoutProgress.setVisibility(View.VISIBLE);
-                SendAllToGoogle(mSendViewModel.getListValue());
+                SendAllToGoogle();
             }
         });
     }
 
-    private void SendAllToGoogle(final ArrayList<GoogleData> allData) {
+    private void SendAllToGoogle() {
         GoogleData singleData;
-        totalData = allData.size();
+        totalData = mSendViewModel.getDataSize();
         mEventColor = getColorInt(); // get the color that the user has choose
-        for (int parsingIndex = 0; parsingIndex < allData.size(); parsingIndex++){
-            singleData = allData.get(parsingIndex);
+        for (int parsingIndex = 0; parsingIndex < totalData; parsingIndex++){
+            singleData = mSendViewModel.getSingleData(parsingIndex);
 
-            if (singleData.getCase() != 2) {
+            if (singleData != null && singleData.getCase() != 2) {
                 sendToCalendar(singleData, parsingIndex);
             }
-            else{
+            else if (singleData != null){
                 sentToDrive(singleData, parsingIndex);
             }
         }
@@ -167,17 +165,14 @@ public class SendFragment extends Fragment  {
                     }
                 }
 
-                allData.removeAll(Collections.singleton(null));
-                if(allData.size()>0){
+                mSendViewModel.clearNullData();
+                if(mSendViewModel.getDataSize()>0){
                     mBinding.textInfo.setText(getString(R.string.send_text_fail));
                 }
                 else
                     mBinding.textInfo.setText(getString(R.string.send_text_completed));
-                try {
-                    new GoogleDataRepository().writeAll(allData, mContext);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // update all values into repository
+                mSendViewModel.updateDatas(mContext);
                 SharedPreferences.Editor editor = mSharedPref.edit();
                 editor.clear(); // remove all values
                 editor.apply();
@@ -260,6 +255,9 @@ public class SendFragment extends Fragment  {
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d("SEND", Integer.toString(totalData));
+                    Log.d("SEND", Integer.toString(parsedData));
+                    Log.d("SEND", Integer.toString(value));
                     mSendViewModel.updateProgress(value);
                 }
             });
