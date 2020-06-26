@@ -72,6 +72,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        super.onDestroy();
+        super.onPause();
     }
 }
