@@ -8,3 +8,6 @@ At the end of the work, once the customer has signed and accepted, the applicati
   2. the job description provided
   3. Attached is the link to the customer's signature previously saved on Google Drive
  
+In order to use this application you have to configure a Google project by setting the package name for the app and the SHA1 certificate.
+You can find more info at: https://developers.google.com/identity/sign-in/android/start-integrating
+You have also to enable Google Drive and Google Calendar API for the same project on google developer console, https://console.developers.google.com.
