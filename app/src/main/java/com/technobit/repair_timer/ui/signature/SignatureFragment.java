@@ -172,12 +172,14 @@ public class SignatureFragment extends Fragment {
                 safe_press_back();
             }
             else {
+                // path of the file to delete
+                String filepath = GoogleDataSingleton.getData().getImage();
                 // setting the attachment and the case in singleton
                 GoogleDataSingleton.getData().setImage(attachment);
                 GoogleDataSingleton.getData().setCase(1);
 
                 // delete the bitmap file, is useless now
-                deleteBitmapFile();
+                deleteBitmapFile(filepath);
                 sendToCalendar();
             }
         }
@@ -228,7 +230,7 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mBinding.signatureView.isBitmapEmpty()){
-            String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+            String currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
             File file = new File(requireContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
                     + ".jpeg");
@@ -250,11 +252,9 @@ public class SignatureFragment extends Fragment {
         return null;
     }
 
-    private void deleteBitmapFile(){
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-        File file = new File(requireContext().getFilesDir() + "/" +
-                GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
-                + ".jpeg");
+    private void deleteBitmapFile(String path){
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
+        File file = new File(path);
         file.delete();
     }
 
