@@ -39,4 +39,8 @@ public class SmartphoneControlUtility {
 
         return false;
     }
+
+    public boolean emailIsValid(String email){
+       return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 }
