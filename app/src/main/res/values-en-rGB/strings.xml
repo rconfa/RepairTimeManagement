@@ -45,4 +45,5 @@
     <string name="send_text_fail">Retry later …</string>
     <string name="send_text_completed">Upload finished …</string>
     <string name="snackbar_no_internet">No internet connection!</string>
+    <string name="emailSubject">Technobit: repair of</string>
 </resources>

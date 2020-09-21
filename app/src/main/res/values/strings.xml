@@ -89,4 +89,5 @@
     <string name="send_text_completed">Invio completato …</string>
     <string name="background_send_feedback">Invio dei dati in background …</string>
     <string name="send_text_progress" translatable="false">%1$d%%</string>
+    <string name="emailSubject">Technobit: riparazione del</string>
 </resources>

@@ -11,6 +11,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.gmail.GmailScopes;
 
 import java.util.Arrays;
 
@@ -33,7 +34,7 @@ public class GoogleUtility {
     // get credential
     public GoogleAccountCredential getCredential(Context mContext){
         return GoogleAccountCredential.usingOAuth2(mContext,
-                Arrays.asList(CalendarScopes.CALENDAR, DriveScopes.DRIVE))
+                Arrays.asList(CalendarScopes.CALENDAR, DriveScopes.DRIVE, GmailScopes.GMAIL_SEND))
                 .setBackOff(new ExponentialBackOff());
     }
 
@@ -50,7 +51,9 @@ public class GoogleUtility {
     // GoogleSignInClient
     public GoogleSignInClient getSignInClient(Context mContext){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(new Scope(CalendarScopes.CALENDAR), new Scope(DriveScopes.DRIVE)) // Scope to read/write calendar and drive
+                // Scope to read/write calendar, drive and send email
+                .requestScopes(new Scope(CalendarScopes.CALENDAR), new Scope(DriveScopes.DRIVE),
+                        new Scope(GmailScopes.GMAIL_SEND))
                 .requestEmail()
                 .build();
 
