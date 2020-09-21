@@ -21,6 +21,7 @@ import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
 import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
 import com.technobit.repair_timer.service.google.calendar.InsertToGoogleCalendar;
 import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
+import com.technobit.repair_timer.service.google.gmail.SendEmail;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
@@ -39,6 +40,7 @@ public class SignatureFragment extends Fragment {
 
     private FragmentSignatureBinding mBinding;
     private SharedPreferences mSharedPref;
+    private String currentDate;
 
     public SignatureFragment() {
         // Required empty public constructor
@@ -204,6 +206,37 @@ public class SignatureFragment extends Fragment {
         public void processFinish(String result) {
             // if result == null the event is no added on google
             if(result.equals("true")) {
+                sendEmail();
+            }
+            else{
+                // check if the user let vibrate the smartphone
+                boolean canVib = mSharedPref.getBoolean(Constants.TOOLS_SHARED_PREF_VIBRATION, true);
+
+                if(canVib)
+                    new SmartphoneControlUtility(getContext()).shake(); // shake smartphone
+
+                displaySnackbar(R.string.snackbar_no_internet);
+
+                // go back to the precedent activity
+                safe_press_back();
+            }
+        }
+    };
+
+    private void sendEmail(){
+        String subj = getString(R.string.emailSubject) + " " + currentDate;
+
+        // boolean b = new SmartphoneControlUtility(getContext()).emailIsValid("r");
+
+        new SendEmail(getContext(), GoogleDataSingleton.getData().getEmail(), subj,
+                GoogleDataSingleton.getData().getDescription(), mEmailSender).start();
+    }
+
+    private GoogleAsyncResponse mEmailSender = new GoogleAsyncResponse(){
+        @Override
+        public void processFinish(String result) {
+            // if result == null the event is no added on google
+            if(result.equals("true")) {
                 GoogleDataSingleton.reset(); // it all sent, I reset the value to null
                 displaySnackbar(R.string.snackbar_send_positive);
 
@@ -230,7 +263,7 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mBinding.signatureView.isBitmapEmpty()){
-            String currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
+            currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
             File file = new File(requireContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
                     + ".jpeg");
@@ -253,7 +286,6 @@ public class SignatureFragment extends Fragment {
     }
 
     private void deleteBitmapFile(String path){
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
         File file = new File(path);
         file.delete();
     }
