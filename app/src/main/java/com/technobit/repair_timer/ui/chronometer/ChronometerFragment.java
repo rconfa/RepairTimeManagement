@@ -30,6 +30,7 @@ import com.technobit.repair_timer.databinding.FragmentChronometerBinding;
 import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
 import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
 import com.technobit.repair_timer.utils.Constants;
+import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import com.technobit.repair_timer.viewmodels.SharedViewModel;
 
 import java.util.Calendar;
@@ -39,7 +40,7 @@ public class ChronometerFragment extends Fragment{
     private static final String TAG = "ChronometerFragment";
     private long mPauseOffset;
     private boolean chronoIsRunning; // mi dice se il cronometro sta runnando
-    private String mEventTitle = "";
+    private String mEventTitle = "", mEmail = "";
     private int mSpinnerSelectionPos;
     private Animation mAnimBlink;
     private SharedPreferences mSharedPref;
@@ -64,6 +65,7 @@ public class ChronometerFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         // save shared preference to manage existing preference
         mSharedPref = requireContext().getSharedPreferences(
                 Constants.CHRONOMETER_SHARED_PREF_FILENAME, Context.MODE_PRIVATE);
@@ -75,7 +77,7 @@ public class ChronometerFragment extends Fragment{
         // load chronometer animation
         mAnimBlink = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
-        SharedViewModel model = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        final SharedViewModel model = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Init dello spinner
         mSpinnerSelectionPos = 0; // Default selected index, 0 = hint for the spinner
@@ -114,6 +116,7 @@ public class ChronometerFragment extends Fragment{
                 if(mSpinnerSelectionPos != 0){
                     // Spinner is not enable yet.
                     mBinding.spinnerChooseClient.setEnabled(false);
+                    mEmail = model.getContactsEmail(getContext(), mSpinnerSelectionPos - 1);
                     startChronometer(SystemClock.elapsedRealtime());
                 }
                 else{
@@ -276,7 +279,7 @@ public class ChronometerFragment extends Fragment{
 
         // Initialize the instance of CalendarEvent with the known value.
         GoogleDataSingleton.initialize(3, mEventTitle, null,
-                null, elapsedMillis, end.getTime());
+                null, elapsedMillis, end.getTime(), mEmail);
 
         // go to the signature fragment to complete the action
         mNavigator.navigate(R.id.nav_signature);
