@@ -24,12 +24,12 @@ public class GoogleDataSingleton {
     // initialize the instance with value
     public static synchronized GoogleDataSingleton initialize(int mCase, String mEventTitle, String mDescription,
                                                      String mImage, Long mEventDuration,
-                                                     Long mEventEnd){
+                                                     Long mEventEnd, String mEmail){
         if(instance==null){
             instance=new GoogleDataSingleton();
         }
 
-        data = new GoogleData(mCase,mEventTitle,mDescription,mImage,mEventDuration,mEventEnd);
+        data = new GoogleData(mCase,mEventTitle,mDescription,mImage,mEventDuration,mEventEnd, mEmail);
 
         return instance;
     }

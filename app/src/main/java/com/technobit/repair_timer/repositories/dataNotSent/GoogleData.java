@@ -2,6 +2,8 @@ package com.technobit.repair_timer.repositories.dataNotSent;
 
 import androidx.annotation.NonNull;
 
+import com.technobit.repair_timer.ui.contact.Card;
+
 /*  This class store values that need to send into google drive/calendar.
     If there some error while sending or app crash it saves data into file.
     The file could have 3 syntax:
@@ -19,16 +21,18 @@ public class GoogleData {
     private String mEventTitle, mDescription, mImage; // title, descripion and attachment for the event
     private Long mEventDuration, mEventEnd; // duration and end time for the event
     private int mCase;
+    private String mEmail;
 
     // constructor with parameter
     protected GoogleData(int mCase, String mEventTitle, String mDescription, String mAttachment,
-                       Long mEventDuration, Long mEventEnd) {
+                       Long mEventDuration, Long mEventEnd, String mEmail) {
         this.setCase(mCase);
         this.setEventTitle(mEventTitle);
         this.setDescription(mDescription);
         this.setImage(mAttachment);
         this.setEventDuration(mEventDuration);
         this.setEventEnd(mEventEnd);
+        this.mEmail = mEmail;
     }
 
     public GoogleData() {
@@ -37,6 +41,7 @@ public class GoogleData {
         this.mImage = null;
         this.mEventDuration = null;
         this.mEventEnd = null;
+        this.mEmail = null;
     }
 
     // GETTER
@@ -64,7 +69,9 @@ public class GoogleData {
         return mCase;
     }
 
-
+    public String getEmail() {
+        return mEmail;
+    }
 
     // SETTER
     private void setEventTitle(String mEventTitle) {
@@ -92,11 +99,12 @@ public class GoogleData {
         this.mCase = mCase;
     }
 
+
     @NonNull
     @Override
     public String toString() {
         return  mCase + ";" + mEventTitle + ";" + mDescription + ";" + mEventDuration + ";" +
-                mEventEnd + ";" + mImage;
+                mEventEnd + ";" + mImage + "," + mEmail;
     }
 
 
@@ -117,6 +125,8 @@ public class GoogleData {
             toRet.mDescription = null;
             toRet.mImage = null;
         }
+
+        toRet.mEmail = unzippedData[6];
 
         return toRet;
     }

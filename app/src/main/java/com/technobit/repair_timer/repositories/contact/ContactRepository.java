@@ -80,4 +80,11 @@ public class ContactRepository {
         }
         return instance;
     }
+
+    public String getEmailFromName(int pos) {
+        if(this.clienti != null && this.clienti.size() > pos)
+            return this.clienti.get(pos).getEmail();
+
+        else return "";
+    }
 }

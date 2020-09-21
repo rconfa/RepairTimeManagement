@@ -63,4 +63,8 @@ public class SharedViewModel extends ViewModel {
         return repo.getContactNameList();
     }
 
+    public String getContactsEmail(Context mContext, int i) {
+        initRepository(mContext);
+        return repo.getEmailFromName(i);
+    }
 }
