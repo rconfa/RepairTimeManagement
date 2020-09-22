@@ -29,14 +29,14 @@ public class SendEmail  extends Thread {
     private Gmail mService; // google gmail service
     private GoogleAsyncResponse mdelegate;
     private Context mContext;
-    private String emailTo, emailBody, emailSubject;
+    private String mEmailTo, mEmailBody, mEmailSubject;
 
-    public SendEmail(Context mContext, String emailTo, String emailSubject, String emailBody, GoogleAsyncResponse mdelegate) {
+    public SendEmail(Context mContext, String mEmailTo, String mEmailSubject, String mEmailBody, GoogleAsyncResponse mdelegate) {
         this.mdelegate = mdelegate;
         this.mContext = mContext;
-        this.emailTo = emailTo;
-        this.emailSubject = emailSubject;
-        this.emailBody = emailBody;
+        this.mEmailTo = mEmailTo;
+        this.mEmailSubject = mEmailSubject;
+        this.mEmailBody = mEmailBody;
 
         // get account and credential from google Utility
         GoogleUtility gu = GoogleUtility.getInstance();
@@ -74,13 +74,18 @@ public class SendEmail  extends Thread {
     public void run() {
         if(mService != null) {
             if(new SmartphoneControlUtility(mContext).checkInternetConnection()) {
-                try {
-                    String result = sendEmail(); // send email
-                    mdelegate.processFinish(result);
-                } catch (IOException | MessagingException e) {
-                    e.printStackTrace();
-                    mdelegate.processFinish("false");
+                if (new SmartphoneControlUtility(mContext).emailIsValid(mEmailTo) && mEmailBody != null) {
+                    try {
+                        String result = sendEmail(); // send email
+                        mdelegate.processFinish(result);
+                    } catch (IOException | MessagingException e) {
+                        e.printStackTrace();
+                        mdelegate.processFinish("false");
+                    }
                 }
+                else
+                    mdelegate.processFinish("true");
+                    // mdelegate.processFinish("noValidEmail");
             }
             else
                 mdelegate.processFinish("noInternet");
@@ -97,9 +102,9 @@ public class SendEmail  extends Thread {
      */
     private MimeMessage createEmail() throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage(Session.getDefaultInstance(new Properties()));
-        mimeMessage.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(this.emailTo));
-        mimeMessage.setSubject(this.emailSubject);
-        mimeMessage.setText(this.emailBody);
+        mimeMessage.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(this.mEmailTo));
+        mimeMessage.setSubject(this.mEmailSubject);
+        mimeMessage.setText(this.mEmailBody);
         return mimeMessage;
     }
 
