@@ -269,7 +269,7 @@ public class SignatureFragment extends Fragment {
         if(!mBinding.signatureView.isBitmapEmpty()){
             // get the date of finishing
             Date endDate = new Date(GoogleDataSingleton.getData().getEventEnd());
-            mStringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy hh:mm:ss", endDate);
+            mStringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy HH:mm:ss", endDate);
             File file = new File(requireContext().getFilesDir() + "/" +
                     GoogleDataSingleton.getData().getEventTitle() + "_" + mStringDate
                     + ".jpeg");
