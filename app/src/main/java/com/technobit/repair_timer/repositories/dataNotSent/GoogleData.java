@@ -8,14 +8,17 @@ import com.technobit.repair_timer.ui.contact.Card;
     If there some error while sending or app crash it saves data into file.
     The file could have 3 syntax:
 
-    1) if the image is already sent to drive
+    1) if the image is already sent to drive but missing calendar + email
     1;EventTitle;EventDescription;eventDuration;eventEndTime;imageLink
 
-    2) If the image is not sent to drive yet
+    2) If the image is not sent to drive yet and also missing calendar + email
     2;EventTitle;EventDescription;eventDuration;eventEndTime;imagePath
 
-    3) If the app crash before the user sign and insert the description
+    3) If the app crash before the user sign and insert the description. Need to send only to calendar
     3;EventTitle;eventDuration;eventEndTime
+
+    4) Missing only to send email
+    4;EventDescription;eventEndTime  --> riesco a recuperare data e ora da li altrimenti salvo subj!
  */
 public class GoogleData {
     private String mEventTitle, mDescription, mImage; // title, descripion and attachment for the event
@@ -74,7 +77,7 @@ public class GoogleData {
     }
 
     // SETTER
-    private void setEventTitle(String mEventTitle) {
+    public void setEventTitle(String mEventTitle) {
         this.mEventTitle = mEventTitle;
     }
 
@@ -87,7 +90,7 @@ public class GoogleData {
         this.mImage = mAttachement;
     }
 
-    private void setEventDuration(Long mEventDuration) {
+    public void setEventDuration(Long mEventDuration) {
         this.mEventDuration = mEventDuration;
     }
 
@@ -104,7 +107,7 @@ public class GoogleData {
     @Override
     public String toString() {
         return  mCase + ";" + mEventTitle + ";" + mDescription + ";" + mEventDuration + ";" +
-                mEventEnd + ";" + mImage + "," + mEmail;
+                mEventEnd + ";" + mImage + ";" + mEmail;
     }
 
 
@@ -113,20 +116,20 @@ public class GoogleData {
         String[] unzippedData = line.split(";");
 
         toRet.mCase = Integer.parseInt(unzippedData[0]);
-        toRet.mEventTitle = unzippedData[1];
-        toRet.mEventDuration = Long.decode(unzippedData[3]);
         toRet.mEventEnd = Long.decode(unzippedData[4]);
+        toRet.mEmail = unzippedData[6];
+        // in case 4 there is no event title and duration
+        if(toRet.mCase != 4) {
+            toRet.mEventTitle = unzippedData[1];
+            toRet.mEventDuration = Long.decode(unzippedData[3]);
+        }
         // if case == 3 then there are no description and no imageData
         if(toRet.mCase != 3) {
             toRet.mDescription = unzippedData[2];
             toRet.mImage = unzippedData[5];
         }
-        else{
-            toRet.mDescription = null;
-            toRet.mImage = null;
-        }
 
-        toRet.mEmail = unzippedData[6];
+
 
         return toRet;
     }
