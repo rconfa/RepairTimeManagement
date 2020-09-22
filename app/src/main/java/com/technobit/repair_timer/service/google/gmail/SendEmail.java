@@ -1,13 +1,15 @@
 package com.technobit.repair_timer.service.google.gmail;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.Base64;
+
+
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
 import com.technobit.repair_timer.R;
@@ -18,6 +20,7 @@ import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -60,7 +63,8 @@ public class SendEmail  extends Thread {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         createEmail().writeTo(baos);
         Message message = new Message();
-        message.setRaw(Base64.encodeBase64URLSafeString(baos.toByteArray()));
+
+        message.setRaw(Base64.encodeToString(baos.toString().getBytes(), Base64.NO_WRAP));
 
         Gmail.Users.Messages.Send sender = mService.users().messages().send("me", message);
 
