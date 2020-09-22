@@ -31,16 +31,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 public class SignatureFragment extends Fragment {
 
     private FragmentSignatureBinding mBinding;
     private SharedPreferences mSharedPref;
-    private String currentDate;
+    private String mStringDate;
 
     public SignatureFragment() {
         // Required empty public constructor
@@ -206,7 +204,13 @@ public class SignatureFragment extends Fragment {
         public void processFinish(String result) {
             // if result == null the event is no added on google
             if(result.equals("true")) {
-                sendEmail();
+                // Event is added
+                GoogleDataSingleton.getData().setCase(4); // change the case
+                // delete unused information
+                GoogleDataSingleton.getData().setImage(null);
+                GoogleDataSingleton.getData().setEventTitle(null);
+                GoogleDataSingleton.getData().setEventDuration(null);
+                sendEmail(); // try to send email
             }
             else{
                 // check if the user let vibrate the smartphone
@@ -224,7 +228,7 @@ public class SignatureFragment extends Fragment {
     };
 
     private void sendEmail(){
-        String subj = getString(R.string.emailSubject) + " " + currentDate;
+        String subj = getString(R.string.emailSubject) + " " + mStringDate;
 
         // boolean b = new SmartphoneControlUtility(getContext()).emailIsValid("r");
 
@@ -235,7 +239,7 @@ public class SignatureFragment extends Fragment {
     private GoogleAsyncResponse mEmailSender = new GoogleAsyncResponse(){
         @Override
         public void processFinish(String result) {
-            // if result == null the event is no added on google
+            // if result == true the email was sent
             if(result.equals("true")) {
                 GoogleDataSingleton.reset(); // it all sent, I reset the value to null
                 displaySnackbar(R.string.snackbar_send_positive);
@@ -263,9 +267,11 @@ public class SignatureFragment extends Fragment {
     private File writeBitmapOnFile(){
         // check if the user as insert his sign
         if(!mBinding.signatureView.isBitmapEmpty()){
-            currentDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
+            // get the date of finishing
+            Date endDate = new Date(GoogleDataSingleton.getData().getEventEnd());
+            mStringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy hh:mm:ss", endDate);
             File file = new File(requireContext().getFilesDir() + "/" +
-                    GoogleDataSingleton.getData().getEventTitle() + "_" + currentDate
+                    GoogleDataSingleton.getData().getEventTitle() + "_" + mStringDate
                     + ".jpeg");
             OutputStream os;
             try {
