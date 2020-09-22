@@ -19,9 +19,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.technobit.repair_timer.R;
 import com.technobit.repair_timer.databinding.FragmentSendBinding;
 import com.technobit.repair_timer.repositories.dataNotSent.GoogleData;
+import com.technobit.repair_timer.repositories.dataNotSent.GoogleDataSingleton;
 import com.technobit.repair_timer.service.google.GoogleAsyncResponse;
 import com.technobit.repair_timer.service.google.calendar.InsertToGoogleCalendar;
 import com.technobit.repair_timer.service.google.drive.InsertToGoogleDrive;
+import com.technobit.repair_timer.service.google.gmail.SendEmail;
 import com.technobit.repair_timer.ui.customize.dialog.colorDialog.ColorUtility;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
@@ -161,8 +163,10 @@ public class SendFragment extends Fragment  {
         mEventColor = getColorInt(); // get the color that the user has choose
         for (int parsingIndex = 0; parsingIndex < totalData; parsingIndex++){
             singleData = mSendViewModel.getSingleData(parsingIndex);
-
-            if (singleData != null && singleData.getCase() != 2) {
+            if (singleData != null && singleData.getCase() == 4) {
+                sendEmail(singleData, parsingIndex);
+            }
+            else if (singleData != null && singleData.getCase() != 2) {
                 sendToCalendar(singleData, parsingIndex);
             }
             else if (singleData != null){
@@ -223,13 +227,45 @@ public class SendFragment extends Fragment  {
                 }).start();
     }
 
-    private void sendToCalendar(final GoogleData data, final int index){
+    private void sendToCalendar(final GoogleData singleData, final int index){
         // when the image is upload I add the event on calendar
         // insert the event on calendar
-        Date endDate = new Date(data.getEventEnd());
+        Date endDate = new Date(singleData.getEventEnd());
 
-        new InsertToGoogleCalendar(data.getEventTitle(), data.getDescription(), endDate,
-                data.getEventDuration(), mEventColor, mContext,data.getImage(),
+        new InsertToGoogleCalendar(singleData.getEventTitle(), singleData.getDescription(), endDate,
+                singleData.getEventDuration(), mEventColor, mContext,singleData.getImage(),
+                new  GoogleAsyncResponse(){
+                    @Override
+                    public void processFinish(String result) {
+                        if(result.equals("true")) {
+                            // Event is added
+                            singleData.setCase(4); // change the case
+                            // delete unused information
+                            singleData.setImage(null);
+                            singleData.setEventTitle(null);
+                            singleData.setEventDuration(null);
+
+                            mSendViewModel.updateSingleData(index, singleData);
+                            sendEmail(singleData, index);
+                        }
+                        else{
+                            parsedData++;
+                            int val = (parsedData * 100) / totalData; // calculate the progress
+
+                            safe_update_ui(val); // Update ui
+                            safe_vibrate();
+                        }
+                    }
+                }).start();
+    }
+
+    private void sendEmail(final GoogleData singleData, final int index){
+        Date endDate = new Date(singleData.getEventEnd());
+        String stringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy hh:mm:ss", endDate);
+
+        String subj = getString(R.string.emailSubject) + " " + stringDate;
+
+        new SendEmail(getContext(), singleData.getEmail(), subj, singleData.getDescription(),
                 new  GoogleAsyncResponse(){
                     @Override
                     public void processFinish(String result) {
@@ -242,9 +278,11 @@ public class SendFragment extends Fragment  {
                             mSendViewModel.updateSingleData(index, null);
                         else
                             safe_vibrate();
+
                     }
                 }).start();
     }
+
 
     private int getColorInt(){
         int defaultColorValue = Color.parseColor(Constants.default_color);
