@@ -261,7 +261,7 @@ public class SendFragment extends Fragment  {
 
     private void sendEmail(final GoogleData singleData, final int index){
         Date endDate = new Date(singleData.getEventEnd());
-        String stringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy hh:mm:ss", endDate);
+        String stringDate = (String) android.text.format.DateFormat.format("dd-MM-yyyy HH:mm:ss", endDate);
 
         String subj = getString(R.string.emailSubject) + " " + stringDate;
 
