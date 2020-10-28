@@ -117,7 +117,10 @@ public class GoogleData {
 
         toRet.mCase = Integer.parseInt(unzippedData[0]);
         toRet.mEventEnd = Long.decode(unzippedData[4]);
-        toRet.mEmail = unzippedData[6];
+        if(unzippedData.length==7)
+            toRet.mEmail = unzippedData[6];
+        else
+            toRet.mEmail = "";
         // in case 4 there is no event title and duration
         if(toRet.mCase != 4) {
             toRet.mEventTitle = unzippedData[1];
