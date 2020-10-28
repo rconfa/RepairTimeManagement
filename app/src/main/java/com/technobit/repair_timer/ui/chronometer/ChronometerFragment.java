@@ -32,6 +32,7 @@ import com.technobit.repair_timer.ui.customize.dialog.ConfirmChoiceDialog;
 import com.technobit.repair_timer.utils.Constants;
 import com.technobit.repair_timer.utils.SmartphoneControlUtility;
 import com.technobit.repair_timer.viewmodels.SharedViewModel;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -85,10 +86,10 @@ public class ChronometerFragment extends Fragment{
         // Updating UI, add all item to the adapter
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(),
                 R.layout.spinner_item, model.getContactsName(getContext()));
-
-        arrayAdapter.insert(getResources().getString(R.string.spinner_hint), 0);
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         mBinding.spinnerChooseClient.setAdapter(arrayAdapter);
+        //title for the search box
+        mBinding.spinnerChooseClient.setTitle(getString(R.string.spinner_hint));
+        mBinding.spinnerChooseClient.setPositiveButton(getString(R.string.dialog_btn_yes)); //unused
 
         // LISTENER
         // event on client choose from the spinner
@@ -102,6 +103,7 @@ public class ChronometerFragment extends Fragment{
                             // set the event title as the client name
                             mEventTitle = clientName.getText().toString();
                             mSpinnerSelectionPos = position; // save the spinner position
+                            System.err.println("Item sel: " + mSpinnerSelectionPos);
                         }
                     }
 
@@ -116,7 +118,9 @@ public class ChronometerFragment extends Fragment{
                 if(mSpinnerSelectionPos != 0){
                     // Spinner is not enable yet.
                     mBinding.spinnerChooseClient.setEnabled(false);
-                    mEmail = model.getContactsEmail(getContext(), mSpinnerSelectionPos - 1);
+
+                    mEmail = model.getContactsEmail(getContext(), mSpinnerSelectionPos);
+                    System.err.println("chrono: " + mSpinnerSelectionPos + " email:" + mEmail);
                     startChronometer(SystemClock.elapsedRealtime());
                 }
                 else{
@@ -134,7 +138,6 @@ public class ChronometerFragment extends Fragment{
                 }
             }
         });
-
 
         // event on chronometer stop
         mBinding.fabStop.setOnClickListener(new View.OnClickListener() {
